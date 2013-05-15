@@ -1,0 +1,79 @@
+//
+// Security.cs
+//
+// Author: najmeddine nouri
+//
+// Copyright (c) 2013 najmeddine nouri, amine gassem
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+//
+// Except as contained in this notice, the name(s) of the above copyright holders
+// shall not be used in advertising or otherwise to promote the sale, use or other
+// dealings in this Software without prior written authorization.
+//
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Security.Cryptography;
+
+namespace Badr.Server.Middlewares
+{
+    internal static class Security
+    {
+        internal static RNGCryptoServiceProvider _RNGCryptoServiceProvider = new RNGCryptoServiceProvider();
+
+        internal static string GenerateId(int length = 15)
+        {
+            if (length > 0)
+                return Convert.ToBase64String(GenerateBytes(length));
+
+            return null;
+        }
+
+        internal static byte[] GenerateBytes(int length = 15)
+        {
+            if (length > 0)
+            {
+                byte[] data = new byte[length];
+
+                lock (_RNGCryptoServiceProvider)
+                    _RNGCryptoServiceProvider.GetBytes(data);
+
+                return data;
+            }
+
+            return null;
+        }
+
+        internal static string GenerateSalt(int iterations = 1000)
+        {
+            if (iterations < 1000)
+                return null;
+
+            return Convert.ToBase64String(GenerateBytes(12));
+        }
+
+        internal static string Hash(string value, string salt, int iterations = 1000)
+        {
+            using (var pbkdf2 = new Rfc2898DeriveBytes(Encoding.UTF8.GetBytes(value), Convert.FromBase64String(salt), iterations))
+                return Convert.ToBase64String(pbkdf2.GetBytes(24));
+        }
+    }
+}

@@ -1,0 +1,13 @@
+<Project
+    DefaultTargets="Test"
+    xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <UsingTask
+    AssemblyFile="..\packages\xunit.1.9.1\lib\net20\xunit.runner.msbuild.dll"
+    TaskName="Xunit.Runner.MSBuild.xunit"/>
+
+  <Target Name="Test">
+    <xunit Assembly="..\test\Badr.Orm.Test\$(OutputPath)Badr.Orm.Test.dll" />
+  </Target>
+
+</Project>
