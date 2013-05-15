@@ -250,7 +250,7 @@ Badr will look for template files in SiteSettings.TEMPLATE__DIRS (we'll see this
 >         font-size: 1.3591405em;
 >     }
 
-***ok, now how will Badr render the page?***    
+***ok, now how will Badr renders the page?***    
 
 It's easy, it will compile the template file and renders each instruction taking into account the TemplateContext object supplied by the view. 
 
