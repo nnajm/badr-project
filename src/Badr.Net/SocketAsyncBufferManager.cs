@@ -1,5 +1,5 @@
 ﻿//
-// HttpServer.cs
+// HttpRequestHeaders.cs
 //
 // Author: najmeddine nouri
 //
@@ -29,32 +29,42 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+using System.Net.Sockets;
 using System.Text;
 
-namespace Badr.Net.Http
+namespace Badr.Net
 {
-    public class HttpServer: NetServer
+    // Contains a single large buffer divided between SocketAsyncEventArgs instances.
+    public class SocketAsyncBufferManager
     {
-        public HttpServer(IPAddress ipAddr, int port, int maxConnectionNumber)
-            : this(new IPEndPoint(ipAddr, port), maxConnectionNumber)
-		{
-        }
+        private int _theBufferSize;
+        private byte[] _theBuffer;
+        private int _availableOffset;
+        private int _divBufferSize;
 
-        public HttpServer(string ipAddr, int port, int maxConnectionNumber)
-            : this(IPAddress.Parse(ipAddr), port, maxConnectionNumber)
+        public SocketAsyncBufferManager(int totalBytes, int bufferSize)
         {
+            _theBufferSize = totalBytes;
+            _availableOffset = 0;
+            _divBufferSize = bufferSize;
         }
 
-        public HttpServer(IPEndPoint ipEndPoint, int maxConnectionNumber)
-			:base(ipEndPoint, maxConnectionNumber)
+        public void CreateBuffer()
+        {
+            _theBuffer = new byte[_theBufferSize];
+        }
+
+        public bool AssignBuffer (SocketAsyncEventArgs args)
 		{
-        }
 
-        /// <summary>
-        /// Set to true when running the server behind a FastCGI web server
-        /// </summary>
-        public bool IsFastCGI { get; set; }
+			if ((_theBufferSize - _divBufferSize) < _availableOffset)
+			{
+				return false;
+			}
+			args.SetBuffer (_theBuffer, _availableOffset, _divBufferSize);
+			_availableOffset += _divBufferSize;
+
+			return true;
+		}
     }
 }

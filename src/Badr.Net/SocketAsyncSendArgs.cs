@@ -76,7 +76,7 @@ namespace Badr.Net
                 //    SendOpCount,
                 //    Encoding.Default.GetString(Buffer, Offset, Math.Min(101, Count)));
 
-                if(_asyncManager.DisconnetAfterSend)
+                if(_asyncManager.ShouldCloseConnection)
                     _asyncManager.CloseConnection();
             }
             else

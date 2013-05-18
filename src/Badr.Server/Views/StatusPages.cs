@@ -44,7 +44,7 @@ namespace Badr.Server.Views
         internal const string DEBUG_PAGE_VAR_TEMPLATE_RENDERERS = "debug_template_engine";
         internal const string DEBUG_PAGE_VAR_TEMPLATE_ERROR_LINES = "debug_template_errors";
         internal const string DEBUG_PAGE_TEMPLATE =
-@"{. load BadrFilters .}
+@"{% load BadrFilters %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -145,35 +145,35 @@ namespace Badr.Server.Views
     
     <body>
         <div class=""_debug_header"">
-            {: " + DEBUG_PAGE_VAR_HEADER + @" :}
+            {{ " + DEBUG_PAGE_VAR_HEADER + @" }}
         </div>
         <div class=""_page_content"">
 
-            {. if " + DEBUG_PAGE_VAR_EXCEPTION + @" .}
+            {% if " + DEBUG_PAGE_VAR_EXCEPTION + @" %}
             <div class=""_section_header""><span class=""button"" onclick=""javascript:toggleVisibility(this, '_id_debug_exception');""><span>&#x25BD;</span>Stack trace:</span></div>
-            <pre id=""_id_debug_exception"" class=""_debug_exception"">{: " + DEBUG_PAGE_VAR_EXCEPTION + @" :}</pre>
-            {. endif .}
+            <pre id=""_id_debug_exception"" class=""_debug_exception"">{{ " + DEBUG_PAGE_VAR_EXCEPTION + @" }}</pre>
+            {% endif %}
 
-            {. if " + DEBUG_PAGE_VAR_TEMPLATE_RENDERERS + @" .}
+            {% if " + DEBUG_PAGE_VAR_TEMPLATE_RENDERERS + @" %}
             <div class=""_section_header""><span class=""button"" onclick=""javascript:toggleVisibility(this, '_id_debug_template');""><span>&#x25BD;</span>Template structure:</span></div>
             <pre id=""_id_debug_template"">
-            {. for exprRenderer in " + DEBUG_PAGE_VAR_TEMPLATE_RENDERERS + @" .}
-            {: exprRenderer.SourceTemplateLine :}.    {. if exprRenderer.SourceTemplateLine in " + DEBUG_PAGE_VAR_TEMPLATE_ERROR_LINES + @" .}<span style=""color:red;font-weight:bold;"">{: exprRenderer.SourceTemplateMatch|PadTabsLeft:exprRenderer.Level :}</span>{. else .}{: exprRenderer.SourceTemplateMatch|PadTabsLeft:exprRenderer.Level :}{. endif .}
-            {. endfor .}
+            {% for exprRenderer in " + DEBUG_PAGE_VAR_TEMPLATE_RENDERERS + @" %}
+            {{ exprRenderer.SourceTemplateLine }}.    {% if exprRenderer.SourceTemplateLine in " + DEBUG_PAGE_VAR_TEMPLATE_ERROR_LINES + @" %}<span style=""color:red;font-weight:bold;"">{{ exprRenderer.SourceTemplateMatch|PadTabsLeft:exprRenderer.Level }}</span>{% else %}{{ exprRenderer.SourceTemplateMatch|PadTabsLeft:exprRenderer.Level }}{% endif %}
+            {% endfor %}
             </pre>
-            {. endif .}
+            {% endif %}
 
-            {. if " + DEBUG_PAGE_VAR_URLS + @" .}
+            {% if " + DEBUG_PAGE_VAR_URLS + @" %}
             <div class=""_section_header""><span class=""button"" onclick=""javascript:toggleVisibility(this, '_id_urls_table');""><span>&#x25B7;</span>Urls:</span></div>
             <div id=""_id_urls_table"" style=""display:none"">
-            {: " + DEBUG_PAGE_VAR_URLS + @" :}
+            {{ " + DEBUG_PAGE_VAR_URLS + @" }}
             </div>
-            {. endif .}
+            {% endif %}
 
-            {. if " + DEBUG_PAGE_VAR_REQUEST + @" .}
+            {% if " + DEBUG_PAGE_VAR_REQUEST + @" %}
             <div class=""_section_header""><span class=""button"" onclick=""javascript:toggleVisibility(this, '_id_debug_request');""><span>&#x25B7;</span>Request:</span></div>
-            <pre id=""_id_debug_request"" class=""_debug_request"" style=""display:none"">{: " + DEBUG_PAGE_VAR_REQUEST + @" :}</pre>
-            {. endif .}
+            <pre id=""_id_debug_request"" class=""_debug_request"" style=""display:none"">{{ " + DEBUG_PAGE_VAR_REQUEST + @" }}</pre>
+            {% endif %}
 
         </div>
     </body>

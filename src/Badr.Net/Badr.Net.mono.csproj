@@ -164,7 +164,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="BufferManager.cs" />
     <Compile Include="Http\HttpProcessor.cs" />
     <Compile Include="Http\Response\HttpStatusException.cs" />
     <Compile Include="SocketAsyncManager.cs" />
@@ -192,6 +191,11 @@
     <Compile Include="Http\Response\HttpResponseExtensions.cs" />
     <Compile Include="Http\Request\HttpRequestHelper.cs" />
     <Compile Include="Http\Request\HttpRequestMethodParams.cs" />
+    <Compile Include="FastCGI\FastCGIInterpreter.cs" />
+    <Compile Include="FastCGI\FastCGIParam.cs" />
+    <Compile Include="FastCGI\FastCGIRecords.cs" />
+    <Compile Include="FastCGI\FastCGIRequest.cs" />
+    <Compile Include="SocketAsyncBufferManager.cs" />
   </ItemGroup>
   <ItemGroup />
 </Project>

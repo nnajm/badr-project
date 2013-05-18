@@ -85,8 +85,8 @@ namespace Badr.Server.Net
                 context[StatusPages.DEBUG_PAGE_VAR_TEMPLATE_ERROR_LINES] = (ex as TemplateException).TemplateEngine.Errors.Select(te => te.Line);
             }
 
-            if (request != null)
-                context[StatusPages.DEBUG_PAGE_VAR_REQUEST] = request.RawRequest;
+//            if (request != null)
+//                context[StatusPages.DEBUG_PAGE_VAR_REQUEST] = request.RawRequest;
             BadrResponse response = new BadrResponse(request);
             response.Body = request.SiteManager.ViewManager.DebugTemplateEngine.Render(request, context);
 

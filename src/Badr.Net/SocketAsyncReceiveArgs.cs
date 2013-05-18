@@ -56,12 +56,7 @@ namespace Badr.Net
         }
 
         public void ReceiveAsync()
-        {
-            //for (int i = 0; i < NetServer2.BUFFER_SIZE; i++)
-            //    Buffer[Offset + i] = 0;
-
-            //SetBuffer(Offset, NetServer2.BUFFER_SIZE);
-            
+        {            
             if (!_asyncManager.SendReceiveSocket.ReceiveAsync(this))
                 ProcessReceive();
         }
@@ -70,20 +65,10 @@ namespace Badr.Net
         {
             if (SocketError == SocketError.Success)
             {
-                //ReceiveOpCount++;
-                //_Logger.InfoFormat("[Thread-{0}][SOCKET[{1}->>{2}][{3}-{4}]: {5}", 
-                //    System.Threading.Thread.CurrentThread.ManagedThreadId, 
-                //    _asyncManager.SendReceiveSocket.Handle, 
-                //    _asyncManager.SendReceiveSocket.RemoteEndPoint,
-                //    ID, 
-                //    ReceiveOpCount, 
-                //    Encoding.Default.GetString(Buffer, Offset, Math.Min(101, Count)));
-
                 TotalReceived += BytesTransferred;
                 _asyncManager.Processor.OnDataReceived(Buffer, Offset, BytesTransferred);
 
-                //if (_asyncManager.SendReceiveSocket.Poll(1, SelectMode.SelectRead))
-                if(!_asyncManager.DisconnetAfterSend)
+                if(!_asyncManager.ShouldCloseConnection)
                     ReceiveAsync();
             }
             else

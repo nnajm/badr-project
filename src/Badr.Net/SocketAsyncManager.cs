@@ -42,7 +42,7 @@ namespace Badr.Net
         event Action<ISocketAsyncManager> ConnectionClosed;
 
         void ReceiveAsync();
-        void SendAsync(byte[] buffer, int offset, int length);
+        void SendAsync(byte[] buffer, int offset, int length, bool close = false);
         void CloseConnection();
         void Clear();
 
@@ -54,7 +54,7 @@ namespace Badr.Net
         int ReceiveOpCount { get; }
         int TotalReceived { get; }
         int TotalSent { get; }
-        bool DisconnetAfterSend { get; set; }
+        bool ShouldCloseConnection { get; set; }
     }
 
     public class SocketAsyncManager : ISocketAsyncManager
@@ -70,7 +70,7 @@ namespace Badr.Net
         public int ReceiveOpCount { get { return Receiver.ReceiveOpCount; } }
         public int TotalReceived { get { return Receiver.TotalReceived; } }
         public int TotalSent { get { return Sender.TotalSent; } }
-        public bool DisconnetAfterSend { get; set; }
+        public bool ShouldCloseConnection { get; set; }
 
         public SocketAsyncManager(NetProcessor processor, string id)
         {
@@ -89,13 +89,16 @@ namespace Badr.Net
             Receiver.ReceiveAsync();
         }
 
-        public void SendAsync(byte[] buffer, int offset, int length)
+        public void SendAsync(byte[] buffer, int offset, int length, bool closeConnection = false)
         {
+            ShouldCloseConnection = closeConnection;
             Sender.SendAsync(buffer, offset, length);
         }
 
         public void CloseConnection()
         {
+            ShouldCloseConnection = true;
+
             if (SendReceiveSocket != null)
             {
                 try
@@ -114,7 +117,10 @@ namespace Badr.Net
 
         public void Clear()
         {
-            DisconnetAfterSend = false;
+            ShouldCloseConnection = false;
+
+            if (Processor != null)
+                Processor.Clear();
 
             if (Receiver != null)
                 Receiver.Clear();

@@ -42,7 +42,7 @@ namespace Badr.Server.Net
         private BadrServer _badrServer;
 
         public BadrProcessor(BadrServer badrServer)
-            :base()
+            :base(badrServer)
         {
             _badrServer = badrServer;
         }

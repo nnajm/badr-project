@@ -90,38 +90,39 @@ namespace Badr.Net.Http.Request
         protected static void InitWRequestHeaders()
         {
             _wrHeadersStringKey = new Dictionary<string, HttpRequestHeaders>();
-            _wrHeadersStringKey.Add("Accept", HttpRequestHeaders.Accept);
-            _wrHeadersStringKey.Add("Accept-Charset", HttpRequestHeaders.AcceptCharset);
-            _wrHeadersStringKey.Add("Accept-Encoding", HttpRequestHeaders.AcceptEncoding);
-            _wrHeadersStringKey.Add("Accept-Language", HttpRequestHeaders.AcceptLanguage);
-            _wrHeadersStringKey.Add("Accept-Datetime", HttpRequestHeaders.AcceptDatetime);
-            _wrHeadersStringKey.Add("Authorization", HttpRequestHeaders.Authorization);
-            _wrHeadersStringKey.Add("Cache-Control", HttpRequestHeaders.CacheControl);
-            _wrHeadersStringKey.Add("Connection", HttpRequestHeaders.Connection);
-            _wrHeadersStringKey.Add("Cookie", HttpRequestHeaders.Cookie);
-            _wrHeadersStringKey.Add("Content-Length", HttpRequestHeaders.ContentLength);
-            _wrHeadersStringKey.Add("Content-MD5", HttpRequestHeaders.ContentMD5);
-            _wrHeadersStringKey.Add("Content-Type", HttpRequestHeaders.ContentType);
-            _wrHeadersStringKey.Add("Date", HttpRequestHeaders.Date);
-            _wrHeadersStringKey.Add("Expect", HttpRequestHeaders.Expect);
-            _wrHeadersStringKey.Add("From", HttpRequestHeaders.From);
-            _wrHeadersStringKey.Add("Host", HttpRequestHeaders.Host);
-            _wrHeadersStringKey.Add("If-Match", HttpRequestHeaders.IfMatch);
-            _wrHeadersStringKey.Add("If-Modified-Since", HttpRequestHeaders.IfModifiedSince);
-            _wrHeadersStringKey.Add("If-None-Match", HttpRequestHeaders.IfNoneMatch);
-            _wrHeadersStringKey.Add("If-Range", HttpRequestHeaders.IfRange);
-            _wrHeadersStringKey.Add("If-Unmodified-Since", HttpRequestHeaders.IfUnmodifiedSince);
-            _wrHeadersStringKey.Add("Max-Forwards", HttpRequestHeaders.MaxForwards);
-            _wrHeadersStringKey.Add("Pragma", HttpRequestHeaders.Pragma);
-            _wrHeadersStringKey.Add("Proxy-Authorization", HttpRequestHeaders.ProxyAuthorization);
-            _wrHeadersStringKey.Add("Range", HttpRequestHeaders.Range);
-            _wrHeadersStringKey.Add("Referer", HttpRequestHeaders.Referer);
-            _wrHeadersStringKey.Add("TE", HttpRequestHeaders.TE);
-            _wrHeadersStringKey.Add("Upgrade", HttpRequestHeaders.Upgrade);
-            _wrHeadersStringKey.Add("User-Agent", HttpRequestHeaders.UserAgent);
-            _wrHeadersStringKey.Add("Via", HttpRequestHeaders.Via);
-            _wrHeadersStringKey.Add("Warning", HttpRequestHeaders.Warning);
-            _wrHeadersStringKey.Add("X-Requested-With", HttpRequestHeaders.XRequestedWith);
+            _wrHeadersStringKey.Add("accept", HttpRequestHeaders.Accept);
+            _wrHeadersStringKey.Add("accept-charset", HttpRequestHeaders.AcceptCharset);
+            _wrHeadersStringKey.Add("accept-encoding", HttpRequestHeaders.AcceptEncoding);
+            _wrHeadersStringKey.Add("accept-language", HttpRequestHeaders.AcceptLanguage);
+            _wrHeadersStringKey.Add("accept-datetime", HttpRequestHeaders.AcceptDatetime);
+            _wrHeadersStringKey.Add("authorization", HttpRequestHeaders.Authorization);
+            _wrHeadersStringKey.Add("cache-control", HttpRequestHeaders.CacheControl);
+            _wrHeadersStringKey.Add("connection", HttpRequestHeaders.Connection);
+            _wrHeadersStringKey.Add("cookie", HttpRequestHeaders.Cookie);
+            _wrHeadersStringKey.Add("content-length", HttpRequestHeaders.ContentLength);
+            _wrHeadersStringKey.Add("content-mD5", HttpRequestHeaders.ContentMD5);
+            _wrHeadersStringKey.Add("content-type", HttpRequestHeaders.ContentType);
+            _wrHeadersStringKey.Add("date", HttpRequestHeaders.Date);
+            _wrHeadersStringKey.Add("dnt", HttpRequestHeaders.DNT);
+            _wrHeadersStringKey.Add("expect", HttpRequestHeaders.Expect);
+            _wrHeadersStringKey.Add("from", HttpRequestHeaders.From);
+            _wrHeadersStringKey.Add("host", HttpRequestHeaders.Host);
+            _wrHeadersStringKey.Add("if-match", HttpRequestHeaders.IfMatch);
+            _wrHeadersStringKey.Add("if-modified-since", HttpRequestHeaders.IfModifiedSince);
+            _wrHeadersStringKey.Add("if-none-match", HttpRequestHeaders.IfNoneMatch);
+            _wrHeadersStringKey.Add("if-range", HttpRequestHeaders.IfRange);
+            _wrHeadersStringKey.Add("if-unmodified-since", HttpRequestHeaders.IfUnmodifiedSince);
+            _wrHeadersStringKey.Add("max-forwards", HttpRequestHeaders.MaxForwards);
+            _wrHeadersStringKey.Add("pragma", HttpRequestHeaders.Pragma);
+            _wrHeadersStringKey.Add("proxy-authorization", HttpRequestHeaders.ProxyAuthorization);
+            _wrHeadersStringKey.Add("range", HttpRequestHeaders.Range);
+            _wrHeadersStringKey.Add("referer", HttpRequestHeaders.Referer);
+            _wrHeadersStringKey.Add("te", HttpRequestHeaders.TE);
+            _wrHeadersStringKey.Add("upgrade", HttpRequestHeaders.Upgrade);
+            _wrHeadersStringKey.Add("user-agent", HttpRequestHeaders.UserAgent);
+            _wrHeadersStringKey.Add("via", HttpRequestHeaders.Via);
+            _wrHeadersStringKey.Add("warning", HttpRequestHeaders.Warning);
+            _wrHeadersStringKey.Add("x-requested-with", HttpRequestHeaders.XRequestedWith);
 
             _wrHeadersEnumKey = new Dictionary<HttpRequestHeaders, string>();
             foreach (KeyValuePair<string, HttpRequestHeaders> kvp in _wrHeadersStringKey)
@@ -130,7 +131,7 @@ namespace Badr.Net.Http.Request
 
         public static string GetHeader(HttpRequestHeaders header)
         {
-            if (_wrHeadersEnumKey.ContainsKey(header))
+            if (header != null && _wrHeadersEnumKey.ContainsKey(header))
                 return _wrHeadersEnumKey[header];
 
             return string.Empty;
@@ -138,8 +139,12 @@ namespace Badr.Net.Http.Request
 
         public static HttpRequestHeaders GetHeader(string header)
         {
-            if (_wrHeadersStringKey.ContainsKey(header))
-                return _wrHeadersStringKey[header];
+            if (header != null)
+            {
+                header = header.ToLower().Replace('_', '-');
+                if (_wrHeadersStringKey.ContainsKey(header))
+                    return _wrHeadersStringKey[header];
+            }
 
             return HttpRequestHeaders.NONE;
         }

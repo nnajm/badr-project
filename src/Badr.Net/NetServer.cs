@@ -31,7 +31,6 @@ using Badr.Net.Http;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -50,8 +49,8 @@ namespace Badr.Net
         protected int _maxConnectionNumber;
         protected int _receiveBufferSize;
 
-        protected BufferManager _bufferManager;
-        protected const int opsToPreAlloc = 2;
+        protected SocketAsyncBufferManager _socketAsyncBufferManager;
+        protected const int _opsToPreAlloc = 2;
 
         protected Socket _listenSocket;
 
@@ -99,8 +98,8 @@ namespace Badr.Net
 
          protected void Init()
         {
-            _bufferManager = new BufferManager(BUFFER_SIZE * _maxConnectionNumber * opsToPreAlloc, BUFFER_SIZE);
-            _bufferManager.InitBuffer();
+            _socketAsyncBufferManager = new SocketAsyncBufferManager(BUFFER_SIZE * _maxConnectionNumber * _opsToPreAlloc, BUFFER_SIZE);
+            _socketAsyncBufferManager.CreateBuffer();
 
             _asyncManagersPool = new SocketAsyncManagersPool(_maxConnectionNumber);
 
@@ -112,7 +111,7 @@ namespace Badr.Net
                 asyncManager.Receiver = new SocketAsyncReceiveArgs(asyncManager);
                 asyncManager.Sender = new SocketAsyncSendArgs(asyncManager);
 
-                _bufferManager.SetBuffer(asyncManager.Receiver);
+                _socketAsyncBufferManager.AssignBuffer(asyncManager.Receiver);
 
                 _asyncManagersPool.Push(asyncManager);
             }
@@ -126,8 +125,6 @@ namespace Badr.Net
             {
                 _isServerStarted = true;
                 _acceptConnections = true;
-
-                //ThreadPool.SetMinThreads(_maxConnectionNumber / 4, _maxConnectionNumber / 4);
 
                 _listenSocket = new Socket(IPEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                 _listenSocket.Bind(IPEndPoint);

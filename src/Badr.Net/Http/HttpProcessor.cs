@@ -35,16 +35,62 @@ using System.Text;
 using Badr.Net.Http.Request;
 using Badr.Net.Http.Response;
 using Badr.Net.Utils;
+using Badr.Net.FastCGI;
 
 namespace Badr.Net.Http
 {
-    public class HttpProcessor: NetProcessor
+    public class HttpProcessor : NetProcessor
     {
+        #region fields
+
         private static readonly ILog _Logger = LogManager.GetLogger(typeof(HttpProcessor));
 
-        public HttpProcessor()
-            :base()
+        protected HttpRequest _request;
+        protected HttpUploadManager _uploadManager;
+        protected ReceiveBufferManager _rbm;
+
+        protected FastCGIInterpreter _fcgiInterpreter;
+        protected FastCGIInterpreter FcgiInterpreter
         {
+            get
+            {
+                if (_fcgiInterpreter == null)
+                    _fcgiInterpreter = new FastCGIInterpreter();
+                return _fcgiInterpreter;
+            }
+        }
+
+
+        private string _currParamName;
+        private string _currFileName;
+        private string _currContentType;
+        private bool _uploadStarted;
+        private bool _endOfPart = false;
+
+        private HttpServer _httpServer;
+
+        #endregion
+
+        public HttpProcessor(HttpServer httpServer)
+            : base()
+        {
+            _httpServer = httpServer;
+        }
+
+        protected IHttpHandler Handler { get; set; }
+
+        public override void Clear()
+        {
+            _request = null;
+
+            if (_uploadManager != null)
+            {
+                _uploadManager.AllFileUploadsEnded();
+                _uploadManager = null;
+            }
+
+            if (_httpServer.IsFastCGI)
+                FcgiInterpreter.Clear();
         }
 
         protected internal override void OnDataReceived(byte[] buffer, int offset, int length)
@@ -53,7 +99,7 @@ namespace Badr.Net.Http
             {
                 if (length > 0)
                 {
-                    if (request == null)
+                    if (_request == null)
                     {
                         if (_rbm == null)
                             _rbm = new ReceiveBufferManager(NetServer.BUFFER_SIZE);
@@ -61,72 +107,76 @@ namespace Badr.Net.Http
                             _rbm.Reset();
                     }
 
-                    AppendToRequest(buffer, offset, length);
-                }
-
-                if (SocketAsyncManager.TotalReceived >= 418020137)
-                {
-                }
-
-                if (request != null && request.TotalLength == SocketAsyncManager.TotalReceived)
-                {
-                    if (_uploadManager != null)
-                        _uploadManager.AllFileUploadsEnded();
-
-                    _Logger.DebugFormat("Data received: {0} bytes", SocketAsyncManager.TotalReceived);
-                    bool disconnetAfterSend = true;
-
-                    if (request != null)
+                    if (_httpServer.IsFastCGI)
                     {
-                        Handler = InitHandler();
-                        if (Handler != null)
+                        length = FcgiInterpreter.TranslateToHttpData(buffer, offset, length);
+                        if (FcgiInterpreter.AbortRequest)
                         {
-                            _Logger.InfoFormat("{0} /{1} {2}", request.Method, request.Resource, request.Protocol);
-                            HttpResponse response = Handler.Handle(request);
-                            if (response != null)
-                            {
-                                SocketAsyncManager.SendAsync(response.Data, 0, response.Data.Length);
-                                SocketAsyncManager.Clear();
-                                request = null;
-                                disconnetAfterSend = !response.ConnectionKeepAlive;
-                            }
-                            else
-                            {
-                                byte[] h404 = Encoding.Default.GetBytes(string.Format("HTTP/1.1 {0}\r\n\r\n", HttpResponseStatus._404.ToResponseHeaderText()));
-                                SocketAsyncManager.SendAsync(h404, 0, h404.Length);
-                                SocketAsyncManager.DisconnetAfterSend = true;
-                            }
+                            SocketAsyncManager.CloseConnection();
+                            return;
                         }
                     }
 
-                    SocketAsyncManager.DisconnetAfterSend = disconnetAfterSend;
+                    ContinueRequestBuilding(buffer, offset, length);
+                }
+
+                if (_request != null && (_request.TotalLength == SocketAsyncManager.TotalReceived || (_httpServer.IsFastCGI && FcgiInterpreter.EndOfRequest)) )
+                {
+                    SendResponse();
                 }
             }
             catch (HttpStatusException ex)
             {
                 byte[] hError = Encoding.Default.GetBytes(string.Format("HTTP/1.1 {0}\r\n\r\n", ex.Message));
-                SocketAsyncManager.SendAsync(hError, 0, hError.Length);
-                SocketAsyncManager.DisconnetAfterSend = true;
+                if (_httpServer.IsFastCGI)
+                    hError = _fcgiInterpreter.TranslateToFCGIResponse(hError);
+
+                SocketAsyncManager.SendAsync(hError, 0, hError.Length, true);
             }
         }
 
-        public override void Clear()
+        protected void SendResponse()
         {
-            request = null;
-
             if (_uploadManager != null)
-            {
                 _uploadManager.AllFileUploadsEnded();
-                _uploadManager = null;
+
+            _Logger.DebugFormat("Data received: {0} bytes", SocketAsyncManager.TotalReceived);
+            bool closeConnectionAfterSend = true;
+
+            if (_request != null)
+            {
+                Handler = InitHandler();
+                if (Handler != null)
+                {
+                    _Logger.InfoFormat("{0} /{1} {2}", _request.Method, _request.Resource, _request.Protocol);
+                    HttpResponse response = Handler.Handle(_request);
+                    if (response != null)
+                    {
+                        byte[] responseData = response.Data;
+
+                        if (_httpServer.IsFastCGI)
+                            responseData = _fcgiInterpreter.TranslateToFCGIResponse(responseData);
+
+                        SocketAsyncManager.SendAsync(responseData, 0, responseData.Length);
+                        SocketAsyncManager.Clear();
+                        _request = null;
+                        closeConnectionAfterSend = !response.ConnectionKeepAlive;
+                    }
+                    else
+                    {
+                        byte[] h404 = Encoding.Default.GetBytes(string.Format("HTTP/1.1 {0}\r\n\r\n", HttpResponseStatus._404.ToResponseHeaderText()));
+                        if (_httpServer.IsFastCGI)
+                            h404 = _fcgiInterpreter.TranslateToFCGIResponse(h404);
+
+                        SocketAsyncManager.SendAsync(h404, 0, h404.Length, true);
+                    }
+                }
             }
+
+            SocketAsyncManager.ShouldCloseConnection = closeConnectionAfterSend;
         }
 
-        HttpRequest request;
-		IHttpHandler Handler {get; set;}
-        HttpUploadManager _uploadManager;
-        ReceiveBufferManager _rbm;
-
-        protected virtual void AppendToRequest(byte[] buffer, int offset, int length)
+        protected virtual void ContinueRequestBuilding(byte[] buffer, int offset, int length)
         {
             try
             {
@@ -135,38 +185,38 @@ namespace Badr.Net.Http
                 if (_rbm.Count == 0)
                     return;
 
-                if (request == null)
+                if (_request == null)
                 {
-                    request = InitRequest();
-                    request.CreateHeaders(_rbm);
+                    _request = InitRequest();
+                    _request.CreateHeaders(_rbm);
                 }
 
-                if (_rbm.Count > 0 && request.IsMulitpart)
+                if (_rbm.Count > 0 && _request.IsMulitpart)
                 {
                     int eolIndex = _rbm.IndexOfEol();
 
                     while (eolIndex != -1 || _rbm.Count > 0)
                     {
-                        if (endOfPart)
+                        if (_endOfPart)
                         {
-                            if (currFileName == null)
+                            if (_currFileName == null)
                             {
                                 eolIndex = _rbm.IndexOfEol();
 
-                                request.AddMethodParam(currParamName, _rbm.PopString(eolIndex, 2), false);
+                                _request.AddMethodParam(_currParamName, _rbm.PopString(eolIndex, 2), false);
 
                                 eolIndex = _rbm.IndexOfEol();
-                                endOfPart = false;
+                                _endOfPart = false;
                             }
                             else
                             {
-                                if (uploadStarted)
+                                if (_uploadStarted)
                                 {
                                     if (_uploadManager == null)
-                                        _uploadManager = InitUploadManager(request);
+                                        _uploadManager = InitUploadManager(_request);
 
-                                    _uploadManager.FileUploadStarted(currParamName, currFileName, currContentType);
-                                    uploadStarted = false;
+                                    _uploadManager.FileUploadStarted(_currParamName, _currFileName, _currContentType);
+                                    _uploadStarted = false;
                                 }
 
                                 int boundaryIndex = -1;
@@ -176,7 +226,7 @@ namespace Badr.Net.Http
                                     amountToWrite = _rbm.Count;
                                 else
                                 {
-                                    boundaryIndex = _rbm.IndexOfArray(request.MulitpartBoundaryBytes, eolIndex);
+                                    boundaryIndex = _rbm.IndexOfArray(_request.MulitpartBoundaryBytes, eolIndex);
                                     if (boundaryIndex == -1)
                                         amountToWrite = (eolIndex - _rbm.StartIndex) + 2;
                                     else
@@ -186,9 +236,9 @@ namespace Badr.Net.Http
                                 if (amountToWrite > 0)// && !(amountToWrite == 2 && _rbm.StartsWithEol()))
                                 {
                                     if (_uploadManager == null)
-                                        _uploadManager = InitUploadManager(request);
+                                        _uploadManager = InitUploadManager(_request);
 
-                                    _uploadManager.WriteChunck(currFileName, _rbm.WorkingBuffer, _rbm.StartIndex, amountToWrite);
+                                    _uploadManager.WriteChunck(_currFileName, _rbm.WorkingBuffer, _rbm.StartIndex, amountToWrite);
                                 }
 
                                 _rbm.MarkAsTreated(amountToWrite);
@@ -196,10 +246,10 @@ namespace Badr.Net.Http
                                 if (boundaryIndex != -1)
                                 {
                                     eolIndex = _rbm.IndexOfEol();
-                                    endOfPart = false;
+                                    _endOfPart = false;
 
                                     if (_uploadManager != null)
-                                        _uploadManager.FileUploadEnded(currFileName);
+                                        _uploadManager.FileUploadEnded(_currFileName);
                                 }
                                 else
                                     return;
@@ -222,56 +272,52 @@ namespace Badr.Net.Http
             }
         }
 
-        private string currParamName;        
-        private string currFileName;
-        private string currContentType;
-        private bool uploadStarted;
-        private bool endOfPart = false;
-
         private void BuildMultipartData(string line)
         {
             if (line != null)
             {
                 if (line.Length == 0)
                 {
-                    endOfPart = true;
+                    _endOfPart = true;
                     return;
                 }
                 else
                 {
-                    if (line == request.MulitpartBoundary)
+                    if (line == _request.MulitpartBoundary)
                     {
-                        endOfPart = false;
+                        _endOfPart = false;
 
-                        currParamName = null;
-                        currFileName = null;
-                        currContentType = null;
+                        _currParamName = null;
+                        _currFileName = null;
+                        _currContentType = null;
                     }
 
                     if (line.StartsWith("Content-Disposition"))
                     {
                         string[] cdSplit = line.Split(';');
-                        currParamName = cdSplit[1].Split('=')[1].Unquote();
+                        _currParamName = cdSplit[1].Split('=')[1].Unquote();
                         if (cdSplit.Length > 2)
                         {
-                            uploadStarted = true;
-                            currFileName = cdSplit[2].Split('=')[1].Unquote();
+                            _uploadStarted = true;
+                            _currFileName = cdSplit[2].Split('=')[1].Unquote();
                         }
                     }
                     else if (line.StartsWith("Content-Type"))
                     {
-                        currContentType = line.Split(':')[1];
+                        _currContentType = line.Split(':')[1];
                     }
                 }
             }
         }
+
+        #region virtuals
 
         public virtual HttpRequest InitRequest()
         {
             return new HttpRequest();
         }
 
-        public virtual HttpUploadManager InitUploadManager(HttpRequest  request)
+        public virtual HttpUploadManager InitUploadManager(HttpRequest request)
         {
             return new HttpUploadManager(request);
         }
@@ -280,5 +326,7 @@ namespace Badr.Net.Http
         {
             return null;
         }
+
+        #endregion
     }
 }
