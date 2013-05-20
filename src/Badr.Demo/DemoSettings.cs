@@ -47,10 +47,10 @@ namespace Badr.Demo
             SITE_ID = "127.0.0.1:8080";
             SITE_HOST_NAME = SITE_ID;
 
-            DATABASES[DbSettings.DEFAULT_DB_NAME] = new DbSettings
+            DATABASES[DbSettings.DEFAULT_DBSETTINGS_NAME] = new DbSettings
             {
                 ENGINE = DbEngine.DB_SQLITE3,
-                NAME = "badr_demo.db",
+                DB_NAME = "badr_demo.db",
                 USER = "",
                 PASSWORD = "",
                 HOST = "",

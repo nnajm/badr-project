@@ -1,9 +1,9 @@
 //
-// Program.cs
+// StaticResponse.cs
 //
-// Author: najmeddine nouri
+// Author: kadmin
 //
-// Copyright (c) 2013 najmeddine nouri, amine gassem
+// Copyright (c) 2013 kadmin
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,43 +27,30 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
+using System;
+using Badr.Net.Http.Response;
+using Badr.Net.Http.Request;
 using Badr.Server.Net;
-using Badr.Server.Settings;
-using Badr.Orm;
-using Badr.Demo.Accounting;
-using Badr.Orm.Query;
 
-namespace Badr.Demo
+namespace Badr.Apps
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            log4net.Config.XmlConfigurator.Configure();
+	public class StaticResponse: BadrResponse
+	{
+		public StaticResponse (BadrRequest request, string contenttype = DEFAULT_CONTENT_TYPE, string charset = DEFAULT_CHARSET)
+			:base(request, contenttype, charset)
+		{
+		}
 
-            //InitializeDatabase();
+		internal byte[] BodyBytes
+		{
+			get;
+			set;
+		}
 
-            new BadrServer().XmlConfigure()
-                            //.RegisterSite<DemoSettings>()
-                            .Start();
-        }
-
-        private static void InitializeDatabase()
-        {
-            new BadrServer().RegisterSite<DemoSettings>()
-                            .SyncDatabase();
-
-            for (int i = 0; i <= 27; i++)
-            {
-                AccountType at = new AccountType();
-                at.Description = "AccountType " + i;
-                at.Save();
-            }
-        }
+		protected override byte[] GetBodyData ()
+		{
+			return BodyBytes;
+		}
 	}
 }
+

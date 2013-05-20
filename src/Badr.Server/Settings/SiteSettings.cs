@@ -37,56 +37,84 @@ using Badr.Server.Urls;
 using Badr.Server.Middlewares;
 using Badr.Orm;
 using Badr.Net.Http.Response;
+using System.Xml.Serialization;
+using System.Configuration;
+using System.Xml;
+using System.IO;
 
 namespace Badr.Server.Settings
 {
-    public abstract class SiteSettings
+    [XmlRoot("website")]
+    public class SiteSettings
     {
-		public bool DEBUG { get; protected set; }
+        [XmlAttribute("debug")]
+		public bool DEBUG { get; set; }
 
-        public string SITE_ID { get; protected set; }
-        public string SITE_HOST_NAME { get; protected set; }
+        [XmlAttribute("id")]
+        public string SITE_ID { get; set; }
+        [XmlAttribute("host_name")]
+        public string SITE_HOST_NAME { get; set; }
 
-		public Dictionary<string, DbSettings> DATABASES { get; protected set; }
+        [XmlArray("databases")]
+        [XmlArrayItem("db_settings")]
+        public DBSettingsDictionary DATABASES { get; protected set; }
+
+        [XmlIgnore]
         public Dictionary<string, Type> EXTRA_DB_ENGINES { get; protected set; }
 
         /// <summary>
         /// Directories where to look for template files
         /// </summary>
-        public string[] TEMPLATE_DIRS { get; protected set; }
+        [XmlArray("template_dirs")]
+        [XmlArrayItem("dir")]
+        public string[] TEMPLATE_DIRS { get; set; }
 
 		#region STATIC FILES
 
-        public string STATIC_URL { get; protected set; }
-		public string STATIC_ROOT { get; protected set; }
+        [XmlAttribute("static_url")]
+        public string STATIC_URL { get; set; }
+        [XmlAttribute("static_root")]
+		public string STATIC_ROOT { get; set; }
 
 		#endregion
 
         /// <summary>
         /// Response body charset to use by default (initial value is 'utf-8').
         /// </summary>
+        [XmlAttribute("default_charset")]
         public string DEFAULT_CHARSET = HttpResponse.DEFAULT_CHARSET;
         /// <summary>
         /// Response body content-type to use by default (initial value is 'text/html').
         /// </summary>
+        [XmlAttribute("default_content_type")]
         public string DEFAULT_CONTENT_TYPE = HttpResponse.DEFAULT_CONTENT_TYPE;
 
+        [XmlIgnore]
         public Type[] MIDDLEWARE_CLASSES { get; protected set; }
+        [XmlIgnore]
         public Type[] CONTEXT_PROCESSORS { get; protected set; }
+        [XmlIgnore]
         public Type[] SITE_URLS { get; protected set; }
+        [XmlIgnore]
         public Type[] INSTALLED_APPS { get; protected set; }
 
         public SiteSettings ()
 		{
-			DATABASES = new Dictionary<string, DbSettings> ();
+            DATABASES = new DBSettingsDictionary();
             EXTRA_DB_ENGINES = new Dictionary<string, Type>();
-			DEBUG = false;
 
-			SITE_ID = "localhost";
-			SITE_HOST_NAME = "127.0.0.1";
+            Set();
+        }
 
-			STATIC_URL = "static/";
-			STATIC_ROOT = "";
+        protected virtual void Set()
+        {
+            DEBUG = false;
+
+            SITE_ID = "localhost";
+            SITE_HOST_NAME = "127.0.0.1";
+
+            STATIC_URL = "static/";
+            STATIC_ROOT = "";
             TEMPLATE_DIRS = new string[0];
 
             MIDDLEWARE_CLASSES = new[] {
@@ -98,10 +126,54 @@ namespace Badr.Server.Settings
 
             SITE_URLS = new Type[0];
             INSTALLED_APPS = new Type[0];
-
-            Set();
         }
 
-        protected abstract void Set();
+        #region statics
+
+        public static SiteSettings Deserialize(string xml, Dictionary<string, string> typePrefixes)
+        {
+            XmlSerializer xs = new XmlSerializer(typeof(SiteSettings));
+            xs.UnknownElement += (sender, e) =>
+            {
+                SiteSettings siteSettings;
+                if (e.Element != null && (siteSettings = e.ObjectBeingDeserialized as SiteSettings) != null)
+                {
+                    ResolveUnknownElement(siteSettings, e.Element, typePrefixes);
+                }
+            };
+            return (SiteSettings)xs.Deserialize(new StringReader(xml));
+        }
+
+        static void ResolveUnknownElement(SiteSettings siteSettings, XmlElement element, Dictionary<string, string> typePrefixes)
+        {
+            if (element.Name == "context_processors")
+                siteSettings.CONTEXT_PROCESSORS = DeserializeTypes(element, "type", typePrefixes);
+            else if (element.Name == "middleware_classes")
+                siteSettings.MIDDLEWARE_CLASSES = DeserializeTypes(element, "type", typePrefixes);
+            else if (element.Name == "site_urls")
+                siteSettings.SITE_URLS = DeserializeTypes(element, "type", typePrefixes);
+            else if (element.Name == "installed_apps")
+                siteSettings.INSTALLED_APPS = DeserializeTypes(element, "type", typePrefixes);
+        }
+
+        static Type[] DeserializeTypes(XmlElement element, string elementName, Dictionary<string, string> typePrefixes)
+        {
+            XmlNodeList list = element.SelectNodes(elementName);
+            if (list != null)
+            {
+                int listCount = list.Count;
+                Type[] types = new Type[listCount];
+                for (int i = 0; i < listCount; i++)
+                {
+                    types[i] = Type.GetType(typePrefixes[list[i].Attributes["prefix"].Value].Replace("$", list[i].Attributes["class"].Value));
+                }
+
+                return types;
+            }
+
+            return null;
+        }
+
+        #endregion
     }
 }

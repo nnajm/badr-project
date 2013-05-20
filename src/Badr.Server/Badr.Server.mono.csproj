@@ -212,6 +212,7 @@
     <Compile Include="Urls\ViewUrl.cs" />
     <Compile Include="Middlewares\MiddlewareManager.cs" />
     <Compile Include="ContextProcessors\ContextProcessorBase.cs" />
+    <Compile Include="Settings\ServerSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Badr.Orm\Badr.Orm.mono.csproj">

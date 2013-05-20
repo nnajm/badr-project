@@ -43,7 +43,7 @@ namespace Badr.Orm.DbEngines
         public SqlServerDbEngine(DbSettings dbSettings)
             :base(dbSettings)
         {
-            _connectionString = string.Format("Data Source={0};Initial Catalog={1};Integrated Security=True", _dbSettings.HOST, _dbSettings.NAME);
+            _connectionString = string.Format("Data Source={0};Initial Catalog={1};Integrated Security=True", _dbSettings.HOST, _dbSettings.DB_NAME);
         }
 
         protected override string GetConnectionString()

@@ -158,6 +158,7 @@
     <Compile Include="Static\Views.cs" />
     <Compile Include="Admin\Admin.cs" />
     <Compile Include="Static\StaticFilesApp.cs" />
+    <Compile Include="Static\StaticResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Badr.Net\Badr.Net.mono.csproj">

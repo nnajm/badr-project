@@ -35,6 +35,12 @@ using System.Text;
 
 namespace Badr.Net.Http
 {
+	public enum ServerMode
+	{
+		Local,
+		FastCGI
+	}
+
     public class HttpServer: NetServer
     {
         public HttpServer(IPAddress ipAddr, int port, int maxConnectionNumber)
@@ -50,11 +56,12 @@ namespace Badr.Net.Http
         public HttpServer(IPEndPoint ipEndPoint, int maxConnectionNumber)
 			:base(ipEndPoint, maxConnectionNumber)
 		{
+			Mode = ServerMode.Local;
         }
 
         /// <summary>
         /// Set to true when running the server behind a FastCGI web server
         /// </summary>
-        public bool IsFastCGI { get; set; }
+        public ServerMode Mode { get; set; }
     }
 }

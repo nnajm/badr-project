@@ -89,7 +89,7 @@ namespace Badr.Net.Http
                 _uploadManager = null;
             }
 
-            if (_httpServer.IsFastCGI)
+            if (_httpServer.Mode == ServerMode.FastCGI)
                 FcgiInterpreter.Clear();
         }
 
@@ -107,7 +107,7 @@ namespace Badr.Net.Http
                             _rbm.Reset();
                     }
 
-                    if (_httpServer.IsFastCGI)
+                    if (_httpServer.Mode == ServerMode.FastCGI)
                     {
                         length = FcgiInterpreter.TranslateToHttpData(buffer, offset, length);
                         if (FcgiInterpreter.AbortRequest)
@@ -120,7 +120,7 @@ namespace Badr.Net.Http
                     ContinueRequestBuilding(buffer, offset, length);
                 }
 
-                if (_request != null && (_request.TotalLength == SocketAsyncManager.TotalReceived || (_httpServer.IsFastCGI && FcgiInterpreter.EndOfRequest)) )
+                if (_request != null && (_request.TotalLength == SocketAsyncManager.TotalReceived || (_httpServer.Mode == ServerMode.FastCGI && FcgiInterpreter.EndOfRequest)) )
                 {
                     SendResponse();
                 }
@@ -128,7 +128,7 @@ namespace Badr.Net.Http
             catch (HttpStatusException ex)
             {
                 byte[] hError = Encoding.Default.GetBytes(string.Format("HTTP/1.1 {0}\r\n\r\n", ex.Message));
-                if (_httpServer.IsFastCGI)
+                if (_httpServer.Mode == ServerMode.FastCGI)
                     hError = _fcgiInterpreter.TranslateToFCGIResponse(hError);
 
                 SocketAsyncManager.SendAsync(hError, 0, hError.Length, true);
@@ -154,7 +154,7 @@ namespace Badr.Net.Http
                     {
                         byte[] responseData = response.Data;
 
-                        if (_httpServer.IsFastCGI)
+                        if (_httpServer.Mode == ServerMode.FastCGI)
                             responseData = _fcgiInterpreter.TranslateToFCGIResponse(responseData);
 
                         SocketAsyncManager.SendAsync(responseData, 0, responseData.Length);
@@ -165,7 +165,7 @@ namespace Badr.Net.Http
                     else
                     {
                         byte[] h404 = Encoding.Default.GetBytes(string.Format("HTTP/1.1 {0}\r\n\r\n", HttpResponseStatus._404.ToResponseHeaderText()));
-                        if (_httpServer.IsFastCGI)
+                        if (_httpServer.Mode == ServerMode.FastCGI)
                             h404 = _fcgiInterpreter.TranslateToFCGIResponse(h404);
 
                         SocketAsyncManager.SendAsync(h404, 0, h404.Length, true);

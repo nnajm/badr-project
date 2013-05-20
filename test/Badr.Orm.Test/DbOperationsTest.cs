@@ -64,7 +64,7 @@ namespace Badr.Orm.Test
             DbSettings dbSettings = new DbSettings()
             {
                 ENGINE = Badr.Orm.DbEngines.DbEngine.DB_SQLITE3,
-                NAME = DB_FILE_PATH
+                DB_NAME = DB_FILE_PATH
             };
 
             OrmManager.RegisterDatabase("BADR_ORM_TEST", dbSettings);

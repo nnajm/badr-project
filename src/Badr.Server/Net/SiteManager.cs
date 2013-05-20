@@ -75,9 +75,9 @@ namespace Badr.Server.Net
                 OrmManager.RegisterDbEngine(dbengine.Key, dbengine.Value);
             }
 
-            foreach (KeyValuePair<string, DbSettings> dbSettings in SiteSettings.DATABASES)
+            foreach (DbSettings dbSettings in SiteSettings.DATABASES)
             {
-                OrmManager.RegisterDatabase(dbSettings.Key, dbSettings.Value);
+                OrmManager.RegisterDatabase(dbSettings.ID, dbSettings);
             }
 
             APPS = new Dictionary<string, AppRoot>();

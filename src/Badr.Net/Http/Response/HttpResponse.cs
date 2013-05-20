@@ -68,7 +68,6 @@ namespace Badr.Net.Http.Response
             Headers = new Dictionary<HttpResponseHeaders, string>();
             Headers.Add(HttpResponseHeaders.Date, DateTime.Now.ToString("u"));
             Headers.Add(HttpResponseHeaders.ContentType, string.Format("{0}; charset={1}", contentType, charset));
-            Headers.Add(HttpResponseHeaders.Server, "custom");
         }
 
 		public byte[] Data{ get { return GetData (); } }
@@ -99,21 +98,21 @@ namespace Badr.Net.Http.Response
 			StringBuilder sb = new StringBuilder ();
 			sb.AppendFormat ("{0} {1}{2}", Request.Protocol, Status.ToResponseHeaderText(), HttpRequest.WR_SEPARATOR);
 
-			string responseBody = ((Body == null) ? "" : Body) + HttpRequest.WR_SEPARATOR;
-			byte[] bodyBytes;
-			if (responseBody.Length > 128 && Request.CanGzip && !Request.IsAjax) {
+			// Response body bytes
+			byte[] bodyBytes = GetBodyData();
+			if(bodyBytes != null)
+				if (bodyBytes.Length > 128 && Request.CanGzip && !Request.IsAjax) {
 
-				if(Headers.ContainsKey(HttpResponseHeaders.ContentEncoding))
-					Headers.Remove(HttpResponseHeaders.ContentEncoding);
+					if(Headers.ContainsKey(HttpResponseHeaders.ContentEncoding))
+						Headers.Remove(HttpResponseHeaders.ContentEncoding);
 
-				bodyBytes = responseBody.Compress(Encoding);
-				if (bodyBytes.Length > 0)
-				    Headers [HttpResponseHeaders.ContentLength] = (bodyBytes.Length).ToString ();
+					bodyBytes = bodyBytes.Compress();
+					if (bodyBytes.Length > 0)
+					    Headers [HttpResponseHeaders.ContentLength] = (bodyBytes.Length).ToString ();
 
-				Headers[HttpResponseHeaders.ContentEncoding] = "gzip";
+					Headers[HttpResponseHeaders.ContentEncoding] = "gzip";
 
-			} else
-				bodyBytes = responseBody.GetBytes(Encoding);
+				}
 
             if (!Headers.ContainsKey(HttpResponseHeaders.Connection))
                 Headers[HttpResponseHeaders.Connection] = "Close";
@@ -131,13 +130,23 @@ namespace Badr.Net.Http.Response
 			
 			sb.Append (HttpRequest.WR_SEPARATOR);
 
+			// Response headers bytes
             byte[] bytes = sb.ToString().GetBytes(Encoding);
-			byte[] allBytes = new byte[bytes.Length + bodyBytes.Length];
+
+			// Response headers+body bytes
+			int totalLength = bytes.Length + (bodyBytes != null ? bodyBytes.Length : 0);
+			byte[] allBytes = new byte[totalLength];
+
 			bytes.CopyTo(allBytes, 0);
-			bodyBytes.CopyTo(allBytes, bytes.Length);
+			if(bodyBytes != null)
+				bodyBytes.CopyTo(allBytes, bytes.Length);
 
 			return allBytes;
 		}
+
+		protected virtual byte[] GetBodyData()
+		{
+			return (Body + HttpRequest.WR_SEPARATOR).GetBytes(Encoding);
+		}
 	}
-	
 }

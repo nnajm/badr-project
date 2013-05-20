@@ -53,7 +53,7 @@ namespace Badr.Orm.DbEngines
         public SQLiteDbEngine(DbSettings dbSettings)
             : base(dbSettings)
         {
-            _connectionString = string.Format("Data Source={0};Version=3;", _dbSettings.NAME);
+            _connectionString = string.Format("Data Source={0};Version=3;", _dbSettings.DB_NAME);
         }
 
         protected override string GetConnectionString()

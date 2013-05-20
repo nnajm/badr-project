@@ -44,7 +44,7 @@ namespace Badr.Apps.Static
     {
         internal const string STATIC_RESOURCE_GROUP_NAME = "STATIC_RESOURCE_GROUP";
 
-        private readonly Dictionary<string, string> _tempFilesCache = new Dictionary<string, string>();
+        private readonly Dictionary<string, byte[]> _tempFilesCache = new Dictionary<string, byte[]>();
         private readonly FilesManager _staticFilesManager;
 
         public Views(SiteSettings settings)
@@ -62,16 +62,16 @@ namespace Badr.Apps.Static
                     if (!_tempFilesCache.ContainsKey(resourcePath))
                     {
                         if (_staticFilesManager.Exists(resourcePath))
-                            _tempFilesCache.Add(resourcePath, _staticFilesManager.GetFileContent(resourcePath));
+                            _tempFilesCache.Add(resourcePath, _staticFilesManager.GetFileBytes(resourcePath));
                     }
                 }
 
                 if (_tempFilesCache.ContainsKey(resourcePath))
 
-                    return new BadrResponse(request, MimeMapping.GetMimeMapping(resourcePath))
+                    return new StaticResponse(request, MimeMapping.GetMimeMapping(resourcePath))
                     {
                         Status = HttpResponseStatus._200,
-                        Body = _tempFilesCache[resourcePath]
+                        BodyBytes = _tempFilesCache[resourcePath]
                     };
             }
 

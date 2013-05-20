@@ -83,7 +83,7 @@ namespace Badr.Server.Views
             {
                 if (!_viewTemplates.ContainsKey(templatePath))
                 {
-                    string templateContent = _templateFilesManager.GetFileContent(templatePath);
+                    string templateContent = _templateFilesManager.GetFileText(templatePath);
 
                     if (templateContent != null)
                         _viewTemplates.Add(templatePath, new TemplateEngine(_siteManager, templateContent));

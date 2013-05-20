@@ -143,7 +143,7 @@ namespace Badr.Orm
         {
             DbEngine dbEngine = CreateDbEngine(dbSettings);
 
-            if (_defaultDatabase == null || name == DbSettings.DEFAULT_DB_NAME)
+            if (_defaultDatabase == null || name == DbSettings.DEFAULT_DBSETTINGS_NAME)
                 _defaultDatabase = dbEngine;
 
             _databases.Add(name, dbEngine);

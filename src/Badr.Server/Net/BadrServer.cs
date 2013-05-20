@@ -46,7 +46,7 @@ using log4net;
 
 namespace Badr.Server.Net
 {
-    public enum ServerCommands
+	public enum ServerCommands
     {
         Run,
         Syncdb,
@@ -55,6 +55,8 @@ namespace Badr.Server.Net
 
     public class BadrServer : HttpServer
     {
+		public const string SERVER_NAME = "Badr server";
+
         protected const string DEFAULT_IP_ADDRESS = "127.0.0.1";
         protected const int DEFAULT_PORT = 8080;
         protected const int DEFAULT_MAX_CONNECTIONS = 10;
@@ -95,12 +97,13 @@ namespace Badr.Server.Net
             : base(ipaddress, port, maxConnectionNumber)
         {
             _sites = new List<Type>();
+            SiteManagers = new Dictionary<string, SiteManager>();
 			_badrHttpHandler = new BadrHandler(this);
             Command = ServerCommands.Run;
         }
 
         /// <summary>
-        /// Registers a SiteSettings class typetype to use as the definition for a hosted site.
+        /// Registers a SiteSettings class type to use as the definition for a hosted site.
         /// </summary>
         /// <typeparam name="TSite">The site settings class type. Must inherit from Badr.Server.Settings.SiteSettings and contains a parameterless constructor.</typeparam>
         /// <returns>And instance of the server</returns>
@@ -110,6 +113,23 @@ namespace Badr.Server.Net
             Type siteType = typeof(TSite);
             if (!_sites.Contains(siteType))
                 _sites.Add(siteType);
+            return this;
+        }
+
+        /// <summary>
+        /// Registers a SiteSettings instance to use as the definition for a hosted site.
+        /// </summary>
+        /// <typeparam name="TSite">The site settings instance</typeparam>
+        /// <returns>And instance of the server</returns>
+        public BadrServer RegisterSite(SiteSettings siteSettings)
+        {
+            SiteManager siteManager = new SiteManager(siteSettings);
+            siteManager.RegisterMiddlewares();
+            siteManager.RegisterContextProcessors();
+            siteManager.CreateOrmManagers();
+            siteManager.LoadUrls();
+            SiteManagers.Add(siteManager.SiteSettings.SITE_HOST_NAME, siteManager);
+
             return this;
         }
 
@@ -138,8 +158,13 @@ namespace Badr.Server.Net
         /// </summary>
         public BadrServer XmlConfigure()
         {
-            BadrServerConfigSection badrServerConfig= (BadrServerConfigSection)System.Configuration.ConfigurationManager.GetSection("badrserver");
-            IPEndPoint = new System.Net.IPEndPoint(IPAddress.Parse(badrServerConfig.EndPoint.IPAddress), badrServerConfig.EndPoint.Port);
+            ServerSettings badrServerSettings = (ServerSettings)System.Configuration.ConfigurationManager.GetSection("BadrServer");
+            IPEndPoint = new System.Net.IPEndPoint(IPAddress.Parse(badrServerSettings.EndPoint.IPAddress), badrServerSettings.EndPoint.Port);
+			Mode = badrServerSettings.EndPoint.Mode;
+            foreach (SiteSettings siteSettings in badrServerSettings.Websites)
+            {
+                RegisterSite(siteSettings);
+            }
             return this;
         }
 
@@ -156,19 +181,10 @@ namespace Badr.Server.Net
             {
                 _siteManagersCreated = true;
 
-                SiteManagers = new Dictionary<string, SiteManager>();
-
                 foreach (Type siteType in _sites)
                 {
                     if (siteType != null)
-                    {
-                        SiteManager siteManager = new SiteManager((SiteSettings)Activator.CreateInstance(siteType));
-                        siteManager.RegisterMiddlewares();
-                        siteManager.RegisterContextProcessors();
-                        siteManager.CreateOrmManagers();
-                        siteManager.LoadUrls();
-                        SiteManagers.Add(siteManager.SiteSettings.SITE_HOST_NAME, siteManager);
-                    }
+                        RegisterSite((SiteSettings)Activator.CreateInstance(siteType));
                 }
             }
         }

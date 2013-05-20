@@ -37,43 +37,55 @@ using System.Text;
 
 namespace Badr.Server.Views
 {
-    public class FilesManager
-    {
-        protected string[] PathRoots { get; private set; }
+	public class FilesManager
+	{
+		protected string[] PathRoots { get; private set; }
 
-        public FilesManager(params string[] pathRoots)
-        {
-            PathRoots = pathRoots;
-        }
+		public FilesManager (params string[] pathRoots)
+		{
+			PathRoots = pathRoots;
+		}
 
-        public string GetFileContent(string filepath){
-            if (filepath != null && !string.IsNullOrWhiteSpace(filepath))
-            {
-                if (Path.IsPathRooted(filepath))
-                    return File.ReadAllText(filepath);
-                else
-                    for (int i = 0; i < PathRoots.Length; i++)
-                    {
-                        string rootedFilepath = Path.Combine(PathRoots[i], filepath);
-                        if (File.Exists(rootedFilepath))
-                            return File.ReadAllText(rootedFilepath);
-                    }
-            }
-            return null;
-        }
+		public string GetFileText (string filepath)
+		{
+			filepath = GetAbsolutePath (filepath);
+			if (filepath != null)
+			{
+				return File.ReadAllText (filepath);
+			}
+			return null;
+		}
 
-        public bool Exists(string filepath)
-        {
-            if (filepath != null && !string.IsNullOrWhiteSpace(filepath))
-            {
-                if (Path.IsPathRooted(filepath))
-                    return File.Exists(filepath);
-                else
-                    for (int i = 0; i < PathRoots.Length; i++)
-                        if (File.Exists(Path.Combine(PathRoots[i], filepath)))
-                            return true;
-            }
-            return false;
-        }
-    }
+		public byte[] GetFileBytes (string filepath)
+		{
+			filepath = GetAbsolutePath (filepath);
+			if (filepath != null)
+			{
+				return File.ReadAllBytes (filepath);
+			}
+			return null;
+		}
+
+		public bool Exists (string filepath)
+		{
+			return GetAbsolutePath (filepath) != null;
+		}
+
+		private string GetAbsolutePath (string filepath)
+		{
+			if (filepath != null && !string.IsNullOrWhiteSpace (filepath))
+			{
+				if (Path.IsPathRooted (filepath))
+					return filepath;
+				else
+					for (int i = 0; i < PathRoots.Length; i++)
+					{
+						string absFilePath = Path.Combine (PathRoots [i], filepath);
+						if (File.Exists (absFilePath))
+							return absFilePath;
+					}
+			}
+			return null;
+		}
+	}
 }
