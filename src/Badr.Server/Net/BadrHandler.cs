@@ -70,7 +70,10 @@ namespace Badr.Server.Net
                 if (request == null)
                     throw new Exception("Request is not a BadrRequest");
 
-                if (request.Valid && request.Headers.ContainsKey(HttpRequestHeaders.Host))
+				if (!request.ValidMethod)
+					return HttpResponse.CreateResponse(request, HttpResponseStatus._405);
+
+                if (request.Headers.ContainsKey(HttpRequestHeaders.Host))
                 {
                     siteManager = _badrServer.GetSiteManager(request.Headers[HttpRequestHeaders.Host]);
                     if (siteManager != null)

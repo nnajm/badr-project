@@ -66,7 +66,7 @@ namespace Badr.Net.Http.Response
             Cookies = new HttpCookie();
 
             Headers = new Dictionary<HttpResponseHeaders, string>();
-            Headers.Add(HttpResponseHeaders.Date, DateTime.Now.ToString("u"));
+            Headers.Add(HttpResponseHeaders.Date, DateTime.Now.ToUniversalTime().ToString("r"));
             Headers.Add(HttpResponseHeaders.ContentType, string.Format("{0}; charset={1}", contentType, charset));
         }
 

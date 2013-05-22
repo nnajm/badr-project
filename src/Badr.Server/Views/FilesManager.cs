@@ -71,6 +71,15 @@ namespace Badr.Server.Views
 			return GetAbsolutePath (filepath) != null;
 		}
 
+		public DateTime GetLastModificationTimeUtc(string filepath)
+		{
+			string absPath = GetAbsolutePath(filepath);
+			if(absPath != null)
+				return File.GetLastWriteTimeUtc(absPath);
+			else
+				return DateTime.MinValue;
+		}
+
 		private string GetAbsolutePath (string filepath)
 		{
 			if (filepath != null && !string.IsNullOrWhiteSpace (filepath))

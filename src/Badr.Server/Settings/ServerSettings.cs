@@ -36,7 +36,7 @@ namespace Badr.Server.Settings
 				if(modeAttr != null)
 					EndPoint.Mode = (ServerMode)Enum.Parse(typeof(ServerMode), modeAttr.Value, true);
 				else
-					EndPoint.Mode = ServerMode.Local;
+					EndPoint.Mode = ServerMode.Standalone;
 			}
 
             list = section.SelectNodes("typeprefixes/prefix");

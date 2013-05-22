@@ -37,7 +37,7 @@ namespace Badr.Net.Http
 {
 	public enum ServerMode
 	{
-		Local,
+		Standalone,
 		FastCGI
 	}
 
@@ -56,7 +56,7 @@ namespace Badr.Net.Http
         public HttpServer(IPEndPoint ipEndPoint, int maxConnectionNumber)
 			:base(ipEndPoint, maxConnectionNumber)
 		{
-			Mode = ServerMode.Local;
+			Mode = ServerMode.Standalone;
         }
 
         /// <summary>

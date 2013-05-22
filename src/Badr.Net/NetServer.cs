@@ -209,7 +209,6 @@ namespace Badr.Net
         private void ProcessAccept(object sender, SocketAsyncEventArgs e)
         {
             Interlocked.Increment(ref _acceptCount);
-            _Logger.InfoFormat("accepted so far: {0}", _acceptCount);
             
             Socket accSocket = e.AcceptSocket;
             StartAccept(e);

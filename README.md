@@ -4,9 +4,9 @@ Badr project
 What is it?
 ---------------------
 
-Badr is a .NET web programming framework and also:
+Badr is a .NET web development framework and also:
 
--    **lightweight**: no big settings files, small memory footprint
+-    **lightweight**: simple configuration, small memory footprint
 -    **ready to go**: integrated ORM, configured from the start for most web developpment use cases (but also customizable to meet particular needs)
 -    **clean and powerful architecture**: [model, template, view] make a badr application, a set of applications make a site.
 -    **DRY, reusability**: a badr application can be packaged and used with different sites.
@@ -21,9 +21,12 @@ Features
 
 Many features in Badr are inspired from the django web framework:
 
--    Template system
--    Orm style (with the help of .NET dynamic objects)
--    Reusable applications
+-    Powerful Template system
+-    Integrated Orm (Based on .NET dynamic objects)
+-    Reusable components
+-    Ships with a lightweight web server for development and testing.
+-    Support for middleware classes (request/response processing)
+-    Support for the FastCGI protocol
 
 <br/>
 <hr/>
@@ -31,17 +34,21 @@ Supported Platforms
 ===================
 
 - Windows/.NET 4.0+
-  * Solution file: Badr.sln  (requires VS 2012 [express])
+  * Solution file: Badr.sln  
 
-- Linux/Mono 4.0
+- Linux/Mono 2.10.8+
   * Solution file: Badr.mono.sln
 
 Using Badr is like using any packaged assemblies, reference it and start coding. The minimum requirements are:
 
 >     - .NET framework 4
 >     - log4net, to activate server logs (1.2.11.0, available via NuGet)
->     - database driver (for now, only sqlite (1.0.85.0, available via NuGet) is supported, 
->       but coming very soon: sql server, mysql, postgresql, oracle, ...)
+
+Website
+=======
+
+[badrproject.com](http://www.badrproject.com)
+
 
 License
 =========
@@ -334,10 +341,10 @@ To configure a site, create a class derived from `Badr.Server.Settings.SiteSetti
 
 >                 SITE_HOST_NAME = "127.0.0.1:8080";
 
->                 DATABASES [DbSettings.DEFAULT_DB_NAME] = new DbSettings
+>                 DATABASES [DbSettings.DEFAULT_DBSETTINGS_NAME] = new DbSettings
 >                 {
 >                   ENGINE = DbEngine.DB_SQLITE3,
->                   NAME = "simple_site.db"
+>                   DB_NAME = "simple_site.db"
 >                 };
 
 >                 MIDDLEWARE_CLASSES = new[] {
@@ -362,6 +369,7 @@ To configure a site, create a class derived from `Badr.Server.Settings.SiteSetti
 >                 };
 
 >                 INSTALLED_APPS = new[] {
+>                   typeof(StaticFilesApp),
 >                   typeof(App1)
 >                 };
 >             }

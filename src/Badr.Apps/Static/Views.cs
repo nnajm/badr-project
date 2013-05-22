@@ -44,12 +44,11 @@ namespace Badr.Apps.Static
     {
         internal const string STATIC_RESOURCE_GROUP_NAME = "STATIC_RESOURCE_GROUP";
 
-        private readonly Dictionary<string, byte[]> _tempFilesCache = new Dictionary<string, byte[]>();
         private readonly FilesManager _staticFilesManager;
 
         public Views(SiteSettings settings)
         {
-            _staticFilesManager = new FilesManager(settings.STATIC_ROOT);
+			_staticFilesManager = new FilesManager(settings.STATIC_ROOT);
         }
 
         public BadrResponse ServeStaticFiles(BadrRequest request, UrlArgs args = null)
@@ -57,22 +56,35 @@ namespace Badr.Apps.Static
             string resourcePath = null;
             if (args != null && (resourcePath = args[STATIC_RESOURCE_GROUP_NAME]) != null)
             {
-                lock (_tempFilesCache)
-                {
-                    if (!_tempFilesCache.ContainsKey(resourcePath))
-                    {
-                        if (_staticFilesManager.Exists(resourcePath))
-                            _tempFilesCache.Add(resourcePath, _staticFilesManager.GetFileBytes(resourcePath));
-                    }
-                }
+				bool reloadFile = true;
+				bool conditionalGet = request.Headers.ContainsKey(Badr.Net.Http.Request.HttpRequestHeaders.IfModifiedSince);
 
-                if (_tempFilesCache.ContainsKey(resourcePath))
+				DateTime resourceLastModificationDate = _staticFilesManager.GetLastModificationTimeUtc(resourcePath);
+				DateTime clientLastModificationDate;
 
-                    return new StaticResponse(request, MimeMapping.GetMimeMapping(resourcePath))
+				if(conditionalGet)
+				{
+					if(DateTime.TryParse(request.Headers[Badr.Net.Http.Request.HttpRequestHeaders.IfModifiedSince], out clientLastModificationDate))
+					{
+						reloadFile = resourceLastModificationDate.CompareTo(clientLastModificationDate) > 0;
+					}
+				}
+
+				BadrResponse response;
+
+                if (reloadFile){
+                    response = new StaticResponse(request, MimeMapping.GetMimeMapping(resourcePath))
                     {
                         Status = HttpResponseStatus._200,
-                        BodyBytes = _tempFilesCache[resourcePath]
+                        BodyBytes = _staticFilesManager.GetFileBytes(resourcePath)
                     };
+				}
+				else {
+					response = new BadrResponse(request) { Status = HttpResponseStatus._304 };
+				}
+
+				response.Headers.Add(HttpResponseHeaders.LastModified, resourceLastModificationDate.ToString("r"));
+				return response;
             }
 
             return null;

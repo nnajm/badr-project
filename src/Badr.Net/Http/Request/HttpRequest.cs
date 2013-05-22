@@ -233,7 +233,7 @@ namespace Badr.Net.Http.Request
         public Uri DomainUri { get; protected internal set; }
         public HttpCookie Cookies { get; protected internal set; }
         public string Body { get; protected internal set; }
-        public bool Valid { get { return Method != HttpRequestMethods.NONE; } }
+        public bool ValidMethod { get { return Method == HttpRequestMethods.GET || Method == HttpRequestMethods.POST; } }
         
         public int HeaderLength { get; private set; }
         public int ContentLength { get; private set; }

@@ -213,6 +213,7 @@
     <Compile Include="Middlewares\MiddlewareManager.cs" />
     <Compile Include="ContextProcessors\ContextProcessorBase.cs" />
     <Compile Include="Settings\ServerSettings.cs" />
+    <Compile Include="Utils\Logging\ManagedColordConsoleAppender.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Badr.Orm\Badr.Orm.mono.csproj">
@@ -233,4 +234,7 @@
   </Target>
   -->
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Utils\Logging\" />
+  </ItemGroup>
 </Project>

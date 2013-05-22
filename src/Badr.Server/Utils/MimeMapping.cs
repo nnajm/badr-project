@@ -371,6 +371,7 @@ namespace Badr.Server
                 _dict.Add("gv", "text/vnd.graphviz");
                 _dict.Add("gxf", "application/gxf");
                 _dict.Add("gxt", "application/vnd.geonext");
+				_dict.Add("gz", "application/x-gzip");
                 _dict.Add("h", "text/x-c");
                 _dict.Add("h261", "video/h261");
                 _dict.Add("h263", "video/h263");
@@ -864,6 +865,7 @@ namespace Badr.Server
                 _dict.Add("tfi", "application/thraud+xml");
                 _dict.Add("tfm", "application/x-tex-tfm");
                 _dict.Add("tga", "image/x-tga");
+				_dict.Add("tgz", "application/x-gzip");
                 _dict.Add("thmx", "application/vnd.ms-officetheme");
                 _dict.Add("tif", "image/tiff");
                 _dict.Add("tiff", "image/tiff");
