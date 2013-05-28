@@ -54,12 +54,12 @@ namespace Badr.Server.Templates.Rendering
 
         #endregion
 
-        private readonly ExprMatchVar _templatePathVar;
+        private readonly TemplateVarFiltered _templatePathVar;
 
         public IncludeRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
             : base(exprMatchResult, exprMatchGroups)
         {
-            _templatePathVar = ExprMatchGroups.GetVariableAndFilteres(GROUP_TEMPLATE_FILE)[0];
+            _templatePathVar = ExprMatchGroups.GetFilteredVariable(GROUP_TEMPLATE_FILE);
         }
 
         public override void Render(RenderContext renderContext)

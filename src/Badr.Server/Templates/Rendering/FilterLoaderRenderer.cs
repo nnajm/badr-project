@@ -52,7 +52,7 @@ namespace Badr.Server.Templates.Rendering
         public FilterLoaderRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
             : base(exprMatchResult, exprMatchGroups)
         {
-            _filterName = ExprMatchGroups[GROUP_FILTER_NAME];
+            _filterName = ExprMatchGroups.GetGroupValue(GROUP_FILTER_NAME);
         }
 
         public override void Render(RenderContext renderContext)

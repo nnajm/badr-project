@@ -44,9 +44,9 @@ namespace Badr.Apps.Admin
 
 			protected override void Set ()
 			{
-				Add (@"^admin/(?<model_name>\w+)/$", Views.ModelListView, "model_list_url");
-				Add (@"^admin/(?<model_name>\w+)/Page/(?<page_num>\d+)/$", Views.ModelListView, "model_list_page_url");
-				Add (@"^admin/(?<model_name>\w+)/(?<model_id>\d+)/$", Views.ModelView, "model_details_url");
+				Add (@"^admin/(\w+)/$", Views.ModelListView, "model_list_url");
+				Add (@"^admin/(\w+)/Page/(?<page_num>\d+)/$", Views.ModelListView, "model_list_page_url");
+				Add (@"^admin/(\w+)/(?<model_id>\d+)/$", Views.ModelView, "model_details_url");
 			}
 		}
 	}

@@ -65,21 +65,21 @@ namespace Badr.Server.Templates.Rendering
 
         #endregion
 
-        private readonly ExprMatchVar _leftVar;
-        private readonly ExprMatchVar _rightVar;
+        private readonly TemplateVarFiltered _leftVar;
+        private readonly TemplateVarFiltered _rightVar;
         private readonly string _operator;
         private readonly bool _isNegated;
 
         public IfRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
             :base(exprMatchResult, exprMatchGroups)
         {
-            _leftVar = ExprMatchGroups.GetVariableAndFilteres(GROUP_IF_L_VAR)[0];
+            _leftVar = ExprMatchGroups.GetFilteredVariable(GROUP_IF_L_VAR);
             if (ExprMatchGroups.Contains(GROUP_IF_R_VAR))
-                _rightVar = ExprMatchGroups.GetVariableAndFilteres(GROUP_IF_R_VAR)[0];
+                _rightVar = ExprMatchGroups.GetFilteredVariable(GROUP_IF_R_VAR);
             else
                 _rightVar = null;
-            _operator = ExprMatchGroups[GROUP_IF_OP];
-            _isNegated = ExprMatchGroups[GROUP_IF_NOT] == "not";
+            _operator = ExprMatchGroups.GetGroupValue(GROUP_IF_OP);
+            _isNegated = ExprMatchGroups.GetGroupValue(GROUP_IF_NOT) == "not";
         }
 
         internal protected bool ConditionResult;

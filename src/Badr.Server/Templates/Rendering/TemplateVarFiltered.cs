@@ -1,5 +1,5 @@
 //
-// Views.cs
+// TemplateVarFiltered.cs
 //
 // Author: najmeddine nouri
 //
@@ -27,41 +27,24 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-using System;
-using Badr.Server.Net;
-using Badr.Orm;
-using Badr.Server.Templates;
-using Badr.Server.Urls;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-namespace Badr.Apps.Admin
+namespace Badr.Server.Templates.Rendering
 {
-	public static class Views
-	{
-        [Template("admin/model_details.html")]
-        public static BadrResponse ModelView(BadrRequest request, UrlArgs args)
+    public class TemplateVarFiltered
+    {
+        public TemplateVarFiltered(string varValue, List<TemplateFilter> filters)
         {
-            dynamic model = Model.Manager(args[1]).Get(int.Parse(args["model_id"]));
-
-            dynamic tc = new TemplateContext();
-            tc.modelName = args[1];
-            tc.model = model;
-
-            return BadrResponse.CreateResponse(request, tc);
+            Variable = new TemplateVar(varValue);
+            Filters = filters;
         }
 
-        [Template("admin/model_list.html")]
-        public static BadrResponse ModelListView(BadrRequest request, UrlArgs args)
-		{
-                string modelName = args[1];
-				string pageNum = args["page_num"];
-                dynamic modelsPage = Model.Manager(modelName).Page(pageNum != null ? int.Parse(pageNum) : 1, 20);
-
-				dynamic tc = new TemplateContext ();
-				tc.modelName = modelName;
-				tc.modelsPage = modelsPage;
-
-				return BadrResponse.CreateResponse (request, tc);
-		}
-	}
+        public readonly TemplateVar Variable;
+        public readonly List<TemplateFilter> Filters;
+    }
 }
-

@@ -89,7 +89,7 @@ namespace Badr.Server.Templates.Rendering
             _currentScope = currentScopeSave;
         }
 
-        public object this[TemplateVar variable, KeyValuePair<string, TemplateVar>[] filters]
+        public object this[TemplateVar variable, List<TemplateFilter> filters]
         {
             get
             {

@@ -107,5 +107,16 @@ namespace Badr.Server.Utils
             }
             
         }
+
+		public static string ReplaceRecur(this string str, string oldValue, string newValue)
+		{
+			if(str != null)
+				while(str.Contains(oldValue))
+				{
+					str = str.Replace(oldValue, newValue);
+				}
+
+			return str;
+		}
     }
 }

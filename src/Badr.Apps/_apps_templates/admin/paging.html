@@ -1,0 +1,13 @@
+﻿<div class="paging">
+	{% if not modelsPage.IsFirstPage %}
+	<a href="{% url "model_list_page_url" modelName page_num=modelsPage.PageNum|Add:-1 %}">&lt;</a>
+	{% else %}
+	<span class="disabledLink">&lt;</span>
+	{% endif %}
+	page&nbsp;{{ modelsPage.PageNum }}/{{ modelsPage.PagesCount }}
+	{% if not modelsPage.IsLastPage %}
+	<a href="{% url "model_list_page_url" modelName page_num=modelsPage.PageNum|Add:1 %}">&gt;</a>
+	{% else %}
+	<span class="disabledLink">&gt;</span>
+	{% endif %}
+</div>

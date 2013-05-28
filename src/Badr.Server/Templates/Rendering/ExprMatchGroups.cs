@@ -38,20 +38,19 @@ namespace Badr.Server.Templates.Rendering
 {
     public class ExprMatchGroups
     {
-        private static readonly Regex VVF_REGEX = new Regex(BadrGrammar.VARIABLE_VALUE_FILTERED, System.Text.RegularExpressions.RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+        private static readonly Regex _filteredVarRegex = new Regex(BadrGrammar.VARIABLE_VALUE_FILTERED, System.Text.RegularExpressions.RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+        private static readonly Regex _filteredAssignationRegex = new Regex(BadrGrammar.VARIABLE_ASSIGNATION, System.Text.RegularExpressions.RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-        private readonly Dictionary<string, string> _singleMatchGroups;
-        private readonly Dictionary<string, List<string>> _multiMatchGroups;
+        private readonly Dictionary<string, List<string>> _matchGroups;
 
         public ExprMatchGroups()
         {
-            _singleMatchGroups = new Dictionary<string, string>();
-            _multiMatchGroups = new Dictionary<string, List<string>>();
+            _matchGroups = new Dictionary<string, List<string>>();
         }
 
         public void Clear()
         {
-            _singleMatchGroups.Clear();
+            _matchGroups.Clear();
         }
 
         public void CopyTo(ExprMatchGroups emg)
@@ -59,79 +58,123 @@ namespace Badr.Server.Templates.Rendering
             if (emg != null)
             {
                 emg.Clear();
-                foreach (KeyValuePair<string, List<string>> group in _multiMatchGroups)
-                    emg._multiMatchGroups.Add(group.Key, new List<string>(group.Value));
-                foreach (KeyValuePair<string, string> group in _singleMatchGroups)
-                    emg._singleMatchGroups.Add(group.Key, group.Value);
+                foreach (KeyValuePair<string, List<string>> group in _matchGroups)
+                    emg._matchGroups.Add(group.Key, new List<string>(group.Value));
             }
         }
 
         public void Add(string group, string value)
         {
-            if (_multiMatchGroups.ContainsKey(group))
-            {
-                _multiMatchGroups[group].Add(value);
-            }
-            else if (!_singleMatchGroups.ContainsKey(group))
-            {
-                _singleMatchGroups.Add(group, value);
-            }
-            else
-            {
-                _multiMatchGroups.Add(group, new List<string>());
-                _multiMatchGroups[group].Add(_singleMatchGroups[group]);
-                _multiMatchGroups[group].Add(value);
-
-                _singleMatchGroups.Remove(group);
-            }
+            if (!_matchGroups.ContainsKey(group))
+                _matchGroups.Add(group, new List<string>());
+            _matchGroups[group].Add(value);
         }
 
-        public string this[string group]
+        public string GetGroupValue(string group)
         {
-            get
-            {
-                if (_singleMatchGroups.ContainsKey(group))
-                    return _singleMatchGroups[group];
-                return null;
-            }
+            if (_matchGroups.ContainsKey(group))
+                return _matchGroups[group][0];
+            return null;
+        }
+
+        public List<string> GetGroupValuesList(string group)
+        {
+            if (_matchGroups.ContainsKey(group))
+                return _matchGroups[group];
+            return null;
         }
 
         public bool Contains(string group)
         {
-            return _multiMatchGroups.ContainsKey(group)
-                || _singleMatchGroups.ContainsKey(group);
+            return _matchGroups.ContainsKey(group);
         }
 
-        public List<ExprMatchVar> GetVariableAndFilteres(string variableGroup)
+        private TemplateVarFiltered ParseVariableString(string variableString)
         {
-            List<ExprMatchVar> variableMatches = new List<ExprMatchVar>();
+            if (variableString != null)
+            {
+                MatchCollection mcs = _filteredVarRegex.Matches(variableString);
+                if (mcs != null)
+                {
+                    Match match = mcs[0];
+                    if (match.Success)
+                    {
+                        string varValue = match.Groups[BadrGrammar.GROUP_VARIABLE_VALUE].Value;
+                        return new TemplateVarFiltered(varValue, GetFilteres(match.Groups[BadrGrammar.GROUP_VARIABLE_FILTER]));
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public TemplateVarFiltered GetFilteredVariable(string variableGroup)
+        {
             if (Contains(variableGroup))
             {
-                foreach (string varGroupMatch in GetMatchesList(variableGroup))
+                return ParseVariableString(GetGroupValue(variableGroup));
+            }
+
+            return null;
+        }
+
+        public List<TemplateVarFiltered> GetFilteredVariableList(string variableGroup)
+        {
+            if (Contains(variableGroup))
+            {
+                List<TemplateVarFiltered> tVars = new List<TemplateVarFiltered>();
+                foreach (string variable in GetGroupValuesList(variableGroup))
+                    tVars.Add(ParseVariableString(GetGroupValue(variableGroup)));
+                return tVars;
+            }
+
+            return null;
+        }
+
+        public Dictionary<string, TemplateVarFiltered> GetFilteredAssignationList(string assignationGroup)
+        {
+            Dictionary<string, TemplateVarFiltered> assignationMatches = new Dictionary<string, TemplateVarFiltered>();
+            if (Contains(assignationGroup))
+            {
+                foreach (string variable in GetGroupValuesList(assignationGroup))
                 {
-                    MatchCollection mcs = VVF_REGEX.Matches(varGroupMatch);
+                    MatchCollection mcs = _filteredAssignationRegex.Matches(variable);
                     if (mcs != null)
                     {
                         for (int i = 0; i < mcs.Count; i++)
                         {
                             Match match = mcs[i];
                             if (match.Success)
-                                variableMatches.Add(new ExprMatchVar(match));
+                            {
+                                string varName = match.Groups[BadrGrammar.GROUP_VARIABLE_NAME].Value;
+                                assignationMatches.Add(varName, ParseVariableString(match.Groups[BadrGrammar.GROUP_ASSIGNATION_VALUE].Value));
+                            }
                         }
                     }
                 }
             }
 
-            return variableMatches;
+            return assignationMatches;
         }
 
-        public List<string> GetMatchesList(string group)
+        protected List<TemplateFilter> GetFilteres(Group filtersGroup)
         {
-            if (_multiMatchGroups.ContainsKey(group))
-                return _multiMatchGroups[group];
-            else
-                if (_singleMatchGroups.ContainsKey(group))
-                    return new List<string>(new string[] { _singleMatchGroups[group] });
+            if (filtersGroup != null)
+            {
+                int capCount = filtersGroup.Captures.Count;
+                if (capCount > 0)
+                {
+                    List<TemplateFilter> filters = new List<TemplateFilter>();
+                    for (int j = 0; j < capCount; j++)
+                    {
+                        string[] filterNameAndArg = filtersGroup.Captures[j].Value.Split(':');
+                        string filterName = filterNameAndArg[0];
+                        TemplateVar filterArg = filterNameAndArg.Length > 1 ? new TemplateVar(filterNameAndArg[1]) : null;
+                        filters.Add(new TemplateFilter(filterName, filterArg));
+                    }
+                    return filters;
+                }
+            }
 
             return null;
         }
@@ -139,15 +182,23 @@ namespace Badr.Server.Templates.Rendering
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            foreach (KeyValuePair<string, string> group in _singleMatchGroups)
+            foreach (KeyValuePair<string, List<string>> group in _matchGroups)
             {
-                sb.AppendLine(string.Format("{0}: {1}", group.Key, group.Value));
-            }
-            foreach (KeyValuePair<string, List<string>> group in _multiMatchGroups)
-            {
-                sb.AppendLine(string.Format("{0}: {1}", group.Key, string.Join(",", group.Value)));
+                sb.AppendLine(string.Format("{0}: {1} ", group.Key, string.Join(",", group.Value)));
             }
             return sb.ToString();
+        }
+    }
+
+    public class TemplateFilter
+    {
+        public readonly string Name;
+        public readonly TemplateVar Argument;
+
+        public TemplateFilter(string name, TemplateVar argument)
+        {
+            Name = name;
+            Argument = argument;
         }
     }
 }

@@ -58,14 +58,14 @@ namespace Badr.Server.Templates.Rendering
 
         #endregion
 
-        private readonly ExprMatchVar _listVar;
+        private readonly TemplateVarFiltered _listVar;
         private readonly string _loopVariableName;
 
         public ForLoopRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
             : base(exprMatchResult, exprMatchGroups)
         {
-            _listVar = ExprMatchGroups.GetVariableAndFilteres(GROUP_FOR_LIST)[0];
-            _loopVariableName = ExprMatchGroups[GROUP_FOR_VAR];
+            _listVar = ExprMatchGroups.GetFilteredVariable(GROUP_FOR_LIST);
+            _loopVariableName = ExprMatchGroups.GetGroupValue(GROUP_FOR_VAR);
         }
 
         public override void Render(RenderContext renderContext)

@@ -192,5 +192,8 @@
     <None Include="_apps_templates\admin\model_list.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="_apps_templates\admin\paging.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

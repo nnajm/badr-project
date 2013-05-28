@@ -168,10 +168,8 @@
     <Compile Include="Settings\IPAddressValidator.cs" />
     <Compile Include="Settings\SiteSettings.cs" />
     <Compile Include="Templates\Filters\FilterManager.cs" />
-    <Compile Include="Templates\Filters\ITemplateFilter.cs" />
     <Compile Include="Templates\Parser.cs" />
     <Compile Include="Templates\Rendering\ExprMatchGroups.cs" />
-    <Compile Include="Templates\Rendering\ExprMatchVar.cs" />
     <Compile Include="Templates\Rendering\ExprRenderer.cs" />
     <Compile Include="Templates\Rendering\FilterLoaderRenderer.cs" />
     <Compile Include="Templates\Rendering\ForLoopRenderer.cs" />
@@ -188,7 +186,6 @@
     <Compile Include="Templates\BadrGrammar.cs" />
     <Compile Include="Templates\TemplateEngine.cs" />
     <Compile Include="Templates\TemplateException.cs" />
-    <Compile Include="Templates\TemplateVar.cs" />
     <Compile Include="Urls\SiteUrls.cs" />
     <Compile Include="Utils\Helper.cs" />
     <Compile Include="Utils\MimeMapping.cs" />
@@ -214,6 +211,9 @@
     <Compile Include="ContextProcessors\ContextProcessorBase.cs" />
     <Compile Include="Settings\ServerSettings.cs" />
     <Compile Include="Utils\Logging\ManagedColordConsoleAppender.cs" />
+    <Compile Include="Templates\Rendering\TemplateVarFiltered.cs" />
+    <Compile Include="Templates\Filters\IFilterContainer.cs" />
+    <Compile Include="Templates\Rendering\TemplateVar.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Badr.Orm\Badr.Orm.mono.csproj">

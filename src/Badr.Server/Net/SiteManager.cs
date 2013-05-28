@@ -44,9 +44,9 @@ namespace Badr.Server.Net
 {
     public class SiteManager
     {
-        internal SiteSettings SiteSettings;
-        internal ViewManager ViewManager;
-        internal UrlsManager UrlsManager;
+		public SiteSettings SiteSettings { get; protected internal set; }
+        public ViewManager ViewManager { get; protected internal set; }
+        public UrlsManager UrlsManager { get; protected internal set; }
         internal MiddlewareManager MiddlewareManager;
         internal ContextProcessorManager ContextProcessorManager;
 

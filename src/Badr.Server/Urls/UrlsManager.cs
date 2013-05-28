@@ -62,9 +62,9 @@ namespace Badr.Server.Urls
                         if (siteUrls.Urls.Count > 0)
                             foreach (ViewUrl viewUrl in siteUrls.Urls)
                             {
-                                if (!_urls.ContainsKey(viewUrl.ViewName))
+                                if (!_urls.ContainsKey(viewUrl.Name))
                                 {
-                                    _urls.Add(viewUrl.ViewName, viewUrl);
+                                    _urls.Add(viewUrl.Name, viewUrl);
                                 }
                             }
                     }
@@ -83,11 +83,11 @@ namespace Badr.Server.Urls
             return null;
         }
 
-        public string Reverse(string viewName, List<object> args)
+        public string Reverse(string viewName, params string[] args)
         {
             if (viewName != null)
                 if (_urls.ContainsKey(viewName))
-                    return _urls[viewName].Build(args);
+                    return _urls[viewName].Reverse(args);
 
             throw new Exception(string.Format("Url reverse failed: no url named '{0}'", viewName));
         }

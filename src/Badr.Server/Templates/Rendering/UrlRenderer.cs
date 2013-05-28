@@ -42,37 +42,60 @@ namespace Badr.Server.Templates.Rendering
         internal const string URL_RENDERER_NAME = "URL_RENDERER_NAME";
 
         internal const string GROUP_URL_NAME = "URL_NAME";
-        internal const string GROUP_URL_ARGS = "URL_ARGS";
+        internal const string GROUP_URL_NAMED_ARGS = "URL_NAMED_ARGS";
+        internal const string GROUP_URL_POSITIONAL_ARGS = "URL_POSITIONAL_ARGS";
 
         internal const string RE_URL = @"url\s+"
                                      + "(?<" + GROUP_URL_NAME + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")"
-                                     + @"(\s+(?<" + GROUP_URL_ARGS + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + "))*";
+                                     + @"(?:\s+(?:(?<" + GROUP_URL_NAMED_ARGS + ">" + BadrGrammar.VARIABLE_ASSIGNATION + ")|(?<" + GROUP_URL_POSITIONAL_ARGS + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")))*";
 
         #endregion
 
-        private readonly ExprMatchVar _urlNameVar;
-        private readonly List<ExprMatchVar> _urlArgsVar;
+        private readonly TemplateVarFiltered _urlNameVar;
+        private readonly Dictionary<string, TemplateVarFiltered> _urlNamedArgsVar;
+        private readonly List<TemplateVarFiltered> _urlPositionalArgsVar;
+        private readonly int _namedArgsCount;
+        private readonly int _positionalArgsCount;
 
         public UrlRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
             : base(exprMatchResult, exprMatchGroups)
         {
-            _urlNameVar = exprMatchGroups.GetVariableAndFilteres(GROUP_URL_NAME)[0];
-            _urlArgsVar = exprMatchGroups.GetVariableAndFilteres(GROUP_URL_ARGS);
+            _urlNameVar = exprMatchGroups.GetFilteredVariable(GROUP_URL_NAME);
+            _urlNamedArgsVar = exprMatchGroups.GetFilteredAssignationList(GROUP_URL_NAMED_ARGS);
+            _urlPositionalArgsVar = exprMatchGroups.GetFilteredVariableList(GROUP_URL_POSITIONAL_ARGS);
+
+            _namedArgsCount = _urlNamedArgsVar != null ? _urlNamedArgsVar.Count : 0;
+            _positionalArgsCount = _urlPositionalArgsVar != null ? _urlPositionalArgsVar.Count : 0;
         }
 
         public override void Render(RenderContext renderContext)
         {
-            List<object> argValues = new List<object>();
-            if (_urlArgsVar != null && _urlArgsVar.Count > 0)
-            {
-                foreach (ExprMatchVar vm in _urlArgsVar)
-                {
-                    argValues.Add(renderContext[vm.Variable, vm.Filters]);
-                }
-            }
-
             string urlName = (string)renderContext[_urlNameVar.Variable, _urlNameVar.Filters];
-            renderContext.AppendResult(renderContext.SiteManager.UrlsManager.Reverse(urlName, argValues));
+
+            if (_namedArgsCount > 0 || _positionalArgsCount > 0)
+            {
+                int i = 0;
+                string[] argValues = new string[_namedArgsCount + _positionalArgsCount];
+
+                if (_urlNamedArgsVar != null)
+                    foreach (KeyValuePair<string, TemplateVarFiltered> assignation in _urlNamedArgsVar)
+                    {
+                        argValues[i] = string.Format("{0}={1}", assignation.Key, renderContext[assignation.Value.Variable, assignation.Value.Filters]);
+                        i++;
+                    }
+
+                if (_urlPositionalArgsVar != null)
+                    for (int pos = 0; pos < _urlPositionalArgsVar.Count; pos++)
+                    {
+                        TemplateVarFiltered tvf = _urlPositionalArgsVar[pos];
+                        argValues[i] = string.Format("{0}={1}", pos + 1, renderContext[tvf.Variable, tvf.Filters]);
+                        i++;
+                    }
+
+                renderContext.AppendResult(renderContext.SiteManager.UrlsManager.Reverse(urlName, argValues));
+            }
+            else
+                renderContext.AppendResult(renderContext.SiteManager.UrlsManager.Reverse(urlName));
         }
 
         public override string Name

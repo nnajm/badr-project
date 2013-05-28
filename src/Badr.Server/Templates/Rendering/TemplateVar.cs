@@ -33,7 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Badr.Server.Templates
+namespace Badr.Server.Templates.Rendering
 {
     public class TemplateVar
     {

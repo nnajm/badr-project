@@ -1,5 +1,5 @@
 //
-// ITemplateFilter.cs
+// IFilterContainer.cs
 //
 // Author: najmeddine nouri
 //

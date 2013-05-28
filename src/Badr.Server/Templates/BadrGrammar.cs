@@ -78,13 +78,15 @@ namespace Badr.Server.Templates
         internal const string IDENTIFIER_DOTTED = IDENTIFIER + @"(" + DOT + IDENTIFIER + ")*";
         internal const string IDENTIFIER_DOTTED_FILTERED = IDENTIFIER_DOTTED + "(" + FILTER + "?)*";
 
+        internal const string GROUP_VARIABLE_NAME = "VARIABLE_NAME";
         internal const string GROUP_VARIABLE_VALUE = "VARIABLE_VALUE";
         internal const string GROUP_VARIABLE_FILTER = "VARIABLE_FILTER";
         internal const string VARIABLE_VALUE = "(?<"+GROUP_VARIABLE_VALUE+">" + NUMBER + "|" + SINGLE_OR_DOUBLE_QUOTED + "|" + IDENTIFIER_DOTTED + ")";
         internal const string VARIABLE_VALUE_FILTERED = VARIABLE_VALUE
                                                       + @"(\|(?<" + GROUP_VARIABLE_FILTER + ">" + BadrGrammar.FILTER + "))*";
 
-        internal const string VARIABLE_ASSIGNATION = "(?<VARIABLE_NAME>" + IDENTIFIER + ")=" + VARIABLE_VALUE_FILTERED;
+        internal const string GROUP_ASSIGNATION_VALUE = "ASSIGNATION_VALUE";
+        internal const string VARIABLE_ASSIGNATION = "(?<" + GROUP_VARIABLE_NAME + ">" + IDENTIFIER + ")=(?<" + GROUP_ASSIGNATION_VALUE + ">" + VARIABLE_VALUE_FILTERED + ")";
 
         internal const string INSTRUCTION_START = @"\{\%";
         internal const string INSTRUCTION_END = @"\%\}";

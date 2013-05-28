@@ -156,21 +156,20 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="SocketAsyncBufferManager.cs" />
     <Compile Include="Http\HttpProcessor.cs" />
-    <Compile Include="Http\HttpServer.cs" />
     <Compile Include="Http\Response\HttpStatusException.cs" />
     <Compile Include="SocketAsyncManager.cs" />
     <Compile Include="SocketAsyncReceiveArgs.cs" />
     <Compile Include="NetProcessor.cs" />
     <Compile Include="Http\HttpUploadManager.cs" />
     <Compile Include="RecieveBufferManager.cs" />
-    <Compile Include="NetServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="INetServer.cs" />
+    <Compile Include="NetServer.cs" />
     <Compile Include="SocketAsyncEventArgsPool.cs" />
     <Compile Include="SocketAsyncSendArgs.cs" />
     <Compile Include="Utils\ExtensionsHelper.cs" />
+    <Compile Include="Http\HttpServer.cs" />
     <Compile Include="Http\Request\HttpRequest.cs" />
     <Compile Include="Http\Request\HttpCookieFragment.cs" />
     <Compile Include="Http\Request\HttpRequestHeaders.cs" />
@@ -188,6 +187,7 @@
     <Compile Include="FastCGI\FastCGIParam.cs" />
     <Compile Include="FastCGI\FastCGIRecords.cs" />
     <Compile Include="FastCGI\FastCGIRequest.cs" />
+    <Compile Include="SocketAsyncBufferManager.cs" />
   </ItemGroup>
   <ItemGroup />
 </Project>

@@ -57,6 +57,11 @@ namespace Badr.Server.Urls
             _positionalArgs.Add(value);
         }
 
+        /// <summary>
+        /// Returns the argument named 'argumentName'
+        /// </summary>
+        /// <param name="argumentName">argument name</param>
+        /// <returns></returns>
         public string this[string argumentName]
         {
             get
@@ -68,12 +73,17 @@ namespace Badr.Server.Urls
             }
         }
 
+        /// <summary>
+        /// Returns argument in position 'argumentPosition'
+        /// </summary>
+        /// <param name="argumentPosition">argument position starting from 1 (not 0)</param>
+        /// <returns></returns>
         public string this[int argumentPosition]
         {
             get
             {
-                if (argumentPosition <= 0 && argumentPosition < _positionalArgs.Count)
-                    return _positionalArgs[argumentPosition];
+                if (argumentPosition > 0 && argumentPosition <= _positionalArgs.Count)
+                    return _positionalArgs[argumentPosition - 1];
 
                 return null;
             }

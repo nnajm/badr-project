@@ -36,6 +36,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Web;
 using Badr.Net.Utils;
 using log4net;
 using Badr.Net.Http.Response;
@@ -164,7 +165,7 @@ namespace Badr.Net.Http.Request
                         string[] resources = Resource.Split(new char[] { RESOURCE_QUERY_SEPARATOR }, StringSplitOptions.RemoveEmptyEntries);
                         if (resources.Length > 0)
                         {
-                            Resource = resources[0].TrimStart('/');
+                            Resource = HttpUtility.UrlDecode(resources[0].TrimStart('/'));
 
                             // GET data
                             if (Method == HttpRequestMethods.GET && resources.Length > 1)
@@ -212,8 +213,8 @@ namespace Badr.Net.Http.Request
         {
             if (uriEscaped)
             {
-                name = Uri.UnescapeDataString(name);
-                value = Uri.UnescapeDataString(value.Replace('+', ' '));
+                name = HttpUtility.UrlDecode(name);
+                value = HttpUtility.UrlDecode(value);
             }
             if (Method == HttpRequestMethods.GET)
                 GET.Add(name, value);

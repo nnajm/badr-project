@@ -71,7 +71,7 @@ namespace Badr.Server.Views
             if (viewUrl == null)
                 return null;
 
-            return GetTemplateEngine(viewUrl.TemplatePath);
+            return GetTemplateEngine(templatePathOverride ?? viewUrl.TemplatePath);
         }
 
         public TemplateEngine GetTemplateEngine(string templatePath)

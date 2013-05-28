@@ -139,35 +139,39 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Accounting\Models.cs" />
-    <Compile Include="Accounting\Root.cs" />
     <Compile Include="Accounting\Urls.cs" />
     <Compile Include="Accounting\Views.cs" />
     <Compile Include="DemoSettings.cs" />
+    <Compile Include="Accounting\AccountingApp.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\test\Badr.Orm.Test\Badr.Orm.Test.csproj">
-      <Project>{77f2220f-9e68-4a65-9874-4b538ab44bb7}</Project>
-      <Name>Badr.Orm.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Badr.Apps\Badr.Apps.csproj">
       <Project>{78708560-9FB8-49CA-B328-7B53AD087FB8}</Project>
       <Name>Badr.Apps</Name>
     </ProjectReference>
     <ProjectReference Include="..\Badr.Net\Badr.Net.csproj">
-      <Project>{6a65ee42-6b11-40f4-8e3c-b40e4ab21001}</Project>
+      <Project>{6A65EE42-6B11-40F4-8E3C-B40E4AB21001}</Project>
       <Name>Badr.Net</Name>
     </ProjectReference>
     <ProjectReference Include="..\Badr.Orm\Badr.Orm.csproj">
-      <Project>{23454ed0-fa98-4701-a7d9-75e44d6c55db}</Project>
+      <Project>{23454ED0-FA98-4701-A7D9-75E44D6C55DB}</Project>
       <Name>Badr.Orm</Name>
     </ProjectReference>
     <ProjectReference Include="..\Badr.Server\Badr.Server.csproj">
-      <Project>{477e8e97-6fe9-4e3b-858e-2eba823acedf}</Project>
+      <Project>{477E8E97-6FE9-4E3B-858E-2EBA823ACEDF}</Project>
       <Name>Badr.Server</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Config\server.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Config\log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -178,6 +182,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup />
   <ItemGroup />
   <ItemGroup />
 </Project>

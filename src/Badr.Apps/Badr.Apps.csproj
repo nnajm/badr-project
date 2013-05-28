@@ -137,12 +137,13 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Admin\Urls.cs" />
-    <Compile Include="Admin\Root.cs" />
     <Compile Include="Admin\Views.cs" />
     <Compile Include="Admin\Models.cs" />
-    <Compile Include="Static\Root.cs" />
     <Compile Include="Static\Urls.cs" />
     <Compile Include="Static\Views.cs" />
+    <Compile Include="Admin\Admin.cs" />
+    <Compile Include="Static\StaticFilesApp.cs" />
+    <Compile Include="Static\StaticResponse.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Badr.Net\Badr.Net.csproj">
@@ -166,4 +167,20 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <None Include="_apps_staticfiles\admin\admin.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="_apps_templates\admin\model_details.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="_apps_templates\admin\model_list.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="_apps_templates\admin\paging.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

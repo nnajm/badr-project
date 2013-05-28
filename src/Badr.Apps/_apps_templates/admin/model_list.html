@@ -19,52 +19,28 @@
 	    		</div>
 				{% @sqmlfksk %}
 				{% if not modelsPage.IsEmpty %}
-				<div class="paging">
-	        		{% if not modelsPage.IsFirstPage %}
-					<a href="{% url "model_list_page_url" modelName modelsPage.PageNum|Add:-1 %}">&lt;</a>
-					{% else %}
-					<span class="disabledLink">&lt;</span>
-					{% endif %}
-					page&nbsp;{{ modelsPage.PageNum }}/{{ modelsPage.PagesCount }}
-					{% if not modelsPage.IsLastPage %}
-					<a href="{% url "model_list_page_url" modelName modelsPage.PageNum|Add:1 %}">&gt;</a>
-					{% else %}
-					<span class="disabledLink">&gt;</span>
-					{% endif %}
-				</div>
-				<table class="models_table" cellspacing="0" cellpadding="0">
-					<tr class="tr_header">
-					{% for model in modelsPage.Models %}
-						{% if for.counter = 0 %}
-							{% for field in model.Fields %}<th style="{% if for.counter = 0 %}border-left: 1px solid #b0c880;{% endif %}">{{ field.Name }}</th>{% endfor %}
-						{% endif %}
-					{% endfor %}
-					</tr>
-					{% for model in modelsPage.Models %}
-					<tr style="background-color: {% if for.counter|Even %}#fff{% else %}#fcfcfc{% endif %};">
-						{% for fieldValue in model %}
-						{% if for.counter = 0 %}
-						<td><a href="{% url "model_details_url" modelName model.PK %}">{{ fieldValue }}</a></td>
-						{% else %}
-						<td style="border-left: none;">{{ fieldValue }}</td>
-						{% endif %}
+					{% include "admin/paging.html" %}
+					<table class="models_table" cellspacing="0" cellpadding="0">
+						<tr class="tr_header">
+						{% for model in modelsPage.Models %}
+							{% if for.counter = 0 %}
+								{% for field in model.Fields %}<th style="{% if for.counter = 0 %}border-left: 1px solid #b0c880;{% endif %}">{{ field.Name }}</th>{% endfor %}
+							{% endif %}
 						{% endfor %}
-					</tr>
-				{% endfor %}
-				</table>
-				<div class="paging">
-	        		{% if not modelsPage.IsFirstPage %}
-					<a href="{% url "model_list_page_url" modelName modelsPage.PageNum|Add:-1 %}">&lt;</a>
-					{% else %}
-					<span class="disabledLink">&lt;</span>
-					{% endif %}
-					page&nbsp;{{ modelsPage.PageNum }}/{{ modelsPage.PagesCount }}
-					{% if not modelsPage.IsLastPage %}
-					<a href="{% url "model_list_page_url" modelName modelsPage.PageNum|Add:1 %}">&gt;</a>
-					{% else %}
-					<span class="disabledLink">&gt;</span>
-					{% endif %}
-				</div>
+						</tr>
+						{% for model in modelsPage.Models %}
+						<tr style="background-color: {% if for.counter|Even %}#fff{% else %}#fcfcfc{% endif %};">
+							{% for fieldValue in model %}
+							{% if for.counter = 0 %}
+							<td><a href="{% url "model_details_url" modelName model_id=model.PK %}">{{ fieldValue }}</a></td>
+							{% else %}
+							<td style="border-left: none;">{{ fieldValue }}</td>
+							{% endif %}
+							{% endfor %}
+						</tr>
+						{% endfor %}
+					</table>
+					{% include "admin/paging.html" %}
 				{% endif %}
 			</div>
 		</div>

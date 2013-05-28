@@ -10,7 +10,7 @@
 	<div class="main">
 		<div class="header"><div style="margin: 0 15px;width:auto;">administration&nbsp;<span class="badr">&lt;Badr;/&gt;</span></div></div>
 		<div class="page_bread_crumb">
-			&nbsp;&nbsp;&nbsp;admin &gt; <a href="{% url "model_list_page_url" modelName 1 %}">{{ modelName }}</a>&nbsp;&gt;&nbsp;{{ model.PK }}
+			&nbsp;&nbsp;&nbsp;admin &gt; <a href="{% url "model_list_page_url" modelName page_num=1 %}">{{ modelName }}</a>&nbsp;&gt;&nbsp;{{ model.PK }}
 		</div>
 		<div class="models">
     		<div class="models_title" style="padding: 0 0 0 15px;width:auto;">

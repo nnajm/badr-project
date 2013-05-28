@@ -156,7 +156,7 @@ namespace Badr.Server.Templates
 			return true;
 		}
 
-        internal object this [Scope scope, TemplateVar variable, KeyValuePair<string, TemplateVar>[] filters]
+        internal object this [Scope scope, TemplateVar variable, List<TemplateFilter> filters]
 		{
 			get {
 				if (_alwaysEmpty)
@@ -196,14 +196,14 @@ namespace Badr.Server.Templates
 					}
 				}
 
-				if (filters != null && filters.Length > 0)
+				if (filters != null && filters.Count > 0)
 				{
-					int filtersCount = filters.Length;
+                    int filtersCount = filters.Count;
 					KeyValuePair<string, object>[] resolvedFilters = new KeyValuePair<string, object>[filtersCount];
 					for (int i = 0; i < filtersCount; i++)
 					{
-						KeyValuePair<string, TemplateVar> currFilter = filters [i];
-						resolvedFilters [i] = new KeyValuePair<string, object> (currFilter.Key, this [scope, currFilter.Value, null]);
+						TemplateFilter currFilter = filters [i];
+						resolvedFilters [i] = new KeyValuePair<string, object> (currFilter.Name, this [scope, currFilter.Argument, null]);
 					}
 
 					return FilterManager.Filter (val, resolvedFilters);

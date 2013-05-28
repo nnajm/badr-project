@@ -52,7 +52,7 @@ namespace Badr.Server.Templates.Rendering
         public SpecialTagRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
             : base(exprMatchResult, exprMatchGroups)
         {
-            _specialTagName = ExprMatchGroups[GROUP_SPE_TAG_NAME];
+            _specialTagName = ExprMatchGroups.GetGroupValue(GROUP_SPE_TAG_NAME);
         }
 
         public override void Render(RenderContext renderContext)

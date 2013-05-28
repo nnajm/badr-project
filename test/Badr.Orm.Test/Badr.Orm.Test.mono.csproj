@@ -193,6 +193,7 @@
     <Compile Include="Models\ProjectMembers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DbOperationsTest.cs" />
+    <Compile Include="UrlsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="badr_orm_test.db" />
@@ -202,6 +203,10 @@
     <ProjectReference Include="..\..\src\Badr.Orm\Badr.Orm.mono.csproj">
       <Project>{23454ED0-FA98-4701-A7D9-75E44D6C55DB}</Project>
       <Name>Badr.Orm.mono</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Badr.Server\Badr.Server.mono.csproj">
+      <Project>{477E8E97-6FE9-4E3B-858E-2EBA823ACEDF}</Project>
+      <Name>Badr.Server.mono</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
