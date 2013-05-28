@@ -43,20 +43,20 @@ namespace Badr.Net.Http
 
     public class HttpServer: NetServer
     {
-        public HttpServer(IPAddress ipAddr, int port, int maxConnectionNumber)
-            : this(new IPEndPoint(ipAddr, port), maxConnectionNumber)
+        public HttpServer(IPAddress ipAddr, int port, int maxConnectionNumber, ServerMode mode = ServerMode.Standalone)
+            : this(new IPEndPoint(ipAddr, port), maxConnectionNumber, mode)
 		{
         }
 
-        public HttpServer(string ipAddr, int port, int maxConnectionNumber)
-            : this(IPAddress.Parse(ipAddr), port, maxConnectionNumber)
+        public HttpServer(string ipAddr, int port, int maxConnectionNumber, ServerMode mode = ServerMode.Standalone)
+            : this(IPAddress.Parse(ipAddr), port, maxConnectionNumber, mode)
         {
         }
 
-        public HttpServer(IPEndPoint ipEndPoint, int maxConnectionNumber)
+        public HttpServer(IPEndPoint ipEndPoint, int maxConnectionNumber, ServerMode mode = ServerMode.Standalone)
 			:base(ipEndPoint, maxConnectionNumber)
 		{
-			Mode = ServerMode.Standalone;
+			Mode = mode;
         }
 
         /// <summary>

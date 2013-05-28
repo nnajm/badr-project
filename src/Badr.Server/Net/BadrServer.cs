@@ -85,16 +85,16 @@ namespace Badr.Server.Net
         /// <summary>
         /// Creates a new instance of BadrServer that will bind to the specified ipaddress &amp; port;
         /// </summary>
-        public BadrServer(string ipaddress, int port)
-            : this(ipaddress, port, DEFAULT_MAX_CONNECTIONS)
+        public BadrServer(string ipaddress, int port, ServerMode mode = ServerMode.Standalone)
+            : this(ipaddress, port, DEFAULT_MAX_CONNECTIONS, mode)
         {
         }
 
         /// <summary>
         /// Creates a new instance of BadrServer that will bind to the specified ipaddress &amp; port;
         /// </summary>
-        public BadrServer(string ipaddress, int port, int maxConnectionNumber)
-            : base(ipaddress, port, maxConnectionNumber)
+        public BadrServer(string ipaddress, int port, int maxConnectionNumber, ServerMode mode = ServerMode.Standalone)
+            : base(ipaddress, port, maxConnectionNumber, mode)
         {
             _sites = new List<Type>();
             SiteManagers = new Dictionary<string, SiteManager>();
@@ -138,9 +138,10 @@ namespace Badr.Server.Net
         /// </summary>
         /// <param name="ipaddress">server binding ip address</param>
         /// <param name="port">server binding port</param>
-        public BadrServer Configure(string ipaddress, int port)
+        public BadrServer Configure(string ipaddress, int port, ServerMode mode)
         {
             IPEndPoint = new IPEndPoint(IPAddress.Parse(ipaddress), port);
+			Mode = mode;
             return this;
         }
 
@@ -195,6 +196,7 @@ namespace Badr.Server.Net
 
             string ipaddress = null;
             int port = 0;
+			string mode = ServerMode.Standalone.ToString();
 
             if (args != null && args.Length > 0)
             {
@@ -217,6 +219,10 @@ namespace Badr.Server.Net
                                 case "--PORT":
                                     port = int.Parse(argValue);
                                     break;
+                                case "-M":
+                                case "--MODE":
+                                    mode = argValue;
+                                    break;
                                 default:
                                     break;
                             }
@@ -237,8 +243,11 @@ namespace Badr.Server.Net
                         }
                     }
                 }
+				ServerMode sMode;
+				if(!Enum.TryParse<ServerMode>(mode, out sMode))
+					sMode = ServerMode.Standalone;
 
-                Configure(ipaddress, port);
+                Configure(ipaddress, port, sMode);
             }
         }
 		

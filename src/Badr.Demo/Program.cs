@@ -42,20 +42,25 @@ namespace Badr.Demo
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            log4net.Config.XmlConfigurator.Configure();
+        static void Main (string[] args)
+		{
+			log4net.Config.XmlConfigurator.Configure ();
 
-            //InitializeDatabase();
+			// after db initialization (db file creation), set to true
+			bool databaseInitialized = true;
 
-            new BadrServer().XmlConfigure()
-                            //.RegisterSite<DemoSettings>()
-                            .Start();
+			if (!databaseInitialized)
+				InitializeDatabase ();
+			else
+			{
+				new BadrServer ().XmlConfigure ()
+                            .Start ();
+			}
         }
 
         private static void InitializeDatabase()
         {
-            new BadrServer().RegisterSite<DemoSettings>()
+            new BadrServer().XmlConfigure()
                             .SyncDatabase();
 
             for (int i = 0; i <= 27; i++)
