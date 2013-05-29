@@ -171,7 +171,7 @@
     <Compile Include="Templates\BadrGrammar.cs" />
     <Compile Include="Templates\TemplateEngine.cs" />
     <Compile Include="Templates\TemplateException.cs" />
-    <Compile Include="Urls\SiteUrls.cs" />
+    <Compile Include="Urls\UrlsBase.cs" />
     <Compile Include="Utils\Helper.cs" />
     <Compile Include="Utils\MimeMapping.cs" />
     <Compile Include="Views\FilesManager.cs" />
