@@ -42,12 +42,6 @@ namespace Badr.Server.Middlewares
     {
         protected const string SESSION_SPE_TAG_NAME = "sessiontoken";
 
-        public SessionMiddleware(SiteSettings settings)
-            : base(settings)
-        {
-
-        }
-
         public override MiddlewareProcessStatus PreProcess(BadrRequest wRequest, out string errorMessage)
         {
             string sessionId = wRequest.Cookies[CookieNames.SESSION_ID].Value;

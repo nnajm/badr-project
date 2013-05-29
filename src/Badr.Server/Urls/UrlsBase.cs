@@ -39,18 +39,20 @@ using Badr.Server.Settings;
 
 namespace Badr.Server.Urls
 {
-    public abstract class SiteUrls
+    public abstract class UrlsBase
     {
-        protected internal SiteSettings Settings { get; private set; }
+        public SiteSettings Settings { get; set; }
         protected internal List<ViewUrl> Urls { get; private set; }
 
-        public SiteUrls(SiteSettings settings)
+        public UrlsBase()
         {
-            Settings = settings;
             Urls = new List<ViewUrl>();
-            
-            Set();
         }
+
+		internal void CreateUrls()
+		{
+			Set();
+		}
 
         protected abstract void Set();
 

@@ -38,14 +38,8 @@ namespace Badr.Apps.Static
 {
 	public partial class StaticFilesApp: AppRoot
 	{
-		public class Urls: SiteUrls
+		public class Urls: UrlsBase
 		{
-			public Urls (SiteSettings settings)
-            :base(settings)
-			{
-
-			}
-
 			protected override void Set ()
 			{
 				Add ("^" + Settings.STATIC_URL + "(?<STATIC_RESOURCE_GROUP>.*)", new Views (Settings).ServeStaticFiles, "_serve_static_files");

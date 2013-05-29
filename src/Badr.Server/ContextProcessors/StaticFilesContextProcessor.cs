@@ -36,12 +36,6 @@ namespace Badr.Server.ContextProcessors
 
 	public class StaticFilesContextProcessor: ContextProcessorBase
 	{
-        public StaticFilesContextProcessor(SiteSettings settings)
-            :base(settings)
-        {
-
-        }
-
 		protected internal override void Process (TemplateContext context)
 		{
 			context["STATIC_URL"] = "/" + Settings.STATIC_URL;

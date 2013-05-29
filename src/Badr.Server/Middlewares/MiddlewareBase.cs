@@ -47,11 +47,10 @@ namespace Badr.Server.Middlewares
 
     public abstract class MiddlewareBase
     {
-        protected SiteSettings Settings { get; private set; }
+        public SiteSettings Settings { get; set; }
 
-        public MiddlewareBase(SiteSettings settings)
+        public MiddlewareBase()
         {
-            Settings = settings;
         }
 
         public abstract MiddlewareProcessStatus PreProcess(BadrRequest wRequest, out string errorMessage);

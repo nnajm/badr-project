@@ -47,10 +47,14 @@ namespace Badr.Server.ContextProcessors
             _contextProcessors = new List<ContextProcessorBase>();
         }
 
-        public void Register(Type contextProcessorType)
+        public void Register (Type contextProcessorType)
 		{
-            if (typeof(ContextProcessorBase).IsAssignableFrom(contextProcessorType))
-                _contextProcessors.Add((ContextProcessorBase)Activator.CreateInstance(contextProcessorType, _settings));
+			if (typeof(ContextProcessorBase).IsAssignableFrom (contextProcessorType))
+			{
+				ContextProcessorBase cp = (ContextProcessorBase)Activator.CreateInstance (contextProcessorType);
+				cp.Settings = _settings;
+				_contextProcessors.Add (cp);
+			}
             else
                 throw new ArgumentException("contextProcessorType argument is either null or not of type ContextProcessorBase", "contextProcessorType");
         }

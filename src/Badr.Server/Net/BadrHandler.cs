@@ -71,7 +71,7 @@ namespace Badr.Server.Net
                     throw new Exception("Request is not a BadrRequest");
 
 				if (!request.ValidMethod)
-					return HttpResponse.CreateResponse(request, HttpResponseStatus._405);
+					return BadrResponse.CreateResponse(request, HttpResponseStatus._405);
 
                 if (request.Headers.ContainsKey(HttpRequestHeaders.Host))
                 {
@@ -110,7 +110,7 @@ namespace Badr.Server.Net
                     else
                     {
                         _Logger.Error(exceptionMessage);
-                        return HttpResponse.CreateResponse(request, HttpResponseStatus._404);
+                        return BadrResponse.CreateResponse(request, HttpResponseStatus._404);
                     }
                 }
                 else
@@ -123,7 +123,7 @@ namespace Badr.Server.Net
                 if (siteManager != null && siteManager.SiteSettings.DEBUG)
                     return BadrResponse.CreateDebugResponse(request, ex);
                 else
-                    return HttpResponse.CreateResponse(request, HttpResponseStatus._404);
+                    return BadrResponse.CreateResponse(request, HttpResponseStatus._404);
             }
         }
 	}

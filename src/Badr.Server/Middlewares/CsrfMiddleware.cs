@@ -46,12 +46,6 @@ namespace Badr.Server.Middlewares
         protected const string CSRF_INPUT_NAME = CookieNames.CSRF_TOKEN + "_spetag";
         protected const string CSRF_SPE_TAG_NAME = "csrftoken";
 
-        public CsrfMiddleware(SiteSettings settings)
-            : base(settings)
-        {
-
-        }
-
         public override MiddlewareProcessStatus PreProcess(BadrRequest wRequest, out string errorMessage)
         {
             if (!HttpRequestHelper.IsSafeMethod(wRequest.Method))
@@ -59,7 +53,7 @@ namespace Badr.Server.Middlewares
                 if (!wRequest.POST.Contains(CSRF_INPUT_NAME)
                     || wRequest.CsrfToken != wRequest.POST[CSRF_INPUT_NAME].ToString())
                 {
-                    errorMessage = "POST request does not contain a valid csrf token";
+                    errorMessage = "POST request does not contain valid csrf token";
                     _Logger.Error(errorMessage);
 					return MiddlewareProcessStatus.ErrorStop;// WResponseStatus._403;
                 }

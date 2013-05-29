@@ -38,6 +38,7 @@ using Badr.Net.Http.Response;
 using Badr.Server.Templates;
 using Badr.Server.Urls;
 using Badr.Server.Views;
+using Badr.Net.Http.Request;
 
 namespace Badr.Server.Net
 {
@@ -50,6 +51,20 @@ namespace Badr.Server.Net
         {
         }
 
+		public static BadrResponse CreateResponse (BadrRequest request, HttpResponseStatus status)
+		{
+			BadrResponse response = new BadrResponse (request) { Status = status };
+			
+			if (status == HttpResponseStatus._404)
+				response.Body = @"<html><body style=""font-size:404;font-family:lucida console"">404 Not found</body></html>" + HttpRequest.WR_SEPARATOR;
+			else if (status == HttpResponseStatus._403)
+				response.Body = @"<html><body style=""font-size:403;font-family:lucida console"">403 Forbidden</body></html>" + HttpRequest.WR_SEPARATOR;
+			else if (status == HttpResponseStatus._408)
+				response.Body = @"<html><body style=""font-size:408;font-family:lucida console"">408 Bad Request</body></html>" + HttpRequest.WR_SEPARATOR;
+			
+			return response;			
+		}
+
         /// <summary>
         /// Creates a Response to send back to client
         /// </summary>
@@ -61,8 +76,25 @@ namespace Badr.Server.Net
         /// <returns></returns>
         public static BadrResponse CreateResponse(BadrRequest request, TemplateContext context, string templateOverridePath = null, string contentType = null, string charset = null)
         {
-            TemplateEngine templateEngine = request.SiteManager.ViewManager.GetTemplateEngine(request.ViewUrl, templateOverridePath);
-            BadrResponse response = new BadrResponse(request, contentType, charset);
+			return CreateResponse(request, 
+			                      request.SiteManager.ViewManager.GetTemplateEngine(request.ViewUrl, templateOverridePath), 
+			                      context, 
+			                      contentType, 
+			                      charset);
+        }
+
+		public static BadrResponse CreateResponse(BadrRequest request, string responseBody, TemplateContext context, string contentType = null, string charset = null)
+        {
+            return CreateResponse(request, 
+			                      request.SiteManager.ViewManager.GetTemplateEngineFromText(responseBody), 
+			                      context, 
+			                      contentType, 
+			                      charset);
+        }
+
+		private static BadrResponse CreateResponse(BadrRequest request, TemplateEngine templateEngine, TemplateContext context, string contentType = null, string charset = null)
+		{
+			BadrResponse response = new BadrResponse(request, contentType, charset);
 
 			if(context == null)
 				context = new TemplateContext();
@@ -70,7 +102,7 @@ namespace Badr.Server.Net
             request.SiteManager.ContextProcessorManager.Process(context);
             response.Body = templateEngine.Render(request, context);
             return response;
-        }
+		}
 
         internal static BadrResponse CreateDebugResponse(BadrRequest request, Exception ex)
         {

@@ -34,14 +34,8 @@ namespace Badr.Apps.Admin
 {
 	public partial class Admin: AppRoot
 	{
-		public class Urls: SiteUrls
+		public class Urls: UrlsBase
 		{
-			public Urls (SiteSettings settings)
-            : base(settings)
-			{
-
-			}
-
 			protected override void Set ()
 			{
 				Add (@"^admin/(\w+)/$", Views.ModelListView, "model_list_url");

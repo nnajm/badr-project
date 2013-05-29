@@ -56,9 +56,11 @@ namespace Badr.Server.Urls
             {
                 foreach (Type siteUrlType in siteUrlTypes)
                 {
-                    if (typeof(SiteUrls).IsAssignableFrom(siteUrlType))
+                    if (typeof(UrlsBase).IsAssignableFrom(siteUrlType))
                     {
-                        SiteUrls siteUrls = (SiteUrls)Activator.CreateInstance(siteUrlType, _siteManager.SiteSettings);
+                        UrlsBase siteUrls = (UrlsBase)Activator.CreateInstance(siteUrlType);
+						siteUrls.Settings = _siteManager.SiteSettings;
+						siteUrls.CreateUrls();
                         if (siteUrls.Urls.Count > 0)
                             foreach (ViewUrl viewUrl in siteUrls.Urls)
                             {

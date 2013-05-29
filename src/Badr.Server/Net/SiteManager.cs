@@ -70,39 +70,42 @@ namespace Badr.Server.Net
        
         protected internal void CreateOrmManagers()
         {
-            foreach (KeyValuePair<string, Type> dbengine in SiteSettings.EXTRA_DB_ENGINES)
-            {
-                OrmManager.RegisterDbEngine(dbengine.Key, dbengine.Value);
-            }
+			if(SiteSettings.EXTRA_DB_ENGINES != null && SiteSettings.EXTRA_DB_ENGINES.Count > 0)
+	            foreach (KeyValuePair<string, Type> dbengine in SiteSettings.EXTRA_DB_ENGINES)
+	            {
+	                OrmManager.RegisterDbEngine(dbengine.Key, dbengine.Value);
+	            }
 
-            foreach (DbSettings dbSettings in SiteSettings.DATABASES)
-            {
-                OrmManager.RegisterDatabase(dbSettings.ID, dbSettings);
-            }
+			if(SiteSettings.DATABASES != null && SiteSettings.DATABASES.Count > 0)
+	            foreach (DbSettings dbSettings in SiteSettings.DATABASES)
+	            {
+	                OrmManager.RegisterDatabase(dbSettings.ID, dbSettings);
+	            }
 
             APPS = new Dictionary<string, AppRoot>();
 
-            foreach (Type installedApp in SiteSettings.INSTALLED_APPS)
-            {
-                if (typeof(AppRoot).IsAssignableFrom(installedApp))
-                {
-                    AppRoot appRoot = (AppRoot)Activator.CreateInstance(installedApp);
-                    if (appRoot != null)
-                    {
-                        List<Type> models = new List<Type>();
+			if(SiteSettings.INSTALLED_APPS != null && SiteSettings.INSTALLED_APPS.Length > 0)
+	            foreach (Type installedApp in SiteSettings.INSTALLED_APPS)
+	            {
+	                if (typeof(AppRoot).IsAssignableFrom(installedApp))
+	                {
+	                    AppRoot appRoot = (AppRoot)Activator.CreateInstance(installedApp);
+	                    if (appRoot != null)
+	                    {
+	                        List<Type> models = new List<Type>();
 
-                        APPS[appRoot.AppName] = appRoot;
+	                        APPS[appRoot.AppName] = appRoot;
 
-                        foreach (Type type in Assembly.GetAssembly(installedApp).GetTypes())
-                        {
-                            if (type.Namespace != null && type.Namespace.StartsWith(appRoot.AppNamespace))
-                                    models.Add(type);
-                        }
+	                        foreach (Type type in Assembly.GetAssembly(installedApp).GetTypes())
+	                        {
+	                            if (type.Namespace != null && type.Namespace.StartsWith(appRoot.AppNamespace))
+	                                    models.Add(type);
+	                        }
 
-                        OrmManager.RegisterModels(appRoot.AppName, models);
-                    }
-                }
-            }
+	                        OrmManager.RegisterModels(appRoot.AppName, models);
+	                    }
+	                }
+	            }
         }
 
         protected internal void LoadUrls()
@@ -112,14 +115,16 @@ namespace Badr.Server.Net
 
         protected internal void RegisterMiddlewares()
         {
-            foreach (Type middleWareType in SiteSettings.MIDDLEWARE_CLASSES)
-                MiddlewareManager.Register(middleWareType);
+			if(SiteSettings.MIDDLEWARE_CLASSES != null && SiteSettings.MIDDLEWARE_CLASSES.Length > 0)
+		        foreach (Type middleWareType in SiteSettings.MIDDLEWARE_CLASSES)
+		            MiddlewareManager.Register(middleWareType);
         }
 
         protected internal void RegisterContextProcessors()
         {
-            foreach (Type contextProcessorType in SiteSettings.CONTEXT_PROCESSORS)
-                ContextProcessorManager.Register(contextProcessorType);
+			if(SiteSettings.CONTEXT_PROCESSORS != null && SiteSettings.CONTEXT_PROCESSORS.Length > 0)
+	            foreach (Type contextProcessorType in SiteSettings.CONTEXT_PROCESSORS)
+	                ContextProcessorManager.Register(contextProcessorType);
         }
         
 

@@ -86,7 +86,7 @@ namespace Badr.Server.Views
                     string templateContent = _templateFilesManager.GetFileText(templatePath);
 
                     if (templateContent != null)
-                        _viewTemplates.Add(templatePath, new TemplateEngine(_siteManager, templateContent));
+                        _viewTemplates.Add(templatePath, GetTemplateEngineFromText(templateContent));
                 }
 
                 if (_viewTemplates.ContainsKey(templatePath))
@@ -95,5 +95,13 @@ namespace Badr.Server.Views
                     throw new Exception(string.Format("Template file not found for resource '{0}' ", templatePath));
             }
         }
+
+		public TemplateEngine GetTemplateEngineFromText (string templateText)
+		{
+			if (templateText == null)
+				return null;
+
+			return new TemplateEngine (_siteManager, templateText);
+		}
     }
 }

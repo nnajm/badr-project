@@ -80,20 +80,6 @@ namespace Badr.Net.Http.Response
         public bool ConnectionKeepAlive { get; private set; }
         public HttpResponseStatus Status { get; set; }
 
-		public static HttpResponse CreateResponse (HttpRequest request, HttpResponseStatus status)
-		{
-			HttpResponse response = new HttpResponse (request) { Status = status };
-			
-			if (status == HttpResponseStatus._404)
-				response.Body = @"<html><body style=""font-size:404;font-family:lucida console"">404 Not found</body></html>" + HttpRequest.WR_SEPARATOR;
-			else if (status == HttpResponseStatus._403)
-				response.Body = @"<html><body style=""font-size:403;font-family:lucida console"">403 Forbidden</body></html>" + HttpRequest.WR_SEPARATOR;
-			else if (status == HttpResponseStatus._408)
-				response.Body = @"<html><body style=""font-size:408;font-family:lucida console"">408 Bad Request</body></html>" + HttpRequest.WR_SEPARATOR;
-			
-			return response;			
-		}
-
 		protected virtual byte[] GetData(){
 
 			StringBuilder sb = new StringBuilder ();

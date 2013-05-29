@@ -49,8 +49,12 @@ namespace Badr.Server.Middlewares
 
         public void Register (Type middlewareType)
 		{
-            if (typeof(MiddlewareBase).IsAssignableFrom(middlewareType))
-                _middlewares.Add((MiddlewareBase)Activator.CreateInstance(middlewareType, _settings));
+			if (typeof(MiddlewareBase).IsAssignableFrom (middlewareType))
+			{
+				MiddlewareBase mb = (MiddlewareBase)Activator.CreateInstance (middlewareType);
+				mb.Settings = _settings;
+				_middlewares.Add (mb);
+			}
             else
                 throw new ArgumentException("middlewareType argument is either null or not of type ContextProcessorBase", "middlewareType");
         }

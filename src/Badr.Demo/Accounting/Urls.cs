@@ -38,14 +38,8 @@ namespace Badr.Demo.Accounting
 {
 	public partial class AccountingApp : AppRoot
 	{
-		public class Urls : SiteUrls
+		public class Urls : UrlsBase
 		{
-			public Urls (SiteSettings settings)
-            : base(settings)
-			{
-
-			}
-
 			protected override void Set ()
 			{		
 

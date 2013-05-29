@@ -35,11 +35,10 @@ namespace Badr.Server.ContextProcessors
 {
 	public abstract class ContextProcessorBase
 	{
-        protected SiteSettings Settings { get; private set; }
+        public SiteSettings Settings { get; set; }
 
-        public ContextProcessorBase(SiteSettings settings)
+        public ContextProcessorBase()
         {
-            Settings = settings;
         }
 
 		protected internal abstract void Process (TemplateContext context);
