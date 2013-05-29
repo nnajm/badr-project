@@ -125,10 +125,10 @@ namespace Badr.Net.FastCGI
             buffer[copyOffset] = Version;
             buffer[copyOffset + 1] = Type;
             
-            buffer[copyOffset + 2] = (byte)((RequestId & 0xFF00) >> 8);
+            buffer[copyOffset + 2] = (byte)((RequestId >> 8) & 0xFF);
             buffer[copyOffset + 3] = (byte)(RequestId & 0xFF);
 
-            buffer[copyOffset + 4] = (byte)((ContentLength & 0xFF00) >> 8);
+            buffer[copyOffset + 4] = (byte)((ContentLength >> 8) & 0xFF);
             buffer[copyOffset + 5] = (byte)(ContentLength & 0xFF);
 
             
@@ -232,9 +232,9 @@ namespace Badr.Net.FastCGI
 
         internal void CopyBytesTo(byte[] buffer, int copyOffset)
         {
-            buffer[copyOffset + 0] = (byte)((AppStatus & 0xFF000000) >> 24);
-            buffer[copyOffset + 1] = (byte)((AppStatus & 0x00FF0000) >> 16);
-            buffer[copyOffset + 2] = (byte)((AppStatus & 0x0000FF00) >> 8);
+            buffer[copyOffset + 0] = (byte)((AppStatus >> 24) & 0xFF);
+            buffer[copyOffset + 1] = (byte)((AppStatus >> 16) & 0xFF);
+            buffer[copyOffset + 2] = (byte)((AppStatus >> 8) & 0xFF);
             buffer[copyOffset + 3] = (byte)(AppStatus & 0xFF);
 
             buffer[copyOffset + 4] = ProtocolStatus;

@@ -134,6 +134,7 @@ namespace Badr.Net.Http.Response
             _headersStringKey.Add("Retry-After", HttpResponseHeaders.RetryAfter);
             _headersStringKey.Add("Server", HttpResponseHeaders.Server);
             _headersStringKey.Add("Set-Cookie", HttpResponseHeaders.SetCookie);
+			_headersStringKey.Add("Status", HttpResponseHeaders.Status);
             _headersStringKey.Add("Strict-Transport-Security", HttpResponseHeaders.StrictTransportSecurity);
             _headersStringKey.Add("Trailer", HttpResponseHeaders.Trailer);
             _headersStringKey.Add("Transfer-Encoding", HttpResponseHeaders.TransferEncoding);

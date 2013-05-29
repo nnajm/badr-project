@@ -192,6 +192,12 @@ namespace Badr.Net.Http.Response
         /// </summary>
         SetCookie,
 
+		/// <summary>
+		/// The HTTP status of the response
+		/// Example:Status: 200 OK
+		/// </summary>
+		Status,
+
         /// <summary>
         /// A HSTS Policy informing the HTTP client how long to cache the HTTPS only policy and whether this applies to subdomains. 
         /// Example:Strict-Transport-Security: max-age=16070400; includeSubDomains

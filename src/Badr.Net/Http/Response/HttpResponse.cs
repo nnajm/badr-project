@@ -62,12 +62,13 @@ namespace Badr.Net.Http.Response
             }
             catch { Encoding = Encoding.UTF8; }
 
-            Status = HttpResponseStatus._200;
             Cookies = new HttpCookie();
 
             Headers = new Dictionary<HttpResponseHeaders, string>();
             Headers.Add(HttpResponseHeaders.Date, DateTime.Now.ToUniversalTime().ToString("r"));
             Headers.Add(HttpResponseHeaders.ContentType, string.Format("{0}; charset={1}", contentType, charset));
+
+			Status = HttpResponseStatus._200;
         }
 
 		public byte[] Data{ get { return GetData (); } }
@@ -116,6 +117,9 @@ namespace Badr.Net.Http.Response
 
             if (!Headers.ContainsKey(HttpResponseHeaders.Connection))
                 Headers[HttpResponseHeaders.Connection] = "Close";
+
+			if (!Headers.ContainsKey(HttpResponseHeaders.Status))
+                Headers[HttpResponseHeaders.Status] = Status.ToResponseHeaderText();
 
             ConnectionKeepAlive = Headers[HttpResponseHeaders.Connection] == "keep-alive";            
 
