@@ -54,7 +54,7 @@ namespace Badr.Demo
 			else
 			{
 				new BadrServer ().XmlConfigure ()
-                            .Start ();
+                                 .Start ();
 			}
         }
 
