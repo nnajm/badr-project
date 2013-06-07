@@ -19,11 +19,8 @@
 
 ##Supported Platforms
 
-- Windows/.NET 4.0+
-  * Solution file: Badr.sln  
-
-- Linux/Mono 2.10.8+
-  * Solution file: Badr.mono.sln
+- Windows/.NET 4.0+,  --- _Solution file: Badr.sln_
+- Linux/Mono 2.10.8+ &#160;--- _Solution file: Badr.mono.sln_
 
 ####Assemblies
 
