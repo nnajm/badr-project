@@ -192,6 +192,7 @@
     <Compile Include="Query\AndExprGroup.cs" />
     <Compile Include="Query\OrExprGroup.cs" />
     <Compile Include="Utils\Helper.cs" />
+    <Compile Include="Fields\DateField.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

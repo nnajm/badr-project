@@ -163,9 +163,6 @@
     <Compile Include="Middlewares\MiddlewareBase.cs" />
     <Compile Include="Middlewares\Security.cs" />
     <Compile Include="Middlewares\SessionMiddleware.cs" />
-    <Compile Include="Settings\AppRoot.cs" />
-    <Compile Include="Settings\BadrServerConfigSection.cs" />
-    <Compile Include="Settings\IPAddressValidator.cs" />
     <Compile Include="Settings\SiteSettings.cs" />
     <Compile Include="Templates\Filters\FilterManager.cs" />
     <Compile Include="Templates\Parser.cs" />
@@ -199,7 +196,6 @@
     <Compile Include="Net\CookieNames.cs" />
     <Compile Include="Net\BadrServer.cs" />
     <Compile Include="Net\BadrHandler.cs" />
-    <Compile Include="Net\SiteManager.cs" />
     <Compile Include="Net\BadrRequest.cs" />
     <Compile Include="Net\BadrResponse.cs" />
     <Compile Include="Net\BadrSession.cs" />
@@ -214,6 +210,8 @@
     <Compile Include="Templates\Filters\IFilterContainer.cs" />
     <Compile Include="Templates\Rendering\TemplateVar.cs" />
     <Compile Include="Urls\UrlsBase.cs" />
+    <Compile Include="SiteManager.cs" />
+    <Compile Include="AppRoot.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Badr.Orm\Badr.Orm.mono.csproj">
