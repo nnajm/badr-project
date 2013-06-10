@@ -1,5 +1,5 @@
 //
-// Views.cs
+// DateTimeField.cs
 //
 // Author: najmeddine nouri
 //
@@ -28,40 +28,34 @@
 // dealings in this Software without prior written authorization.
 //
 using System;
-using Badr.Server.Net;
-using Badr.Orm;
-using Badr.Server.Templates;
-using Badr.Server.Urls;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Dynamic;
+using System.Globalization;
 
-namespace Badr.Apps.Admin
+namespace Badr.Orm.Fields
 {
-	public static class Views
-	{
-        [Template("admin/model_details.html")]
-        public static BadrResponse ModelView(BadrRequest request, UrlArgs args)
+
+    public class DateField : Field
+    {
+        public DateField()
+            : base(FieldType.Date)
         {
-            dynamic model = Model.Manager(args[1]).Get(int.Parse(args["model_id"]));
-
-            dynamic tc = new TemplateContext();
-            tc.modelName = args[1];
-            tc.model = model;
-
-            return BadrResponse.Create(request, tc);
         }
 
-        [Template("admin/model_list.html")]
-        public static BadrResponse ModelListView(BadrRequest request, UrlArgs args)
-		{
-                string modelName = args[1];
-				string pageNum = args["page_num"];
-                dynamic modelsPage = Model.Manager(modelName).Page(pageNum != null ? int.Parse(pageNum) : 1, 20);
+        protected override bool ValidateNotNullInternal(object value)
+        {
+            return value is DateTime;
+        }
 
-				dynamic tc = new TemplateContext ();
-				tc.modelName = modelName;
-				tc.modelsPage = modelsPage;
-
-				return BadrResponse.Create (request, tc);
-		}
-	}
+        protected override object FromDbValueInternal(object dbValue)
+        {
+			if(dbValue == null || dbValue is DateTime)
+            	return dbValue;
+			else {
+				return DateTime.ParseExact(dbValue.ToString(), "yyyy-MM-dd", CultureInfo.InvariantCulture);
+			}
+        }
+    }
 }
-

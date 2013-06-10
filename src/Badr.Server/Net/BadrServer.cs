@@ -63,11 +63,7 @@ namespace Badr.Server.Net
 
 		#region Field(s)
 		
-        protected Dictionary<string, SiteManager> SiteManagers;
 		protected IHttpHandler _badrHttpHandler;
-
-        protected List<Type> _sites;
-        protected bool _siteManagersCreated;
 		
 		#endregion
 		
@@ -96,10 +92,18 @@ namespace Badr.Server.Net
         public BadrServer(string ipaddress, int port, int maxConnectionNumber, ServerMode mode = ServerMode.Standalone)
             : base(ipaddress, port, maxConnectionNumber, mode)
         {
-            _sites = new List<Type>();
-            SiteManagers = new Dictionary<string, SiteManager>();
 			_badrHttpHandler = new BadrHandler(this);
             Command = ServerCommands.Run;
+        }
+
+		/// <summary>
+        /// Registers a SiteSettings class type to use as the definition for a hosted site.
+        /// </summary>
+        /// <typeparam name="TSite">The site settings class type. Must inherit from Badr.Server.Settings.SiteSettings and contains a parameterless constructor.</typeparam>
+        /// <returns>And instance of the server</returns>
+        public BadrServer RegisterSite(Type siteType)
+        {
+            return RegisterSite((SiteSettings)Activator.CreateInstance(siteType));
         }
 
         /// <summary>
@@ -110,10 +114,7 @@ namespace Badr.Server.Net
         public BadrServer RegisterSite<TSite>()
             where TSite: SiteSettings, new()
         {
-            Type siteType = typeof(TSite);
-            if (!_sites.Contains(siteType))
-                _sites.Add(siteType);
-            return this;
+            return RegisterSite(new TSite());
         }
 
         /// <summary>
@@ -123,13 +124,7 @@ namespace Badr.Server.Net
         /// <returns>And instance of the server</returns>
         public BadrServer RegisterSite(SiteSettings siteSettings)
         {
-            SiteManager siteManager = new SiteManager(siteSettings);
-            siteManager.RegisterMiddlewares();
-            siteManager.RegisterContextProcessors();
-            siteManager.CreateOrmManagers();
-            siteManager.LoadUrls();
-            SiteManagers.Add(siteManager.SiteSettings.SITE_HOST_NAME, siteManager);
-
+			SiteManager.Initialize(siteSettings);
             return this;
         }
 
@@ -167,27 +162,6 @@ namespace Badr.Server.Net
                 RegisterSite(siteSettings);
             }
             return this;
-        }
-
-        protected internal SiteManager GetSiteManager(string siteHostName)
-        {
-            if (siteHostName != null && SiteManagers.ContainsKey(siteHostName))
-                return SiteManagers[siteHostName];
-            return null;
-        }
-
-        protected internal void BuildSiteManagers()
-        {
-            if (!_siteManagersCreated)
-            {
-                _siteManagersCreated = true;
-
-                foreach (Type siteType in _sites)
-                {
-                    if (siteType != null)
-                        RegisterSite((SiteSettings)Activator.CreateInstance(siteType));
-                }
-            }
         }
 
         protected internal void ParseCommandLineArgs()
@@ -280,7 +254,6 @@ namespace Badr.Server.Net
                 if (Command == ServerCommands.Run)
                 {
                     Console.WriteLine("registering sites...");
-                    BuildSiteManagers();
                     base.Start();
                 }
                 else
@@ -308,12 +281,10 @@ namespace Badr.Server.Net
         /// <summary>
         /// Creates the database if not exists and create all declared models (in each registered site) tables
         /// </summary>
-        public void SyncDatabase()
-        {
-            BuildSiteManagers();
-            foreach (SiteManager siteManager in SiteManagers.Values)
-                siteManager.Syncdb();
-        }
+        public void SyncDatabase ()
+		{
+			SiteManager.Syncdb ();
+		}
 
         /// <summary>
         /// When overridden in a derived class, returns an instance of NetProcessor to be used by the server

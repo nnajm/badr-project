@@ -63,8 +63,8 @@ namespace Badr.Net.Http.Request
         {
             Protocol = DEFAULT_HTTP_PROTOCOL;
 
-            GET = new HttpMethodParams();
-            POST = new HttpMethodParams();
+            GET = new HttpRequestParams();
+            POST = new HttpRequestParams();
             FILES = new HttpFormFiles();
             Headers = new Dictionary<HttpRequestHeaders, string>();
             Cookies = new HttpCookie();
@@ -227,8 +227,8 @@ namespace Badr.Net.Http.Request
         public HttpRequestMethods Method { get; protected internal set; }
         public string Resource { get; protected internal set; }
         public string Protocol { get; protected internal set; }
-        public HttpMethodParams GET { get; protected internal set; }
-        public HttpMethodParams POST { get; protected internal set; }
+        public HttpRequestParams GET { get; protected internal set; }
+        public HttpRequestParams POST { get; protected internal set; }
         public HttpFormFiles FILES { get; protected internal set; }
         public Dictionary<HttpRequestHeaders, string> Headers { get; protected internal set; }
         public Uri DomainUri { get; protected internal set; }

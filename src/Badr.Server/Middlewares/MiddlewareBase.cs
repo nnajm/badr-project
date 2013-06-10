@@ -47,16 +47,14 @@ namespace Badr.Server.Middlewares
 
     public abstract class MiddlewareBase
     {
-        public SiteSettings Settings { get; set; }
-
         public MiddlewareBase()
         {
         }
 
-        public abstract MiddlewareProcessStatus PreProcess(BadrRequest wRequest, out string errorMessage);
-        public abstract bool PostProcess(BadrRequest wRequest, BadrResponse wResponse, out string errorMessage);
+        public abstract MiddlewareProcessStatus PreProcess(BadrRequest request, out string errorMessage);
+        public abstract bool PostProcess(BadrRequest request, BadrResponse response, out string errorMessage);
 
-        public virtual bool ResolveSpecialTag(BadrRequest wRequest, string spetagName, out string result)
+        public virtual bool ResolveSpecialTag(BadrRequest request, string spetagName, out string result)
         {
             result = "";
             return false;

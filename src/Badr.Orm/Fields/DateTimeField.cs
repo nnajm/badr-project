@@ -51,7 +51,11 @@ namespace Badr.Orm.Fields
 
         protected override object FromDbValueInternal(object dbValue)
         {
-            return dbValue;
+			if(dbValue == null || dbValue is DateTime)
+            	return dbValue;
+			else {
+				return DateTime.Parse(dbValue.ToString(), CultureInfo.InvariantCulture);
+			}
         }
     }
 }

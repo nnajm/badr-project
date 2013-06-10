@@ -163,8 +163,9 @@ namespace Badr.Orm.Query
                     }
                 }
 
-                sb.AppendFormat("{0} {1} {2}",
-                    model.ModelDbAlias + "." + expr.LHS,
+				sb.AppendFormat("{0}.{1} {2} {3}",
+                    model.ModelDbAlias,
+				    Constants.QueryCompareOps.TransformLHS(expr.Operator, expr.LHS, dbEngine),
                     Constants.QueryCompareOps.ToSql(expr.Operator),
                     paramValue);
 

@@ -81,6 +81,9 @@ namespace Badr.Orm.DbEngines
                     case FieldType.Text:
                         colSpecific = "nvarchar(max)";
                         break;
+					case FieldType.Date:
+                        colSpecific = "date";
+						break;
                     case FieldType.DateTime:
                         colSpecific = "datetime2";
                         break;
@@ -165,6 +168,9 @@ namespace Badr.Orm.DbEngines
                     case FieldType.Email:
                         sqlFormat = "'" + value.ToString() + "'";
                         break;
+					case FieldType.Date:
+                        sqlFormat = "'" + ((DateTime)value).ToString("yyyy-MM-dd") + "'";
+						break;
                     case FieldType.DateTime:
                         sqlFormat = "'" + ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss.fff") + "'";
                         break;
@@ -190,5 +196,19 @@ namespace Badr.Orm.DbEngines
 
             return sqlFormat;
         }
+
+		protected internal override string GetFunction (DbFunctions functionName)
+		{
+			switch (functionName)
+			{
+
+				case DbFunctions.ToLower:
+					return "LOWER";
+				case DbFunctions.ToUpper:
+					return "UPPER";
+				default:
+					return "";
+			}
+		}
     }
 }

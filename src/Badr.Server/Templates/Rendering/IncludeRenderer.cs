@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Badr.Server.Net;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -65,7 +66,7 @@ namespace Badr.Server.Templates.Rendering
         public override void Render(RenderContext renderContext)
         {
             string templatePath = (string)renderContext[_templatePathVar.Variable, _templatePathVar.Filters];
-            TemplateEngine templateEngine = renderContext.SiteManager.ViewManager.GetTemplateEngine(templatePath);
+            TemplateEngine templateEngine = SiteManager.Views.GetTemplateEngine(templatePath);
             if (templateEngine != null)
             {
                 renderContext.AppendResult(templateEngine.Render(renderContext.BadrRequest, renderContext.Context));

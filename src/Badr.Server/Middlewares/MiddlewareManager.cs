@@ -39,11 +39,9 @@ namespace Badr.Server.Middlewares
     public class MiddlewareManager
     {
         private List<MiddlewareBase> _middlewares;
-        private SiteSettings _settings;
 
-        protected internal MiddlewareManager(SiteSettings settings)
+        protected internal MiddlewareManager()
         {
-            _settings = settings;
             _middlewares = new List<MiddlewareBase>();
         }
 
@@ -52,7 +50,6 @@ namespace Badr.Server.Middlewares
 			if (typeof(MiddlewareBase).IsAssignableFrom (middlewareType))
 			{
 				MiddlewareBase mb = (MiddlewareBase)Activator.CreateInstance (middlewareType);
-				mb.Settings = _settings;
 				_middlewares.Add (mb);
 			}
             else

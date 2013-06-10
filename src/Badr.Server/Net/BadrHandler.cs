@@ -63,7 +63,6 @@ namespace Badr.Server.Net
             string exceptionMessage = null;
             string errorMessage;
             BadrResponse response = null;
-            SiteManager siteManager = null;
 
             try
             {
@@ -71,21 +70,19 @@ namespace Badr.Server.Net
                     throw new Exception("Request is not a BadrRequest");
 
 				if (!request.ValidMethod)
-					return BadrResponse.CreateResponse(request, HttpResponseStatus._405);
+					return BadrResponse.Create(request, HttpResponseStatus._405);
 
                 if (request.Headers.ContainsKey(HttpRequestHeaders.Host))
                 {
-                    siteManager = _badrServer.GetSiteManager(request.Headers[HttpRequestHeaders.Host]);
-                    if (siteManager != null)
+                    if (SiteManager.Settings.SITE_HOST_NAME == request.Headers[HttpRequestHeaders.Host])
                     {
-                        request.SiteManager = siteManager;
 
-                        MiddlewareProcessStatus middlewarePreProcessStatus = siteManager.MiddlewareManager.PreProcess(request, out errorMessage);
+                        MiddlewareProcessStatus middlewarePreProcessStatus = SiteManager.Middlewares.PreProcess(request, out errorMessage);
                         if ((middlewarePreProcessStatus & MiddlewareProcessStatus.Stop) == MiddlewareProcessStatus.Stop)
                             exceptionMessage = string.Format("Request pre-processing error: {0}", errorMessage);
                         else
                         {
-                            ViewUrl viewUrl = siteManager.UrlsManager.GetViewUrl(request.Resource);
+                            ViewUrl viewUrl = SiteManager.Urls.GetViewUrl(request.Resource);
                             if (viewUrl != null)
                             {
                                 request.ViewUrl = viewUrl;
@@ -95,7 +92,7 @@ namespace Badr.Server.Net
                                 exceptionMessage = string.Format("Unknown resource url: {0}", request.Resource);
 
                             if (response != null)
-                                if (!siteManager.MiddlewareManager.PostProcess(request, response, out errorMessage))
+                                if (!SiteManager.Middlewares.PostProcess(request, response, out errorMessage))
                                     exceptionMessage = string.Format("Request post-processing error: {0}", errorMessage);
                         }
                     }
@@ -105,12 +102,12 @@ namespace Badr.Server.Net
 
                 if (exceptionMessage != null)
                 {
-                    if (siteManager != null && siteManager.SiteSettings.DEBUG)
+                    if (SiteManager.Settings.DEBUG)
                         throw new Exception(exceptionMessage);
                     else
                     {
                         _Logger.Error(exceptionMessage);
-                        return BadrResponse.CreateResponse(request, HttpResponseStatus._404);
+                        return BadrResponse.Create(request, HttpResponseStatus._404);
                     }
                 }
                 else
@@ -120,10 +117,10 @@ namespace Badr.Server.Net
             {
                 _Logger.Error(ex.Message, ex);
 
-                if (siteManager != null && siteManager.SiteSettings.DEBUG)
+                if (SiteManager.Settings.DEBUG)
                     return BadrResponse.CreateDebugResponse(request, ex);
                 else
-                    return BadrResponse.CreateResponse(request, HttpResponseStatus._404);
+                    return BadrResponse.Create(request, HttpResponseStatus._404);
             }
         }
 	}

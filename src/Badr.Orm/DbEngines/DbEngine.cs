@@ -40,6 +40,12 @@ using System.Collections;
 
 namespace Badr.Orm.DbEngines
 {
+	public enum DbFunctions
+	{
+		ToLower,
+		ToUpper,
+
+	}
     public abstract class DbEngine
     {
         public const string DB_SQLITE3 = "sqlite3";
@@ -64,7 +70,8 @@ namespace Badr.Orm.DbEngines
         protected abstract string ToSqlCreateStatement(Field field);
         protected abstract string ToSqlCreateStatement(Model model);        
         protected abstract string ToSqlLimit(int offset, int count);
-        
+		protected internal abstract string GetFunction (DbFunctions functionName);
+
         protected string ToFieldNamesList(IModel model, bool quoted = false, bool removeAlias = false)
         {
             StringBuilder sb = new StringBuilder();
@@ -100,7 +107,7 @@ namespace Badr.Orm.DbEngines
             List<Field> fields = model.Fields;
             for (int i = 0; i < fields.Count; i++)
             {
-                qparams.Add(new QParam(fields[i].DbName, fields[i].Value, i + 1));
+				qparams.Add(new QParam(fields[i].DbName, fields[i].Value, i + 1));
             }
 
             return qparams;

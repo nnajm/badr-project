@@ -39,11 +39,9 @@ namespace Badr.Server.ContextProcessors
     public class ContextProcessorManager
     {
         private List<ContextProcessorBase> _contextProcessors;
-        private SiteSettings _settings;
 
-        protected internal ContextProcessorManager(SiteSettings settings)
+        protected internal ContextProcessorManager()
         {
-            _settings = settings;
             _contextProcessors = new List<ContextProcessorBase>();
         }
 
@@ -52,7 +50,6 @@ namespace Badr.Server.ContextProcessors
 			if (typeof(ContextProcessorBase).IsAssignableFrom (contextProcessorType))
 			{
 				ContextProcessorBase cp = (ContextProcessorBase)Activator.CreateInstance (contextProcessorType);
-				cp.Settings = _settings;
 				_contextProcessors.Add (cp);
 			}
             else

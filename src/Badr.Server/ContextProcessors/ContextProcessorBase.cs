@@ -35,8 +35,6 @@ namespace Badr.Server.ContextProcessors
 {
 	public abstract class ContextProcessorBase
 	{
-        public SiteSettings Settings { get; set; }
-
         public ContextProcessorBase()
         {
         }

@@ -40,18 +40,23 @@ using System.Text;
 
 namespace Badr.Apps.Static
 {
-    public sealed class Views
+    public static class Views
     {
         internal const string STATIC_RESOURCE_GROUP_NAME = "STATIC_RESOURCE_GROUP";
 
-        private readonly FilesManager _staticFilesManager;
+        private static FilesManager _staticFilesManager;
+		private static FilesManager StaticFilesManager
+		{
+			get
+			{
+				if(_staticFilesManager == null)
+					_staticFilesManager = new FilesManager(SiteManager.Settings.STATIC_ROOT);
 
-        public Views(SiteSettings settings)
-        {
-			_staticFilesManager = new FilesManager(settings.STATIC_ROOT);
-        }
+				return _staticFilesManager;
+			}
+		}
 
-        public BadrResponse ServeStaticFiles(BadrRequest request, UrlArgs args = null)
+        public static BadrResponse ServeStaticFiles(BadrRequest request, UrlArgs args = null)
         {
             string resourcePath = null;
             if (args != null && (resourcePath = args[STATIC_RESOURCE_GROUP_NAME]) != null)
@@ -59,7 +64,7 @@ namespace Badr.Apps.Static
 				bool reloadFile = true;
 				bool conditionalGet = request.Headers.ContainsKey(Badr.Net.Http.Request.HttpRequestHeaders.IfModifiedSince);
 
-				DateTime resourceLastModificationDate = _staticFilesManager.GetLastModificationTimeUtc(resourcePath);
+				DateTime resourceLastModificationDate = StaticFilesManager.GetLastModificationTimeUtc(resourcePath);
 				DateTime clientLastModificationDate;
 
 				if(conditionalGet)
@@ -76,7 +81,7 @@ namespace Badr.Apps.Static
                     response = new StaticResponse(request, MimeMapping.GetMimeMapping(resourcePath))
                     {
                         Status = HttpResponseStatus._200,
-                        BodyBytes = _staticFilesManager.GetFileBytes(resourcePath)
+                        BodyBytes = StaticFilesManager.GetFileBytes(resourcePath)
                     };
 				}
 				else {

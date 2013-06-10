@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Badr.Server.Urls;
-using Badr.Server.Settings;
+using Badr.Server;
 
 namespace Badr.Demo.Accounting
 {

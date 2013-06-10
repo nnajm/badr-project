@@ -52,10 +52,8 @@ namespace Badr.Net.Http.Response
         /// </summary>
         public const string DEFAULT_CHARSET = "utf-8";
 
-        public HttpResponse(HttpRequest request, string contentType = DEFAULT_CONTENT_TYPE, string charset = DEFAULT_CHARSET)
+		public HttpResponse(HttpResponseStatus status, string contentType = DEFAULT_CONTENT_TYPE, string charset = DEFAULT_CHARSET)
         {
-            Request = request;
-
             try
             {
                 Encoding = Encoding.GetEncoding(charset);
@@ -68,7 +66,13 @@ namespace Badr.Net.Http.Response
             Headers.Add(HttpResponseHeaders.Date, DateTime.Now.ToUniversalTime().ToString("r"));
             Headers.Add(HttpResponseHeaders.ContentType, string.Format("{0}; charset={1}", contentType, charset));
 
-			Status = HttpResponseStatus._200;
+			Status = status;
+        }
+
+        public HttpResponse(HttpRequest request, string contentType = DEFAULT_CONTENT_TYPE, string charset = DEFAULT_CHARSET)
+			:this(HttpResponseStatus._200, contentType, charset)
+        {
+            Request = request;
         }
 
 		public byte[] Data{ get { return GetData (); } }
@@ -82,13 +86,26 @@ namespace Badr.Net.Http.Response
 
 		protected virtual byte[] GetData(){
 
+			string protocol;
+			bool gzip;
+
+			if(Request != null)
+			{
+				protocol = Request.Protocol;
+				gzip = Request.CanGzip && !Request.IsAjax;
+			}else
+			{
+				protocol = HttpRequest.DEFAULT_HTTP_PROTOCOL;
+				gzip = false;
+			}
+
 			StringBuilder sb = new StringBuilder ();
-			sb.AppendFormat ("{0} {1}{2}", Request.Protocol, Status.ToResponseHeaderText(), HttpRequest.WR_SEPARATOR);
+			sb.AppendFormat ("{0} {1}{2}", protocol, Status.ToResponseHeaderText(), HttpRequest.WR_SEPARATOR);
 
 			// Response body bytes
 			byte[] bodyBytes = GetBodyData();
 			if(bodyBytes != null)
-				if (bodyBytes.Length > 128 && Request.CanGzip && !Request.IsAjax) {
+				if (bodyBytes.Length > 128 && gzip) {
 
 					if(Headers.ContainsKey(HttpResponseHeaders.ContentEncoding))
 						Headers.Remove(HttpResponseHeaders.ContentEncoding);

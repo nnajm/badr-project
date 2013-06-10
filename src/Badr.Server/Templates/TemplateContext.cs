@@ -35,6 +35,7 @@ using Badr.Net.Utils;
 using Badr.Server.Utils;
 using Badr.Server.Templates.Filters;
 using Badr.Server.Templates.Rendering;
+using System.Collections;
 
 namespace Badr.Server.Templates
 {
@@ -241,7 +242,9 @@ namespace Badr.Server.Templates
                 string prop = varSplit[subPropLevel];
                 if (var is DynamicObject)
                     var = ((dynamic)var)[prop];
-                else
+                else if (var is IDictionary)
+					var = ((IDictionary)var)[prop];
+				else
                 {
                     PropertyInfo pi = var.GetType().GetProperty(prop, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
                     if (pi != null)

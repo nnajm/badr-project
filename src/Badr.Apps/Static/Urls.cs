@@ -27,12 +27,13 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-using Badr.Server.Settings;
+using Badr.Server;
 using Badr.Server.Urls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Badr.Server.Net;
 
 namespace Badr.Apps.Static
 {
@@ -42,7 +43,7 @@ namespace Badr.Apps.Static
 		{
 			protected override void Set ()
 			{
-				Add ("^" + Settings.STATIC_URL + "(?<STATIC_RESOURCE_GROUP>.*)", new Views (Settings).ServeStaticFiles, "_serve_static_files");
+				Add ("^" + SiteManager.Settings.STATIC_URL + "(?<STATIC_RESOURCE_GROUP>.*)", Views.ServeStaticFiles, "_serve_static_files");
 			}
 		}
 	}

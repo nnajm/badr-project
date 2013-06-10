@@ -112,6 +112,7 @@ namespace Badr.Orm.DbEngines
                     case FieldType.Text:
                         colSpecific = "TEXT";
                         break;
+					case FieldType.Date:
                     case FieldType.DateTime:
                         colSpecific = "TEXT";
                         break;
@@ -170,6 +171,9 @@ namespace Badr.Orm.DbEngines
                     case FieldType.Email:
                         sqlFormat = "'" + value.ToString() + "'";
                         break;
+					case FieldType.Date:
+                        sqlFormat = "'" + ((DateTime)value).ToString("yyyy-MM-dd") + "'";
+                        break;
                     case FieldType.DateTime:
                         sqlFormat = "'" + ((DateTime)value).ToString("yyyy-MM-dd HH:mm:ss.fff") + "'";
                         break;
@@ -202,6 +206,20 @@ namespace Badr.Orm.DbEngines
                 return string.Format(" LIMIT {0},{1}", pageOffset, pageSize);
             return "";
         }
+
+		protected internal override string GetFunction (DbFunctions functionName)
+		{
+			switch (functionName)
+			{
+
+				case DbFunctions.ToLower:
+					return "lower";
+				case DbFunctions.ToUpper:
+					return "upper";
+				default:
+					return "";
+			}
+		}
 
         public override bool Delete(IModel model, Query.Queryset queryset)
         {

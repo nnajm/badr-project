@@ -42,6 +42,7 @@ namespace Badr.Orm.Fields
         Text,
         Char,
         Email,
+		Date,
         DateTime,
         Decimal,
         ForeignKey,

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -58,7 +59,7 @@ namespace Badr.Server.Templates.Rendering
         {
             object val = renderContext[_variable.Variable, _variable.Filters];
             if (val != null)
-                renderContext.AppendResult(val.ToString());
+                renderContext.AppendResult(HttpUtility.HtmlEncode(val.ToString()));
         }
 
         public override string Name

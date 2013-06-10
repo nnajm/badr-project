@@ -27,7 +27,7 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-using Badr.Server.Settings;
+using Badr.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;

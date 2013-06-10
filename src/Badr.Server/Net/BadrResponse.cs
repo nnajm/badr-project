@@ -44,14 +44,21 @@ namespace Badr.Server.Net
 {
     public class BadrResponse: HttpResponse
     {
-        public BadrResponse(BadrRequest wRequest, string contentType = null, string charset = null)
-            : base(wRequest,
-                   contentType ?? wRequest.SiteManager.SiteSettings.DEFAULT_CONTENT_TYPE,
-                   charset ?? wRequest.SiteManager.SiteSettings.DEFAULT_CHARSET)
+		public BadrResponse(HttpResponseStatus status, string contentType = null, string charset = null)
+            : base(status,
+                   contentType ?? SiteManager.Settings.DEFAULT_CONTENT_TYPE,
+                   charset ?? SiteManager.Settings.DEFAULT_CHARSET)
         {
         }
 
-		public static BadrResponse CreateResponse (BadrRequest request, HttpResponseStatus status)
+        public BadrResponse(BadrRequest request, string contentType = null, string charset = null)
+            : base(request,
+                   contentType ?? SiteManager.Settings.DEFAULT_CONTENT_TYPE,
+                   charset ?? SiteManager.Settings.DEFAULT_CHARSET)
+        {
+        }
+
+		public static BadrResponse Create (BadrRequest request, HttpResponseStatus status)
 		{
 			BadrResponse response = new BadrResponse (request) { Status = status };
 			
@@ -74,35 +81,42 @@ namespace Badr.Server.Net
         /// <param name="contentType">Response content type (mime-type)</param>
         /// <param name="charset">Response charset (encoding)</param>
         /// <returns></returns>
-        public static BadrResponse CreateResponse(BadrRequest request, TemplateContext context, string templateOverridePath = null, string contentType = null, string charset = null)
+        public static BadrResponse Create(BadrRequest request, TemplateContext context, string templateOverridePath = null, string contentType = null, string charset = null)
         {
-			return CreateResponse(request, 
-			                      request.SiteManager.ViewManager.GetTemplateEngine(request.ViewUrl, templateOverridePath), 
+			return Create(request, 
+			                      SiteManager.Views.GetTemplateEngine(request.ViewUrl, templateOverridePath), 
 			                      context, 
 			                      contentType, 
 			                      charset);
         }
 
-		public static BadrResponse CreateResponse(BadrRequest request, string responseBody, TemplateContext context, string contentType = null, string charset = null)
+		public static BadrResponse Create(BadrRequest request, string responseBody, TemplateContext context, string contentType = null, string charset = null)
         {
-            return CreateResponse(request, 
-			                      request.SiteManager.ViewManager.GetTemplateEngineFromText(responseBody), 
+            return Create(request, 
+			                      SiteManager.Views.GetTemplateEngineFromText(responseBody), 
 			                      context, 
 			                      contentType, 
 			                      charset);
         }
 
-		private static BadrResponse CreateResponse(BadrRequest request, TemplateEngine templateEngine, TemplateContext context, string contentType = null, string charset = null)
+		private static BadrResponse Create(BadrRequest request, TemplateEngine templateEngine, TemplateContext context, string contentType = null, string charset = null)
 		{
 			BadrResponse response = new BadrResponse(request, contentType, charset);
 
 			if(context == null)
 				context = new TemplateContext();
 
-            request.SiteManager.ContextProcessorManager.Process(context);
+            SiteManager.ContextProcessors.Process(context);
             response.Body = templateEngine.Render(request, context);
             return response;
 		}
+
+		public static BadrResponse Redirect(string url, bool permanent = false)
+        {
+			BadrResponse response = new BadrResponse(permanent ? HttpResponseStatus._301 : HttpResponseStatus._302);
+			response.Headers.Add(HttpResponseHeaders.Location, System.Web.HttpUtility.UrlPathEncode(url));
+			return response;
+        }
 
         internal static BadrResponse CreateDebugResponse(BadrRequest request, Exception ex)
         {
@@ -110,7 +124,7 @@ namespace Badr.Server.Net
 
             context[StatusPages.DEBUG_PAGE_VAR_HEADER] = string.Format("Debug: {0}", ex.Message);
             context[StatusPages.DEBUG_PAGE_VAR_EXCEPTION] = System.Web.HttpUtility.HtmlEncode(string.Format("{0}:\r\n\r\n{1}", ex.Message, ex.StackTrace));
-            context[StatusPages.DEBUG_PAGE_VAR_URLS] = request.SiteManager.UrlsManager.WebPrint();
+            context[StatusPages.DEBUG_PAGE_VAR_URLS] = SiteManager.Urls.WebPrint();
             if (ex is TemplateException)
             {
                 context[StatusPages.DEBUG_PAGE_VAR_TEMPLATE_RENDERERS] = (ex as TemplateException).TemplateEngine.ExprRenderers;
@@ -120,7 +134,7 @@ namespace Badr.Server.Net
 //            if (request != null)
 //                context[StatusPages.DEBUG_PAGE_VAR_REQUEST] = request.RawRequest;
             BadrResponse response = new BadrResponse(request);
-            response.Body = request.SiteManager.ViewManager.DebugTemplateEngine.Render(request, context);
+            response.Body = SiteManager.Views.DebugTemplateEngine.Render(request, context);
 
             return response;
         }

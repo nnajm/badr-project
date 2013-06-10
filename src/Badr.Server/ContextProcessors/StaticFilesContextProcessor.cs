@@ -38,7 +38,7 @@ namespace Badr.Server.ContextProcessors
 	{
 		protected internal override void Process (TemplateContext context)
 		{
-			context["STATIC_URL"] = "/" + Settings.STATIC_URL;
+			context["STATIC_URL"] = "/" + SiteManager.Settings.STATIC_URL;
 		}
 	}
 }

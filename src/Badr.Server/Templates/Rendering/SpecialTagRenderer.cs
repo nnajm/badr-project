@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Badr.Server.Net;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -57,7 +58,7 @@ namespace Badr.Server.Templates.Rendering
 
         public override void Render(RenderContext renderContext)
         {
-            renderContext.AppendResult(renderContext.SiteManager.MiddlewareManager.ResolveSpecialTag(renderContext.BadrRequest, _specialTagName));
+            renderContext.AppendResult(SiteManager.Middlewares.ResolveSpecialTag(renderContext.BadrRequest, _specialTagName));
         }
 
         public override string Name

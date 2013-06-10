@@ -34,6 +34,7 @@ using System.Text;
 using System.Web;
 using Badr.Server.Templates.Filters;
 using Badr.Server.Templates.Rendering;
+using System.Globalization;
 
 namespace Badr.Server.Templates.Filters
 {
@@ -78,6 +79,14 @@ namespace Badr.Server.Templates.Filters
 
             return intVal % 2 == 0;
         }
+
+		public object Format(object val, object argument)
+		{
+			if (val == null || argument == null || !(val is IFormattable))
+                return val;
+
+			return ((IFormattable)val).ToString(argument.ToString(), CultureInfo.InvariantCulture);
+		}
 
         public object Trim(object val, object argument)
         {

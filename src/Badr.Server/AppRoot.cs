@@ -35,7 +35,7 @@ using Badr.Server.Urls;
 using System.IO;
 using System.Reflection;
 
-namespace Badr.Server.Settings
+namespace Badr.Server
 {
     public abstract class AppRoot
     {

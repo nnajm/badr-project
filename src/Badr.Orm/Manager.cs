@@ -41,12 +41,13 @@ namespace Badr.Orm
 {
     public class Manager: DynamicObject
     {
+		protected internal DbEngine _dbEngine;
         protected internal ModelInfo ModelInfo;
 
         public Manager(Type modelType)
         {
             ModelInfo = OrmManager.GetModelInfo(modelType);
-            DbEngine = OrmManager.DefaultDatabase;            
+            DbEngine = OrmManager.DefaultDatabase;
         }
 
         protected internal DBModelCache DbCache
@@ -56,9 +57,13 @@ namespace Badr.Orm
         }
 
         protected internal DbEngine DbEngine
-        {
-            get;
-            protected set;
+		{
+			get {
+				if(_dbEngine == null)
+					throw new Exception("Can't locate a database (Database configuration missing ?)");
+				return _dbEngine; 
+			}
+			protected set { _dbEngine = value; }
         }
         
         public Model Get(object pk = null)
@@ -104,7 +109,7 @@ namespace Badr.Orm
             return Load(queryset);
         }
 
-        public DataTable ToDataTable(string[] fieldNames, Queryset queryset)
+        public DataTable ToDataTable(string[] fieldNames, Queryset queryset = null)
         {
             if (queryset != null)
                 queryset.Compile();
@@ -112,7 +117,7 @@ namespace Badr.Orm
             return DbEngine.ToDataTable(ModelInfo, fieldNames, queryset);
         }
 
-        public IList ToList(string fieldName, Queryset queryset)
+        public IList ToList(string fieldName, Queryset queryset = null)
         {
             if (queryset != null)
                 queryset.Compile();

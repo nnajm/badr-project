@@ -49,16 +49,14 @@ namespace Badr.Server.Templates.Rendering
 {
     public class RenderContext
     {
-        protected internal SiteManager SiteManager { get; private set; }
         protected internal BadrRequest BadrRequest { get; private set; }
         protected internal TemplateContext Context { get; private set; }
 
         private Scope _currentScope;
         private StringBuilder _renderedTemplate;
 
-        public RenderContext(SiteManager siteManager, BadrRequest badrRequest)
+        public RenderContext(BadrRequest badrRequest)
 		{
-			SiteManager = siteManager;
             BadrRequest = badrRequest;
             _renderedTemplate = new StringBuilder();
 		}

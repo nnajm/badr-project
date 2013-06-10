@@ -40,52 +40,47 @@ using Badr.Server.Settings;
 using Badr.Server.Middlewares;
 using Badr.Server.ContextProcessors;
 
-namespace Badr.Server.Net
+namespace Badr.Server
 {
     public class SiteManager
     {
-		public SiteSettings SiteSettings { get; protected internal set; }
-        public ViewManager ViewManager { get; protected internal set; }
-        public UrlsManager UrlsManager { get; protected internal set; }
-        internal MiddlewareManager MiddlewareManager;
-        internal ContextProcessorManager ContextProcessorManager;
+		public static SiteSettings Settings { get; internal set; }
+        public static ViewManager Views { get; internal set; }
+        public static UrlsManager Urls { get; internal set; }
 
-        internal Dictionary<string, AppRoot> APPS;
+        internal static MiddlewareManager Middlewares;
+        internal static ContextProcessorManager ContextProcessors;
+        internal static Dictionary<string, AppRoot> APPS;
 
-        //internal string SITE_ID;
-        //internal string SITE_HOST_NAME;
+		internal static void Initialize(SiteSettings settings)
+		{
+			Settings = settings;
+            RegisterMiddlewares();
+            RegisterContextProcessors();
+            CreateOrmManagers();
+            LoadUrls();
 
-        internal SiteManager(SiteSettings siteSettings)
-        {
-            SiteSettings = siteSettings;
-
-            //SITE_ID = siteSettings.GetSiteId();
-            //SITE_HOST_NAME = siteSettings.GetSiteHostName();
-
-            ViewManager = new ViewManager(this);
-            UrlsManager = new UrlsManager(this);
-            MiddlewareManager = new MiddlewareManager(SiteSettings);
-            ContextProcessorManager = new ContextProcessorManager(SiteSettings);
-        }
+			Views = new ViewManager();
+		}
        
-        protected internal void CreateOrmManagers()
+        internal static void CreateOrmManagers()
         {
-			if(SiteSettings.EXTRA_DB_ENGINES != null && SiteSettings.EXTRA_DB_ENGINES.Count > 0)
-	            foreach (KeyValuePair<string, Type> dbengine in SiteSettings.EXTRA_DB_ENGINES)
+			if(Settings.EXTRA_DB_ENGINES != null && Settings.EXTRA_DB_ENGINES.Count > 0)
+	            foreach (KeyValuePair<string, Type> dbengine in Settings.EXTRA_DB_ENGINES)
 	            {
 	                OrmManager.RegisterDbEngine(dbengine.Key, dbengine.Value);
 	            }
 
-			if(SiteSettings.DATABASES != null && SiteSettings.DATABASES.Count > 0)
-	            foreach (DbSettings dbSettings in SiteSettings.DATABASES)
+			if(Settings.DATABASES != null && Settings.DATABASES.Count > 0)
+	            foreach (DbSettings dbSettings in Settings.DATABASES)
 	            {
 	                OrmManager.RegisterDatabase(dbSettings.ID, dbSettings);
 	            }
 
             APPS = new Dictionary<string, AppRoot>();
 
-			if(SiteSettings.INSTALLED_APPS != null && SiteSettings.INSTALLED_APPS.Length > 0)
-	            foreach (Type installedApp in SiteSettings.INSTALLED_APPS)
+			if(Settings.INSTALLED_APPS != null && Settings.INSTALLED_APPS.Length > 0)
+	            foreach (Type installedApp in Settings.INSTALLED_APPS)
 	            {
 	                if (typeof(AppRoot).IsAssignableFrom(installedApp))
 	                {
@@ -108,27 +103,32 @@ namespace Badr.Server.Net
 	            }
         }
 
-        protected internal void LoadUrls()
+        internal static void LoadUrls()
         {
-            UrlsManager.Register(SiteSettings.SITE_URLS);
+			Urls = new UrlsManager();
+            Urls.Register(Settings.SITE_URLS);
         }
 
-        protected internal void RegisterMiddlewares()
+        internal static void RegisterMiddlewares()
         {
-			if(SiteSettings.MIDDLEWARE_CLASSES != null && SiteSettings.MIDDLEWARE_CLASSES.Length > 0)
-		        foreach (Type middleWareType in SiteSettings.MIDDLEWARE_CLASSES)
-		            MiddlewareManager.Register(middleWareType);
+			Middlewares = new MiddlewareManager();
+
+			if(Settings.MIDDLEWARE_CLASSES != null && Settings.MIDDLEWARE_CLASSES.Length > 0)
+		        foreach (Type middleWareType in Settings.MIDDLEWARE_CLASSES)
+		            Middlewares.Register(middleWareType);
         }
 
-        protected internal void RegisterContextProcessors()
+        internal static void RegisterContextProcessors()
         {
-			if(SiteSettings.CONTEXT_PROCESSORS != null && SiteSettings.CONTEXT_PROCESSORS.Length > 0)
-	            foreach (Type contextProcessorType in SiteSettings.CONTEXT_PROCESSORS)
-	                ContextProcessorManager.Register(contextProcessorType);
+			ContextProcessors = new ContextProcessorManager();
+
+			if(Settings.CONTEXT_PROCESSORS != null && Settings.CONTEXT_PROCESSORS.Length > 0)
+	            foreach (Type contextProcessorType in Settings.CONTEXT_PROCESSORS)
+	                ContextProcessors.Register(contextProcessorType);
         }
         
 
-        protected internal void Syncdb()
+        internal static void Syncdb()
         {
             OrmManager.SyncDb();
         }

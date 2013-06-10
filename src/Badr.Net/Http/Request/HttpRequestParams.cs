@@ -105,11 +105,11 @@ namespace Badr.Net.Http.Request
         }
     }
 
-    public class HttpMethodParams: IEnumerable
+    public class HttpRequestParams: IEnumerable
     {
         private Dictionary<string, object> _methodParams;
 
-        public HttpMethodParams()
+        public HttpRequestParams()
         {
             _methodParams = new Dictionary<string, object>();
         }
@@ -146,10 +146,10 @@ namespace Badr.Net.Http.Request
         /// <typeparam name="T">The type to convert to (int, double, decimal or float)</typeparam>
         /// <param name="key">The param key</param>
         /// <returns>The converted value -or- throws an exception if T is not supported.</returns>
-        public T Get<T> (string key)
+        public T Get<T> (string key, T defaultValue = default(T))
 		{
 			if (!Contains (key))
-				throw new Exception (string.Format ("Request param '{0}' not found", key));
+				return defaultValue;
 
 			Type typeOfT = typeof(T);
 
@@ -168,23 +168,27 @@ namespace Badr.Net.Http.Request
         {
             Type typeOfT = typeof(T);
 
-                if (typeOfT.Equals(typeof(int)))
-                    return int.Parse(value);
-                else if (typeOfT.Equals(typeof(double)))
-                    return double.Parse(value);
-                else if (typeOfT.Equals(typeof(decimal)))
-                    return decimal.Parse(value);
-                else if (typeOfT.Equals(typeof(float)))
-                    return float.Parse(value);
-                else
-                    throw new Exception(string.Format("Conversion of request param to <{0}> not supported. Can convert only to: int, double, decimal & float", typeOfT));
+            if (typeOfT.Equals(typeof(int)))
+                return int.Parse(value);
+            else if (typeOfT.Equals(typeof(double)))
+                return double.Parse(value);
+            else if (typeOfT.Equals(typeof(decimal)))
+                return decimal.Parse(value);
+            else if (typeOfT.Equals(typeof(float)))
+                return float.Parse(value);
+            else
+                throw new Exception(string.Format("Conversion of request param to <{0}> not supported. Can convert only to: int, double, decimal & float", typeOfT));
         }
 
         public T[] GetArrayOf<T>(string key)
         {
             object arrObj = this[key];
-            if(arrObj == null || !(arrObj is string[]))
-                throw new Exception(string.Format("Request param '{0}' not found, or is not an array.", key));
+
+			if(arrObj == null)
+				return null;
+
+            if(!(arrObj is string[]))
+                throw new Exception(string.Format("Request param '{0}' is not an array.", key));
 
             string[] arr = (string[])arrObj;
             int arrLength = arr.Length;
@@ -194,35 +198,6 @@ namespace Badr.Net.Http.Request
                 result[i] = (T)ConvertTo<T>(arr[i]);
             }
             return result;
-        }
-
-        public bool TryGet<T>(string key, out T result, T defaultValue = default(T))
-        {
-            try
-            {
-                result = Get<T>(key);
-                return true;
-            }
-            catch{
-                result = defaultValue;
-            }
-
-            return false;
-        }
-
-        public bool TryGetArrayOf<T>(string key, out T[] result, T[] defaultValue = null)
-        {
-            try
-            {
-                result = GetArrayOf<T>(key);
-                return true;
-            }
-            catch
-            {
-                result = defaultValue;
-            }
-
-            return false;
         }
 
         public bool Contains(string key)
@@ -244,6 +219,16 @@ namespace Badr.Net.Http.Request
         {
             return _methodParams.Values.GetEnumerator();
         }
-    }
-	
+    }	
+
+	public class RequestParam
+	{
+		public String Value { get; private set; }
+		public RequestParam (string value)
+		{
+			Value = value;
+		}
+
+
+	}
 }

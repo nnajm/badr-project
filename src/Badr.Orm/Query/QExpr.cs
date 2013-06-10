@@ -44,7 +44,7 @@ namespace Badr.Orm.Query
             LHS = lhs;
             RHS = rhs;
             Operator = op;
-            QParam = new QParam(lhs, rhs);
+            QParam = new QParam(lhs, Constants.QueryCompareOps.TransformRHS(op, rhs));
         }
 
         /// <summary>

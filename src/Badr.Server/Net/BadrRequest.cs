@@ -46,7 +46,6 @@ namespace Badr.Server.Net
 
         }
 
-        public SiteManager SiteManager { get; protected internal set; }
         public ViewUrl ViewUrl { get; protected internal set; }
         public BadrSession Session { get; set; }
 

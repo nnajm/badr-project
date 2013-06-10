@@ -167,10 +167,12 @@ namespace Badr.Server.Templates.Rendering
                     List<TemplateFilter> filters = new List<TemplateFilter>();
                     for (int j = 0; j < capCount; j++)
                     {
-                        string[] filterNameAndArg = filtersGroup.Captures[j].Value.Split(':');
-                        string filterName = filterNameAndArg[0];
-                        TemplateVar filterArg = filterNameAndArg.Length > 1 ? new TemplateVar(filterNameAndArg[1]) : null;
-                        filters.Add(new TemplateFilter(filterName, filterArg));
+						string filter = filtersGroup.Captures[j].Value;
+						string filterName = filter.Split(':')[0];
+						string filterArg = filter.Length > filterName.Length+1 ? filter.Substring(filterName.Length+1) : null;
+                        filters.Add(new TemplateFilter(filterName, 
+						                               filterArg != null ? new TemplateVar(filterArg) : null)
+						            );
                     }
                     return filters;
                 }

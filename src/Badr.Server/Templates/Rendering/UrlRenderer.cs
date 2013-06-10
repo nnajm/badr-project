@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Badr.Server.Net;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -92,10 +93,10 @@ namespace Badr.Server.Templates.Rendering
                         i++;
                     }
 
-                renderContext.AppendResult(renderContext.SiteManager.UrlsManager.Reverse(urlName, argValues));
+                renderContext.AppendResult(SiteManager.Urls.Reverse(urlName, argValues));
             }
             else
-                renderContext.AppendResult(renderContext.SiteManager.UrlsManager.Reverse(urlName));
+                renderContext.AppendResult(SiteManager.Urls.Reverse(urlName));
         }
 
         public override string Name

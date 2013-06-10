@@ -28,7 +28,7 @@
 // dealings in this Software without prior written authorization.
 //
 using System;
-using Badr.Server.Settings;
+using Badr.Server;
 
 namespace Badr.Apps.Admin
 {

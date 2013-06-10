@@ -128,6 +128,9 @@ namespace Badr.Orm
 
         public static bool RegisterDbEngine(string name,Type dbEngineType)
         {
+			if(name == null)
+				throw new Exception("DbEngine name can not be null.");
+
             if (dbEngineType != null
                 && typeof(DbEngine).IsAssignableFrom(dbEngineType)
                 && !_registeredDbEngines.ContainsKey(name))
@@ -141,9 +144,12 @@ namespace Badr.Orm
 
         public static void RegisterDatabase(string name, DbSettings dbSettings)
         {
+			if(name == null)
+				throw new Exception("Database name can not be null.");
+
             DbEngine dbEngine = CreateDbEngine(dbSettings);
 
-            if (_defaultDatabase == null || name == DbSettings.DEFAULT_DBSETTINGS_NAME)
+            if (_defaultDatabase == null || name.ToUpper() == DbSettings.DEFAULT_DBSETTINGS_NAME)
                 _defaultDatabase = dbEngine;
 
             _databases.Add(name, dbEngine);

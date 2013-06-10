@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Badr.Orm.DbEngines;
 
 namespace Badr.Orm
 {
@@ -75,6 +76,33 @@ namespace Badr.Orm
                     return _opToSql[@operator];
                 return "";
             }
+
+			public static object TransformRHS (string op, object value)
+			{
+				if(value != null)
+					if(op == CONTAINS)
+						return string.Format("%{0}%", value);
+					else if(op == STARTSWITH)
+						return string.Format("{0}%", value);
+					else if(op == ENDSWITH)
+						return string.Format("%{0}", value);
+					else if(op == ICONTAINS)
+						return string.Format("%{0}%", value.ToString().ToLower());
+					else if(op == ISTARTSWITH)
+						return string.Format("{0}%", value.ToString().ToLower());
+					else if(op == IENDSWITH)
+						return string.Format("%{0}", value.ToString().ToLower());
+
+				return value;
+			}
+
+			public static object TransformLHS (string op, object value, DbEngine dbEngine)
+			{
+				if(value != null && (op == ICONTAINS || op == ISTARTSWITH || op == IENDSWITH))
+					return string.Format("{0}({1})", dbEngine.GetFunction(DbFunctions.ToLower), value);
+
+				return value;
+			}
 
             public static string EXACT = "exact";
             public static string IEXACT = "iexact";
