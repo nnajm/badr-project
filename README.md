@@ -45,6 +45,7 @@ Version: 0.9 Beta
 - Authentication app
 - Admin interface
 - More databases support
+- Internationalization/Localization
 
 ##License
 
