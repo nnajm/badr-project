@@ -50,20 +50,18 @@ namespace Badr.Server.Views
             get
             {
                 if(_debugTemplateEngine == null)
-                    _debugTemplateEngine = new TemplateEngine(_siteManager, StatusPages.DEBUG_PAGE_TEMPLATE);
+                    _debugTemplateEngine = new TemplateEngine(StatusPages.DEBUG_PAGE_TEMPLATE);
                 return _debugTemplateEngine;
             }
         }
 
         private Dictionary<string, TemplateEngine> _viewTemplates;
         private FilesManager _templateFilesManager;
-        protected SiteManager _siteManager;
 
-        internal ViewManager(SiteManager siteManager)
+        internal ViewManager()
         {
-            _siteManager = siteManager;
             _viewTemplates = new Dictionary<string, TemplateEngine>();
-            _templateFilesManager = new FilesManager(_siteManager.SiteSettings.TEMPLATE_DIRS);
+            _templateFilesManager = new FilesManager(SiteManager.Settings.TEMPLATE_DIRS);
         }
 
         public TemplateEngine GetTemplateEngine(ViewUrl viewUrl, string templatePathOverride = null)
@@ -101,7 +99,7 @@ namespace Badr.Server.Views
 			if (templateText == null)
 				return null;
 
-			return new TemplateEngine (_siteManager, templateText);
+			return new TemplateEngine (templateText);
 		}
     }
 }

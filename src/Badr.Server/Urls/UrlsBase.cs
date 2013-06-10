@@ -41,7 +41,6 @@ namespace Badr.Server.Urls
 {
     public abstract class UrlsBase
     {
-        public SiteSettings Settings { get; set; }
         protected internal List<ViewUrl> Urls { get; private set; }
 
         public UrlsBase()

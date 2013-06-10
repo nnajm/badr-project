@@ -47,6 +47,11 @@ namespace Badr.Server.Urls
             _positionalArgs = new List<string>();
         }
 
+		public string UrlName {
+			get;
+			internal set;
+		}
+
         public void Add(string name, string value)
         {
             _namedArgs[name] = value;

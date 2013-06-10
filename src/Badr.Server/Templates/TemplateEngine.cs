@@ -42,8 +42,6 @@ namespace Badr.Server.Templates
 {
     public class TemplateEngine
     {
-		private SiteManager _siteManager;
-
         private Scope _scope0;
         private string _semiParsed;
         private bool _isStaticTemplate;
@@ -54,11 +52,9 @@ namespace Badr.Server.Templates
         public List<TemplateError> Errors { get; protected set; }
         public bool ContainsErrors { get { return Errors != null && Errors.Count > 0; } }
 
-        public TemplateEngine(SiteManager siteManager, string templateContent)
+        public TemplateEngine(string templateContent)
         {
             Errors = new List<TemplateError>();
-
-			_siteManager = siteManager;
 
             TemplateContent = templateContent;
             Compile();
@@ -71,18 +67,15 @@ namespace Badr.Server.Templates
                     SemiParsed();
         }
 
-        public string Render(BadrRequest wRequest, TemplateContext context)
+        public string Render(BadrRequest request, TemplateContext context)
         {
-            //if (_scope0 == null)
-            //    Compile();
-
             if (ContainsErrors)
                 throw new TemplateException(string.Join(Environment.NewLine, Errors.Select(te => te.Message)), this);
 
             if (_isStaticTemplate)
                 return TemplateContent;
             else
-                return new RenderContext(_siteManager, wRequest).Render(_scope0, context);
+                return new RenderContext(request).Render(_scope0, context);
         }
 
         private bool ParseExpressions()

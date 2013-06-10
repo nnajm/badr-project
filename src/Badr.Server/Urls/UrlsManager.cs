@@ -42,11 +42,9 @@ namespace Badr.Server.Urls
     public class UrlsManager
     {
         private Dictionary<string, ViewUrl> _urls;
-        protected SiteManager _siteManager;
 
-        internal UrlsManager(SiteManager siteManager)
+        internal UrlsManager()
         {
-            _siteManager = siteManager;
             _urls = new Dictionary<string, ViewUrl>();
         }
 
@@ -59,7 +57,6 @@ namespace Badr.Server.Urls
                     if (typeof(UrlsBase).IsAssignableFrom(siteUrlType))
                     {
                         UrlsBase siteUrls = (UrlsBase)Activator.CreateInstance(siteUrlType);
-						siteUrls.Settings = _siteManager.SiteSettings;
 						siteUrls.CreateUrls();
                         if (siteUrls.Urls.Count > 0)
                             foreach (ViewUrl viewUrl in siteUrls.Urls)

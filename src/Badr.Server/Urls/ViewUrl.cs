@@ -248,12 +248,13 @@ namespace Badr.Server.Urls
 
         public UrlArgs GetArgs(string url)
         {
+			UrlArgs args = new UrlArgs() { UrlName = this.Name };
+
             if (!_isSimpleUrl)
             {
                 Match match = RE.Match(HttpUtility.UrlDecode(url));
                 if (match.Groups.Count > 1)
                 {
-                    UrlArgs args = new UrlArgs();
                     for (int groupIndex = 1; groupIndex < match.Groups.Count; groupIndex++)
                     {
                         Group group = match.Groups[groupIndex];
@@ -273,7 +274,7 @@ namespace Badr.Server.Urls
                 }
             }
 
-            return null;
+            return args;
         }
 
         public override string ToString()
