@@ -50,10 +50,21 @@ namespace Badr.Server.Settings
         [XmlAttribute("debug")]
 		public bool DEBUG { get; set; }
 
-        [XmlAttribute("id")]
-        public string SITE_ID { get; set; }
-        [XmlAttribute("host_name")]
-        public string SITE_HOST_NAME { get; set; }
+		public string[] _allowed_hosts;
+
+		[XmlArray("allowed_hosts")]
+        [XmlArrayItem("pattern")]
+        public string[] ALLOWED_HOSTS 
+		{ 
+			get {return _allowed_hosts;}
+			set{
+				_allowed_hosts = value;
+				if(_allowed_hosts != null)
+					for(int i=0;i<_allowed_hosts.Length;i++)
+						if(_allowed_hosts[i] != null)
+							_allowed_hosts[i] = _allowed_hosts[i].ToLower();
+			}
+		}
 
         [XmlArray("databases")]
         [XmlArrayItem("db_settings")]
@@ -110,8 +121,7 @@ namespace Badr.Server.Settings
         {
             DEBUG = false;
 
-            SITE_ID = "localhost";
-            SITE_HOST_NAME = "127.0.0.1";
+			ALLOWED_HOSTS = null;
 
             STATIC_URL = "static/";
             STATIC_ROOT = "";

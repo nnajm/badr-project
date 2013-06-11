@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using Badr.Server.Templates.Filters;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -59,7 +60,10 @@ namespace Badr.Server.Templates.Rendering
         {
             object val = renderContext[_variable.Variable, _variable.Filters];
             if (val != null)
-                renderContext.AppendResult(HttpUtility.HtmlEncode(val.ToString()));
+                renderContext.AppendResult(
+					val is SafeData
+					? ((SafeData)val).Value.ToString()
+					: HttpUtility.HtmlEncode(val.ToString()));
         }
 
         public override string Name

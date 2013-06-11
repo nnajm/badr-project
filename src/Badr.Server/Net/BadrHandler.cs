@@ -74,7 +74,7 @@ namespace Badr.Server.Net
 
                 if (request.Headers.ContainsKey(HttpRequestHeaders.Host))
                 {
-                    if (SiteManager.Settings.SITE_HOST_NAME == request.Headers[HttpRequestHeaders.Host])
+                    if (ValidateHost(request.Headers[HttpRequestHeaders.Host]))
                     {
 
                         MiddlewareProcessStatus middlewarePreProcessStatus = SiteManager.Middlewares.PreProcess(request, out errorMessage);
@@ -123,6 +123,31 @@ namespace Badr.Server.Net
                     return BadrResponse.Create(request, HttpResponseStatus._404);
             }
         }
+
+		protected bool ValidateHost(string hostname)
+		{
+			if(hostname == null || SiteManager.Settings.ALLOWED_HOSTS == null || SiteManager.Settings.ALLOWED_HOSTS.Length == 0)
+				return false;
+
+			int portIndex = hostname.LastIndexOf(':');
+			string ihostname = (portIndex != -1
+				? hostname.Substring(0, portIndex)
+				: hostname).ToLower();
+
+			foreach(string hostpattern in SiteManager.Settings.ALLOWED_HOSTS)
+			{
+				if(hostpattern == "*")
+					return true;
+
+				if(hostpattern.Length > 1)
+					if(hostpattern.StartsWith("."))
+						return hostname.EndsWith(hostpattern.Substring(1));
+					else
+						return ihostname == hostpattern;
+			}
+
+			return false;
+		}
 	}
 }
 

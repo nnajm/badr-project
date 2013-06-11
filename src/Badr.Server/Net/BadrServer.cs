@@ -157,10 +157,7 @@ namespace Badr.Server.Net
             ServerSettings badrServerSettings = (ServerSettings)System.Configuration.ConfigurationManager.GetSection("BadrServer");
             IPEndPoint = new System.Net.IPEndPoint(IPAddress.Parse(badrServerSettings.EndPoint.IPAddress), badrServerSettings.EndPoint.Port);
 			Mode = badrServerSettings.EndPoint.Mode;
-            foreach (SiteSettings siteSettings in badrServerSettings.Websites)
-            {
-                RegisterSite(siteSettings);
-            }
+			RegisterSite(badrServerSettings.Website);
             return this;
         }
 

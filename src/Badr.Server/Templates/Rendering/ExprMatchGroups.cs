@@ -165,15 +165,24 @@ namespace Badr.Server.Templates.Rendering
                 if (capCount > 0)
                 {
                     List<TemplateFilter> filters = new List<TemplateFilter>();
+					bool escapeFilterFound = false;
+
                     for (int j = 0; j < capCount; j++)
                     {
 						string filter = filtersGroup.Captures[j].Value;
 						string filterName = filter.Split(':')[0];
 						string filterArg = filter.Length > filterName.Length+1 ? filter.Substring(filterName.Length+1) : null;
-                        filters.Add(new TemplateFilter(filterName, 
-						                               filterArg != null ? new TemplateVar(filterArg) : null)
-						            );
+
+						if(filterName == "Escape")
+							escapeFilterFound = true;
+						else
+	                        filters.Add(new TemplateFilter(filterName, 
+							                               filterArg != null ? new TemplateVar(filterArg) : null)
+							            );
                     }
+					if(escapeFilterFound)
+						filters.Add(new TemplateFilter("Escape", null));
+
                     return filters;
                 }
             }

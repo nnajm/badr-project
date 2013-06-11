@@ -20,7 +20,7 @@
 			{% for field in model.Fields %}
         		<div{% if not for.counter = 0 %} class="top-margin10" {% endif %}>
 	        		<label class="fieldName" for="input_{{ field.Name }}">{{ field.Name }}</label>
-	        		{{ field.HtmlTag }}
+	        		{{ field.HtmlTag|Safe }}
         		</div>
 			{% endfor %}
 		   </div>

@@ -127,7 +127,28 @@ namespace Badr.Server.Templates.Filters
 
         public object Escape(object val, object argument)
         {
-            return HttpUtility.HtmlEncode(val);
+			if(val == null || val is SafeData)
+				return val;
+
+            return new SafeData(HttpUtility.HtmlEncode(val));
         }
+
+		public object Safe(object val, object argument)
+		{
+			if(val == null)
+				return val;
+
+			return new SafeData(val);
+		}
     }
+
+	internal class SafeData
+	{
+		internal readonly object Value;
+
+		internal SafeData (object value)
+		{
+			Value = value;
+		}
+	}
 }

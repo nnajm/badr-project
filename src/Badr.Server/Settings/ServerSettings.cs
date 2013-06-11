@@ -47,7 +47,7 @@ namespace Badr.Server.Settings
         public Dictionary<string, string> TypePrefixes { get; set; }
 
         [XmlIgnore]
-        public SiteSettings[] Websites { get; set; }
+        public SiteSettings Website { get; set; }
 
         public object Create(object parent, object configContext, XmlNode section)
         {
@@ -78,12 +78,9 @@ namespace Badr.Server.Settings
                 }
             }
 
-            list = section.SelectNodes("websites/website");
-            int listCount = list.Count;
-            Websites = new SiteSettings[listCount];
-
-            for (int i = 0; i < listCount; i++)
-                Websites[i] = SiteSettings.Deserialize(list[i].OuterXml, TypePrefixes);
+            list = section.SelectNodes("website");
+            if(list.Count > 0)
+                Website = SiteSettings.Deserialize(list[0].OuterXml, TypePrefixes);
 
             return this;
         }

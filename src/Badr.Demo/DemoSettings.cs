@@ -44,8 +44,9 @@ namespace Badr.Demo
         {
             DEBUG = true;
 
-            SITE_ID = "127.0.0.1:8080";
-            SITE_HOST_NAME = SITE_ID;
+            ALLOWED_HOSTS = new string[]{
+				"127.0.0.1"
+			};
 
             DATABASES[DbSettings.DEFAULT_DBSETTINGS_NAME] = new DbSettings
             {
