@@ -62,9 +62,9 @@ namespace Badr.Net.Http.Response
 
             Cookies = new HttpCookie();
 
-            Headers = new Dictionary<HttpResponseHeaders, string>();
-            Headers.Add(HttpResponseHeaders.Date, DateTime.Now.ToUniversalTime().ToString("r"));
-            Headers.Add(HttpResponseHeaders.ContentType, string.Format("{0}; charset={1}", contentType, charset));
+			Headers = new HttpResponseHeaders();
+            Headers[HttpResponseHeaders.Date] = DateTime.Now.ToUniversalTime().ToString("r");
+            Headers[HttpResponseHeaders.ContentType] = string.Format("{0}; charset={1}", contentType, charset);
 
 			Status = status;
         }
@@ -79,7 +79,7 @@ namespace Badr.Net.Http.Response
         protected HttpRequest Request { get; private set; }
         public HttpCookie Cookies { get; private set; }
         public Encoding Encoding { get; private set; }
-        public Dictionary<HttpResponseHeaders, string> Headers { get; private set; }
+        public HttpResponseHeaders Headers { get; private set; }
         public string Body { get; set; }
         public bool ConnectionKeepAlive { get; private set; }
         public HttpResponseStatus Status { get; set; }
@@ -92,7 +92,7 @@ namespace Badr.Net.Http.Response
 			if(Request != null)
 			{
 				protocol = Request.Protocol;
-				gzip = Request.CanGzip && !Request.IsAjax;
+				gzip = Request.ClientGzipSupport && !Request.IsAjax;
 			}else
 			{
 				protocol = HttpRequest.DEFAULT_HTTP_PROTOCOL;
@@ -107,9 +107,6 @@ namespace Badr.Net.Http.Response
 			if(bodyBytes != null)
 				if (bodyBytes.Length > 128 && gzip) {
 
-					if(Headers.ContainsKey(HttpResponseHeaders.ContentEncoding))
-						Headers.Remove(HttpResponseHeaders.ContentEncoding);
-
 					bodyBytes = bodyBytes.Compress();
 					if (bodyBytes.Length > 0)
 					    Headers [HttpResponseHeaders.ContentLength] = (bodyBytes.Length).ToString ();
@@ -118,21 +115,18 @@ namespace Badr.Net.Http.Response
 
 				}
 
-            if (!Headers.ContainsKey(HttpResponseHeaders.Connection))
-                Headers[HttpResponseHeaders.Connection] = "Close";
+			Headers.Add(HttpResponseHeaders.Connection, "Close", replaceIfExists:false);
+			Headers.Add(HttpResponseHeaders.Status, Status.ToResponseHeaderText(), replaceIfExists:false);
 
-			if (!Headers.ContainsKey(HttpResponseHeaders.Status))
-                Headers[HttpResponseHeaders.Status] = Status.ToResponseHeaderText();
-
-            ConnectionKeepAlive = Headers[HttpResponseHeaders.Connection] == "keep-alive";            
+			ConnectionKeepAlive = Headers[HttpResponseHeaders.Connection] == "keep-alive";            
 
 			if (Headers.Count > 0) {
-				foreach (KeyValuePair<HttpResponseHeaders, string> headerValues in Headers)
+				foreach (KeyValuePair<string, string> headerValues in Headers)
 					if (headerValues.Key != HttpResponseHeaders.SetCookie)
-						sb.AppendFormat ("{0}:{1}{2}", headerValues.Key.TotHeaderText(), headerValues.Value, HttpRequest.WR_SEPARATOR);
+						sb.AppendFormat ("{0}:{1}{2}", headerValues.Key, headerValues.Value, HttpRequest.WR_SEPARATOR);
 
 				if (Cookies.Count > 0)
-                    sb.AppendFormat("{0}{1}", Cookies.ToHttpHeader(header: HttpResponseHeaders.SetCookie.TotHeaderText() + ":"), HttpRequest.WR_SEPARATOR);
+                    sb.AppendFormat("{0}{1}", Cookies.ToHttpHeader(header: HttpResponseHeaders.SetCookie + ":"), HttpRequest.WR_SEPARATOR);
 			}
 			
 			sb.Append (HttpRequest.WR_SEPARATOR);

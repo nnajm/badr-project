@@ -36,16 +36,33 @@ namespace Badr.Net.FastCGI
 {
     public class FastCGIParam
     {
+		public static FastCGIParam Empty = new FastCGIParam() ;
+
+		public const string REQUEST_METHOD = "REQUEST_METHOD";
+		public const string REQUEST_URI = "REQUEST_URI";
+		public const string SERVER_PROTOCOL = "SERVER_PROTOCOL";
+
         public readonly string Name;
         public readonly string Value;
         public readonly int ParamEndOffset;
+
+		private FastCGIParam()
+		{
+			Name = "EMPTY";
+			Value = null;
+			ParamEndOffset = 0;
+		}
 
         public FastCGIParam(byte[] buffer, int offset)
         {
             int nameLength = GetNextLength(buffer, ref offset);
             int valueLength = GetNextLength(buffer, ref offset);
 
-            Name = Encoding.ASCII.GetString(buffer, offset, nameLength);
+			if(nameLength > 0)
+            	Name = Encoding.ASCII.GetString(buffer, offset, nameLength);
+			else
+				Name = null;
+
             if (valueLength > 0)
                 Value = Encoding.ASCII.GetString(buffer, offset + nameLength, valueLength);
             else
@@ -56,6 +73,9 @@ namespace Badr.Net.FastCGI
 
         private int GetNextLength(byte[] buffer, ref int offset)
         {
+			if(buffer == null)
+				return 0;
+
             int length = buffer[offset];
             if (length >> 7 == 1)
             {

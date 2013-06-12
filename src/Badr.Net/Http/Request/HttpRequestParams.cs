@@ -228,7 +228,5 @@ namespace Badr.Net.Http.Request
 		{
 			Value = value;
 		}
-
-
 	}
 }

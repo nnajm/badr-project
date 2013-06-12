@@ -303,8 +303,7 @@ namespace Badr.Orm
             if (indexes != null && indexes.Length > 0 && (field = indexes[0] as string) != null)
             {
                 this[field] = value;
-                return true;
-            }
+                return true;            }
 
             return false;
         }

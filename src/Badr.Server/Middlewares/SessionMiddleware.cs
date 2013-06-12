@@ -35,6 +35,7 @@ using Badr.Server.Net;
 using Badr.Net.Http.Request;
 using Badr.Net.Http.Response;
 using Badr.Server.Settings;
+using Badr.Net.Http;
 
 namespace Badr.Server.Middlewares
 {

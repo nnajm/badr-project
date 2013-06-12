@@ -48,7 +48,7 @@ namespace Badr.Server.Templates.Rendering
 
         internal const string RE_URL = @"url\s+"
                                      + "(?<" + GROUP_URL_NAME + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")"
-                                     + @"(?:\s+(?:(?<" + GROUP_URL_NAMED_ARGS + ">" + BadrGrammar.VARIABLE_ASSIGNATION + ")|(?<" + GROUP_URL_POSITIONAL_ARGS + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")))*";
+                                     + @"(?:\s+(?:(?<" + GROUP_URL_NAMED_ARGS + ">" + BadrGrammar.VARIABLE_ASSIGNMENT + ")|(?<" + GROUP_URL_POSITIONAL_ARGS + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")))*";
 
         #endregion
 
@@ -62,7 +62,7 @@ namespace Badr.Server.Templates.Rendering
             : base(exprMatchResult, exprMatchGroups)
         {
             _urlNameVar = exprMatchGroups.GetFilteredVariable(GROUP_URL_NAME);
-            _urlNamedArgsVar = exprMatchGroups.GetFilteredAssignationList(GROUP_URL_NAMED_ARGS);
+            _urlNamedArgsVar = exprMatchGroups.GetFilteredAssignmentList(GROUP_URL_NAMED_ARGS);
             _urlPositionalArgsVar = exprMatchGroups.GetFilteredVariableList(GROUP_URL_POSITIONAL_ARGS);
 
             _namedArgsCount = _urlNamedArgsVar != null ? _urlNamedArgsVar.Count : 0;
@@ -79,9 +79,9 @@ namespace Badr.Server.Templates.Rendering
                 string[] argValues = new string[_namedArgsCount + _positionalArgsCount];
 
                 if (_urlNamedArgsVar != null)
-                    foreach (KeyValuePair<string, TemplateVarFiltered> assignation in _urlNamedArgsVar)
+                    foreach (KeyValuePair<string, TemplateVarFiltered> assignment in _urlNamedArgsVar)
                     {
-                        argValues[i] = string.Format("{0}={1}", assignation.Key, renderContext[assignation.Value.Variable, assignation.Value.Filters]);
+                        argValues[i] = string.Format("{0}={1}", assignment.Key, renderContext[assignment.Value.Variable, assignment.Value.Filters]);
                         i++;
                     }
 

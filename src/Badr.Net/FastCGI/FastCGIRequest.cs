@@ -38,11 +38,11 @@ namespace Badr.Net.FastCGI
     public class FastCGIRequest
     {
         public BeginRequestRecord BeginRequestRecord { get; set; }
-        public Dictionary<string, FastCGIParam> Params { get; set; }
+        public DefaultMap<string, FastCGIParam> Params { get; set; }
 
         public FastCGIRequest()
         {
-            Params = new Dictionary<string, FastCGIParam>();
+            Params = new DefaultMap<string, FastCGIParam>(FastCGIParam.Empty);
         }
 
         public int ParseParams(FastCGIHeader paramsHeader, byte[] buffer, int offset, int endOffset)
@@ -68,14 +68,9 @@ namespace Badr.Net.FastCGI
 
         public void BuildParams()
         {
-            if(Params.ContainsKey("REQUEST_METHOD"))
-                RequestMethod = Params["REQUEST_METHOD"].Value;
-
-            if(Params.ContainsKey("REQUEST_URI"))
-                ResourceUri = Params["REQUEST_URI"].Value;
-
-            if (Params.ContainsKey("SERVER_PROTOCOL"))
-                ServerProtocol = Params["SERVER_PROTOCOL"].Value;
+            RequestMethod = Params[FastCGIParam.REQUEST_METHOD].Value;
+			ResourceUri = Params[FastCGIParam.REQUEST_URI].Value;
+			ServerProtocol = Params[FastCGIParam.SERVER_PROTOCOL].Value;
         }
 
         public override string ToString()

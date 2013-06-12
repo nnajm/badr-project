@@ -126,7 +126,7 @@ namespace Badr.Net.Http.Response
         _301,
         /// <summary>
         /// 302 Found :
-        /// This is an example of industry practice contradicting the standard. The HTTP/1.0 specification (RFC 1945) required the client to perform a temporary redirect (the original describing phrase was Moved Temporarily), but popular browsers implemented 302 with the functionality of a 303 See Other. Therefore, HTTP/1.1 added status codes 303 and 307 to distinguish between the two behaviours. However, some Web applications and frameworks use the 302 status code as if it were the 303.[citation needed]
+        /// This is an example of industry practice contradicting the standard. The HTTP/1.0 specification (RFC 1945) required the client to perform a temporary redirect (the original describing phrase was Moved Temporarily), but popular browsers implemented 302 with the functionality of a 303 See Other. Therefore, HTTP/1.1 added status codes 303 and 307 to distinguish between the two behaviours. However, some Web applications and frameworks use the 302 status code as if it were the 303.
         /// </summary>
         _302,
         /// <summary>
@@ -176,7 +176,7 @@ namespace Badr.Net.Http.Response
         _401,
         /// <summary>
         /// 402 Payment Required :
-        /// Reserved for future use. The original intention was that this code might be used as part of some form of digital cash or micropayment scheme, but that has not happened, and this code is not usually used. As an example of its use, however, Apple's MobileMe service generates a 402 error (httpStatusCode:402 in the Mac OS X Console log) if the MobileMe account is delinquent.[citation needed]
+        /// Reserved for future use. The original intention was that this code might be used as part of some form of digital cash or micropayment scheme, but that has not happened, and this code is not usually used. As an example of its use, however, Apple's MobileMe service generates a 402 error (httpStatusCode:402 in the Mac OS X Console log) if the MobileMe account is delinquent.
         /// </summary>
         _402,
         /// <summary>

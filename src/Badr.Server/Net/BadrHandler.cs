@@ -72,33 +72,28 @@ namespace Badr.Server.Net
 				if (!request.ValidMethod)
 					return BadrResponse.Create(request, HttpResponseStatus._405);
 
-                if (request.Headers.ContainsKey(HttpRequestHeaders.Host))
+                if (ValidateHost(request.Headers[HttpRequestHeaders.Host]))
                 {
-                    if (ValidateHost(request.Headers[HttpRequestHeaders.Host]))
-                    {
-
-                        MiddlewareProcessStatus middlewarePreProcessStatus = SiteManager.Middlewares.PreProcess(request, out errorMessage);
-                        if ((middlewarePreProcessStatus & MiddlewareProcessStatus.Stop) == MiddlewareProcessStatus.Stop)
-                            exceptionMessage = string.Format("Request pre-processing error: {0}", errorMessage);
-                        else
-                        {
-                            ViewUrl viewUrl = SiteManager.Urls.GetViewUrl(request.Resource);
-                            if (viewUrl != null)
-                            {
-                                request.ViewUrl = viewUrl;
-                                response = viewUrl.View(request, viewUrl.GetArgs(request.Resource));
-                            }
-                            else
-                                exceptionMessage = string.Format("Unknown resource url: {0}", request.Resource);
-
-                            if (response != null)
-                                if (!SiteManager.Middlewares.PostProcess(request, response, out errorMessage))
-                                    exceptionMessage = string.Format("Request post-processing error: {0}", errorMessage);
-                        }
-                    }
+                    MiddlewareProcessStatus middlewarePreProcessStatus = SiteManager.Middlewares.PreProcess(request, out errorMessage);
+                    if ((middlewarePreProcessStatus & MiddlewareProcessStatus.Stop) == MiddlewareProcessStatus.Stop)
+                        exceptionMessage = string.Format("Request pre-processing error: {0}", errorMessage);
                     else
-                        throw new Exception(string.Format("Unknown host '{0}'", request.Headers[HttpRequestHeaders.Host]));
-                }
+                    {
+                        ViewUrl viewUrl = SiteManager.Urls.GetViewUrl(request.Resource);
+                        if (viewUrl != null)
+                        {
+                            request.ViewUrl = viewUrl;
+                            response = viewUrl.View(request, viewUrl.GetArgs(request.Resource));
+                        }
+                        else
+                            exceptionMessage = string.Format("Unknown resource url: {0}", request.Resource);
+
+                        if (response != null)
+                            if (!SiteManager.Middlewares.PostProcess(request, response, out errorMessage))
+                                exceptionMessage = string.Format("Request post-processing error: {0}", errorMessage);
+                    }
+                }else
+					throw new Exception(string.Format("Unknown host '{0}'", request.Headers[HttpRequestHeaders.Host]));
 
                 if (exceptionMessage != null)
                 {

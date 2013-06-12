@@ -32,33 +32,13 @@ using System.Collections.Generic;
 
 namespace Badr.Net.Http.Response
 {
-
     public static class HttpResponseExtensions
     {
         private static Dictionary<HttpResponseStatus, string> _responseStatusText;
-        private static Dictionary<string, HttpResponseHeaders> _headersStringKey;
-        private static Dictionary<HttpResponseHeaders, string> _headersEnumKey;
 
         static HttpResponseExtensions()
         {
-            InitHttpHeadersList();
             InitResponseStatusTextList();
-        }
-
-        public static string TotHeaderText(this HttpResponseHeaders httpHeader)
-        {
-            if (_headersEnumKey.ContainsKey(httpHeader))
-                return _headersEnumKey[httpHeader];
-
-            return string.Empty;
-        }
-
-        public static HttpResponseHeaders TotHeaderEnum(this string httpHeader)
-        {
-            if (_headersStringKey.ContainsKey(httpHeader))
-                return _headersStringKey[httpHeader];
-
-            return HttpResponseHeaders.NONE;
         }
 
         public static bool IsInformational(this HttpResponseStatus responseStatus)
@@ -103,49 +83,6 @@ namespace Badr.Net.Http.Response
                 return _responseStatusText[respStatus];
 
             return respStatus.ToString();
-        }
-
-        private static void InitHttpHeadersList()
-        {
-            _headersStringKey = new Dictionary<string, HttpResponseHeaders>();
-            _headersStringKey.Add("Accept-Ranges", HttpResponseHeaders.AcceptRanges);
-            _headersStringKey.Add("Age", HttpResponseHeaders.Age);
-            _headersStringKey.Add("Allow", HttpResponseHeaders.Allow);
-            _headersStringKey.Add("Cache-Control", HttpResponseHeaders.CacheControl);
-            _headersStringKey.Add("Connection", HttpResponseHeaders.Connection);
-            _headersStringKey.Add("Content-Encoding", HttpResponseHeaders.ContentEncoding);
-            _headersStringKey.Add("Content-Language", HttpResponseHeaders.ContentLanguage);
-            _headersStringKey.Add("Content-Length", HttpResponseHeaders.ContentLength);
-            _headersStringKey.Add("Content-Location", HttpResponseHeaders.ContentLocation);
-            _headersStringKey.Add("Content-MD5", HttpResponseHeaders.ContentMD5);
-            _headersStringKey.Add("Content-Disposition", HttpResponseHeaders.ContentDisposition);
-            _headersStringKey.Add("Content-Range", HttpResponseHeaders.ContentRange);
-            _headersStringKey.Add("Content-Type", HttpResponseHeaders.ContentType);
-            _headersStringKey.Add("Date", HttpResponseHeaders.Date);
-            _headersStringKey.Add("ETag", HttpResponseHeaders.ETag);
-            _headersStringKey.Add("Expires", HttpResponseHeaders.Expires);
-            _headersStringKey.Add("Last-Modified", HttpResponseHeaders.LastModified);
-            _headersStringKey.Add("Link", HttpResponseHeaders.Link);
-            _headersStringKey.Add("Location", HttpResponseHeaders.Location);
-            _headersStringKey.Add("P3P", HttpResponseHeaders.P3P);
-            _headersStringKey.Add("Pragma", HttpResponseHeaders.Pragma);
-            _headersStringKey.Add("Proxy-Authenticate", HttpResponseHeaders.ProxyAuthenticate);
-            _headersStringKey.Add("Refresh", HttpResponseHeaders.Refresh);
-            _headersStringKey.Add("Retry-After", HttpResponseHeaders.RetryAfter);
-            _headersStringKey.Add("Server", HttpResponseHeaders.Server);
-            _headersStringKey.Add("Set-Cookie", HttpResponseHeaders.SetCookie);
-			_headersStringKey.Add("Status", HttpResponseHeaders.Status);
-            _headersStringKey.Add("Strict-Transport-Security", HttpResponseHeaders.StrictTransportSecurity);
-            _headersStringKey.Add("Trailer", HttpResponseHeaders.Trailer);
-            _headersStringKey.Add("Transfer-Encoding", HttpResponseHeaders.TransferEncoding);
-            _headersStringKey.Add("Vary", HttpResponseHeaders.Vary);
-            _headersStringKey.Add("Via", HttpResponseHeaders.Via);
-            _headersStringKey.Add("Warning", HttpResponseHeaders.Warning);
-            _headersStringKey.Add("WWW-Authenticate", HttpResponseHeaders.WWWAuthenticate);
-
-            _headersEnumKey = new Dictionary<HttpResponseHeaders, string>();
-            foreach (KeyValuePair<string, HttpResponseHeaders> kvp in _headersStringKey)
-                _headersEnumKey.Add(kvp.Value, kvp.Key);
         }
 
         private static void InitResponseStatusTextList()

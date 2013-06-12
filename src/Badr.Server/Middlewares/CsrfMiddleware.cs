@@ -36,6 +36,7 @@ using Badr.Net.Http.Request;
 using Badr.Net.Http.Response;
 using log4net;
 using Badr.Server.Settings;
+using Badr.Net.Http;
 
 namespace Badr.Server.Middlewares
 {
@@ -48,7 +49,7 @@ namespace Badr.Server.Middlewares
 
         public override MiddlewareProcessStatus PreProcess(BadrRequest wRequest, out string errorMessage)
         {
-            if (!HttpRequestHelper.IsSafeMethod(wRequest.Method))
+            if (!HttpRequest.IsSafeMethod(wRequest.Method))
             {
                 if (!wRequest.POST.Contains(CSRF_INPUT_NAME)
                     || wRequest.CsrfToken != wRequest.POST[CSRF_INPUT_NAME].ToString())

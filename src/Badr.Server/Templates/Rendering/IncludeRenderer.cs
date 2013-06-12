@@ -50,7 +50,7 @@ namespace Badr.Server.Templates.Rendering
         internal const string RE_INCLUDE = @"include\s+"
                                          + @"(?<" + GROUP_TEMPLATE_FILE + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")"
                                          + @"(\s+with"
-                                          + @"(?<" + GROUP_EXTRA_CONTEXT + @">\s+" + BadrGrammar.VARIABLE_ASSIGNATION + ")+"
+                                          + @"(?<" + GROUP_EXTRA_CONTEXT + @">\s+" + BadrGrammar.VARIABLE_ASSIGNMENT + ")+"
                                          + @")?";
 
         #endregion

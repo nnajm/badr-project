@@ -32,10 +32,8 @@ using System.Collections.Generic;
 
 namespace Badr.Net.Http.Request
 {
-    public enum HttpRequestMethods
+	public enum HttpRequestMethods
     {
-        NONE,
-
         /// <summary>
         /// Asks for the response identical to the one that would correspond to a GET request, but without the response body. This is useful for retrieving meta-information written in response headers, without having to transport the entire content.
         /// </summary>    
@@ -81,4 +79,63 @@ namespace Badr.Net.Http.Request
         /// </summary>
         PATCH
     }
+
+	public partial class HttpRequest
+	{
+		static HttpRequest()
+        {
+            InitMethods();
+        }
+
+        private static Dictionary<string, HttpRequestMethods> _methodsStringKey;
+        private static Dictionary<HttpRequestMethods, string> _methodsEnumKey;
+
+        private static void InitMethods()
+        {
+            _methodsStringKey = new Dictionary<string, HttpRequestMethods>();
+            _methodsStringKey.Add("CONNECT", HttpRequestMethods.CONNECT);
+            _methodsStringKey.Add("DELETE", HttpRequestMethods.DELETE);
+            _methodsStringKey.Add("GET", HttpRequestMethods.GET);
+            _methodsStringKey.Add("HEAD", HttpRequestMethods.HEAD);
+            _methodsStringKey.Add("OPTIONS", HttpRequestMethods.OPTIONS);
+            _methodsStringKey.Add("PATCH", HttpRequestMethods.PATCH);
+            _methodsStringKey.Add("POST", HttpRequestMethods.POST);
+            _methodsStringKey.Add("PUT", HttpRequestMethods.PUT);
+            _methodsStringKey.Add("TRACE", HttpRequestMethods.TRACE);
+
+            _methodsEnumKey = new Dictionary<HttpRequestMethods, string>();
+            foreach (KeyValuePair<string, HttpRequestMethods> kvp in _methodsStringKey)
+                _methodsEnumKey.Add(kvp.Value, kvp.Key);
+        }
+
+        public static string GetMethod(HttpRequestMethods method)
+        {
+            if (_methodsEnumKey.ContainsKey(method))
+                return _methodsEnumKey[method];
+
+            throw new Exception(string.Format("Unknown Request method '{0}' from client.", method));
+        }
+
+        public static HttpRequestMethods GetMethod(string method)
+        {
+            if (_methodsStringKey.ContainsKey(method))
+                return _methodsStringKey[method];
+
+            throw new Exception(string.Format("Unknown Request method '{0}' from client.", method));
+        }
+
+		public static bool IsSafeMethod(HttpRequestMethods requestMethod)
+        {
+            switch (requestMethod)
+            {
+                case HttpRequestMethods.GET:
+                case HttpRequestMethods.HEAD:
+                case HttpRequestMethods.OPTIONS:
+                case HttpRequestMethods.TRACE:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+	}
 }

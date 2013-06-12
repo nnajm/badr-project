@@ -34,8 +34,9 @@ using System.Text;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using Badr.Net.Utils;
+using Badr.Net.Http.Request;
 
-namespace Badr.Net.Http.Request
+namespace Badr.Net.Http
 {
     /// <summary>
     /// A class to hold ONE key,value pair.

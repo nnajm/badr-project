@@ -85,8 +85,8 @@ namespace Badr.Server.Templates
         internal const string VARIABLE_VALUE_FILTERED = VARIABLE_VALUE
                                                       + @"(\|(?<" + GROUP_VARIABLE_FILTER + ">" + BadrGrammar.FILTER + "))*";
 
-        internal const string GROUP_ASSIGNATION_VALUE = "ASSIGNATION_VALUE";
-        internal const string VARIABLE_ASSIGNATION = "(?<" + GROUP_VARIABLE_NAME + ">" + IDENTIFIER + ")=(?<" + GROUP_ASSIGNATION_VALUE + ">" + VARIABLE_VALUE_FILTERED + ")";
+        internal const string GROUP_ASSIGNMENT_VALUE = "ASSIGNMENT_VALUE";
+        internal const string VARIABLE_ASSIGNMENT = "(?<" + GROUP_VARIABLE_NAME + ">" + IDENTIFIER + ")=(?<" + GROUP_ASSIGNMENT_VALUE + ">" + VARIABLE_VALUE_FILTERED + ")";
 
         internal const string INSTRUCTION_START = @"\{\%";
         internal const string INSTRUCTION_END = @"\%\}";

@@ -44,7 +44,7 @@ using Badr.Net.Http.Response;
 namespace Badr.Net.Http.Request
 {
 
-    public class HttpRequest
+    public partial class HttpRequest
     {
         private static readonly ILog _Logger = LogManager.GetLogger(typeof(HttpRequest));
 
@@ -66,7 +66,7 @@ namespace Badr.Net.Http.Request
             GET = new HttpRequestParams();
             POST = new HttpRequestParams();
             FILES = new HttpFormFiles();
-            Headers = new Dictionary<HttpRequestHeaders, string>();
+            Headers = new HttpRequestHeaders();
             Cookies = new HttpCookie();
         }
 
@@ -96,19 +96,15 @@ namespace Badr.Net.Http.Request
 
         protected void ValidateHeaders()
         {
-            int contentLength = 0;
-            if (!HttpRequestHelper.IsSafeMethod(Method)
-                && (!Headers.ContainsKey(HttpRequestHeaders.ContentLength)
-                    || !int.TryParse(Headers[HttpRequestHeaders.ContentLength], out contentLength)))
-            {
-                throw new HttpStatusException(HttpResponseStatus._411);
-            }
-            else
-            {
-                ContentLength = contentLength;
-            }
+			int contentLength;
+			bool contentLengthFound = int.TryParse(Headers[HttpRequestHeaders.ContentLength], out contentLength);
 
-            string contentType = Headers.ContainsKey(HttpRequestHeaders.ContentType) ? Headers[HttpRequestHeaders.ContentType] : "application/x-www-form-urlencoded";
+            if (!IsSafeMethod(Method) && !contentLengthFound)
+                throw new HttpStatusException(HttpResponseStatus._411);
+
+            ContentLength = contentLength;
+
+			string contentType = Headers[HttpRequestHeaders.ContentType, "application/x-www-form-urlencoded"];
             IsMulitpart = contentType.Contains("multipart/form-data");
             if (IsMulitpart)
             {
@@ -116,15 +112,14 @@ namespace Badr.Net.Http.Request
                 MulitpartBoundaryBytes = Encoding.Default.GetBytes(MulitpartBoundary);
             }
 
-            CanGzip = Headers.ContainsKey(HttpRequestHeaders.AcceptEncoding) && Headers[HttpRequestHeaders.AcceptEncoding].Contains("gzip");
-            IsAjax = Headers.ContainsKey(HttpRequestHeaders.XRequestedWith) && Headers[HttpRequestHeaders.XRequestedWith] == "XMLHttpRequest";
+            ClientGzipSupport = Headers[HttpRequestHeaders.AcceptEncoding] != null && Headers[HttpRequestHeaders.AcceptEncoding].Contains("gzip");
+            IsAjax = Headers[HttpRequestHeaders.XRequestedWith] == "XMLHttpRequest";
 
-            if (Headers.ContainsKey(HttpRequestHeaders.Host))
+            if (Headers.Contains(HttpRequestHeaders.Host))
             {
                 DomainUri = new Uri("http://" + Headers[HttpRequestHeaders.Host]);
 
-                if (Headers.ContainsKey(HttpRequestHeaders.Cookie))
-                    BuildCookies(Headers[HttpRequestHeaders.Cookie]);
+                BuildCookies(Headers[HttpRequestHeaders.Cookie]);
             }
             else
                 throw new HttpStatusException(HttpResponseStatus._400);
@@ -157,7 +152,7 @@ namespace Badr.Net.Http.Request
                         }
                         else if (line0.Length > 1)
                         {
-                            Method = HttpRequestHelper.GetMethod(line0[0].Trim());
+                            Method = HttpRequest.GetMethod(line0[0].Trim());
                             Resource = line0[1];
                             Protocol = line0.Length > 2 ? line0[2] : DEFAULT_HTTP_PROTOCOL;
                         }
@@ -182,7 +177,7 @@ namespace Badr.Net.Http.Request
                         string[] header = line.Split(HEADER_VALUE_SEPARATOR);
 
                         if (header.Length > 1 && header[1] != null)
-                            Headers[HttpRequestHelper.GetHeader(header[0].Trim())] = line.Substring(header[0].Length + 1).Trim();
+                            Headers[header[0].Trim().ToLower()] = line.Substring(header[0].Length + 1).Trim();
                     }
                 }
 
@@ -204,9 +199,10 @@ namespace Badr.Net.Http.Request
             }
         }
 
-        protected virtual void BuildCookies(string httpCookie)
+        protected virtual void BuildCookies(string httpCookies)
         {
-            Cookies.Parse(Headers[HttpRequestHeaders.Cookie]);
+			if(httpCookies != null)
+            	Cookies.Parse(Headers[HttpRequestHeaders.Cookie]);
         }
 
         protected internal void AddMethodParam(string name, string value, bool uriEscaped)
@@ -230,7 +226,7 @@ namespace Badr.Net.Http.Request
         public HttpRequestParams GET { get; protected internal set; }
         public HttpRequestParams POST { get; protected internal set; }
         public HttpFormFiles FILES { get; protected internal set; }
-        public Dictionary<HttpRequestHeaders, string> Headers { get; protected internal set; }
+        public HttpRequestHeaders Headers { get; protected internal set; }
         public Uri DomainUri { get; protected internal set; }
         public HttpCookie Cookies { get; protected internal set; }
         public string Body { get; protected internal set; }
@@ -240,7 +236,7 @@ namespace Badr.Net.Http.Request
         public int ContentLength { get; private set; }
         public int TotalLength { get { return HeaderLength + ContentLength; } }
 
-        public bool CanGzip { get; protected set; }
+        public bool ClientGzipSupport { get; protected set; }
         public bool IsAjax { get; protected set; }
 
         public bool IsMulitpart { get; protected set; }

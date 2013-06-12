@@ -37,6 +37,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Badr.Net.Http.Request;
 
 namespace Badr.Apps.Static
 {
@@ -62,7 +63,7 @@ namespace Badr.Apps.Static
             if (args != null && (resourcePath = args[STATIC_RESOURCE_GROUP_NAME]) != null)
             {
 				bool reloadFile = true;
-				bool conditionalGet = request.Headers.ContainsKey(Badr.Net.Http.Request.HttpRequestHeaders.IfModifiedSince);
+				bool conditionalGet = request.Headers[HttpRequestHeaders.IfModifiedSince] != null;
 
 				DateTime resourceLastModificationDate = StaticFilesManager.GetLastModificationTimeUtc(resourcePath);
 				DateTime clientLastModificationDate;

@@ -39,7 +39,7 @@ namespace Badr.Server.Templates.Rendering
     public class ExprMatchGroups
     {
         private static readonly Regex _filteredVarRegex = new Regex(BadrGrammar.VARIABLE_VALUE_FILTERED, System.Text.RegularExpressions.RegexOptions.Compiled | RegexOptions.ExplicitCapture);
-        private static readonly Regex _filteredAssignationRegex = new Regex(BadrGrammar.VARIABLE_ASSIGNATION, System.Text.RegularExpressions.RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+        private static readonly Regex _filteredAssignmentRegex = new Regex(BadrGrammar.VARIABLE_ASSIGNMENT, System.Text.RegularExpressions.RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
         private readonly Dictionary<string, List<string>> _matchGroups;
 
@@ -131,14 +131,14 @@ namespace Badr.Server.Templates.Rendering
             return null;
         }
 
-        public Dictionary<string, TemplateVarFiltered> GetFilteredAssignationList(string assignationGroup)
+        public Dictionary<string, TemplateVarFiltered> GetFilteredAssignmentList(string assignmentGroup)
         {
-            Dictionary<string, TemplateVarFiltered> assignationMatches = new Dictionary<string, TemplateVarFiltered>();
-            if (Contains(assignationGroup))
+            Dictionary<string, TemplateVarFiltered> assignmentMatches = new Dictionary<string, TemplateVarFiltered>();
+            if (Contains(assignmentGroup))
             {
-                foreach (string variable in GetGroupValuesList(assignationGroup))
+                foreach (string variable in GetGroupValuesList(assignmentGroup))
                 {
-                    MatchCollection mcs = _filteredAssignationRegex.Matches(variable);
+                    MatchCollection mcs = _filteredAssignmentRegex.Matches(variable);
                     if (mcs != null)
                     {
                         for (int i = 0; i < mcs.Count; i++)
@@ -147,14 +147,14 @@ namespace Badr.Server.Templates.Rendering
                             if (match.Success)
                             {
                                 string varName = match.Groups[BadrGrammar.GROUP_VARIABLE_NAME].Value;
-                                assignationMatches.Add(varName, ParseVariableString(match.Groups[BadrGrammar.GROUP_ASSIGNATION_VALUE].Value));
+                                assignmentMatches.Add(varName, ParseVariableString(match.Groups[BadrGrammar.GROUP_ASSIGNMENT_VALUE].Value));
                             }
                         }
                     }
                 }
             }
 
-            return assignationMatches;
+            return assignmentMatches;
         }
 
         protected List<TemplateFilter> GetFilteres(Group filtersGroup)

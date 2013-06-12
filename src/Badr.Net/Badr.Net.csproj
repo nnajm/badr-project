@@ -171,23 +171,22 @@
     <Compile Include="Utils\ExtensionsHelper.cs" />
     <Compile Include="Http\HttpServer.cs" />
     <Compile Include="Http\Request\HttpRequest.cs" />
-    <Compile Include="Http\Request\HttpCookieFragment.cs" />
     <Compile Include="Http\Request\HttpRequestHeaders.cs" />
     <Compile Include="Http\Request\HttpRequestMethods.cs" />
-    <Compile Include="Http\Request\HttpCookie.cs" />
     <Compile Include="Http\Response\HttpResponse.cs" />
     <Compile Include="Http\Response\HttpResponseHeaders.cs" />
     <Compile Include="Http\Response\HttpResponseStatus.cs" />
     <Compile Include="Http\IHttpHandler.cs" />
-    <Compile Include="Http\Response\HttpResponseHelper.cs" />
     <Compile Include="Http\Response\HttpResponseExtensions.cs" />
-    <Compile Include="Http\Request\HttpRequestHelper.cs" />
     <Compile Include="FastCGI\FastCGIInterpreter.cs" />
     <Compile Include="FastCGI\FastCGIParam.cs" />
     <Compile Include="FastCGI\FastCGIRecords.cs" />
     <Compile Include="FastCGI\FastCGIRequest.cs" />
     <Compile Include="SocketAsyncBufferManager.cs" />
     <Compile Include="Http\Request\HttpRequestParams.cs" />
+    <Compile Include="Http\HttpCookie.cs" />
+    <Compile Include="Http\HttpCookieFragment.cs" />
+    <Compile Include="Utils\DefaultMap.cs" />
   </ItemGroup>
   <ItemGroup />
 </Project>
