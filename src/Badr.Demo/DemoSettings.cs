@@ -42,44 +42,49 @@ namespace Badr.Demo
     {
         protected override void Set()
         {
-            DEBUG = true;
+            Debug = true;
 
-            ALLOWED_HOSTS = new string[]{
+            AllowedHosts = new string[]{
 				"127.0.0.1"
 			};
 
-            DATABASES[DbSettings.DEFAULT_DBSETTINGS_NAME] = new DbSettings
+			// -- settings when deploying a HTTPS website
+			SecureProxySslHeader = new[] { "X-FORWARDED-PROTO", "https" };
+
+			Cookies.SessionHttpOnly = true;
+			Cookies.SessionSecure = true;
+			Cookies.SessionExpireAtBrowserClose = true;
+			Cookies.CsrfSecure = true;
+			// -- end HTTPS
+
+            Databases[DbSettings.DEFAULT_DBSETTINGS_NAME] = new DbSettings
             {
                 ENGINE = DbEngine.DB_SQLITE3,
-                DB_NAME = "badr_demo.db",
-                USER = "",
-                PASSWORD = "",
-                HOST = "",
-                PORT = 8080
+                DB_NAME = "badr_demo.db"
             };
 
-            MIDDLEWARE_CLASSES = new[] {
+            MiddlewareClasses = new[] {
                 typeof(CsrfMiddleware),
                 typeof(SessionMiddleware)
             };
 
-            CONTEXT_PROCESSORS = new[]{
+            ContextProcessors = new[]{
                 typeof(StaticFilesContextProcessor)
             };
 
-			STATIC_URL = "static/";
-			STATIC_ROOT = @"_apps_staticfiles/";
+			StaticUrl = "static/";
+			StaticRoot = @"_apps_staticfiles/";
 
-            TEMPLATE_DIRS = new[] {
+            TemplateDirs = new[] {
                 @"_apps_templates/"
             };
 
-            SITE_URLS = new[] {
+            Urls = new[] {
                 typeof(Admin.Urls),
                 typeof(StaticFilesApp.Urls)
             };
 
-            INSTALLED_APPS = new[] {
+            InstalledApps = new[] {
 				typeof(Admin),
                 typeof(StaticFilesApp),
                 typeof(AccountingApp)

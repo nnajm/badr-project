@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -106,27 +107,27 @@ namespace Badr.Server.Templates.Rendering
             ExprRenderer exprRenderer = null;
 
             foreach (KeyValuePair<Regex, Type> regType in _exprRenderers)
-            {
-                ExprMatchGroups emg = MatchExpr(emr, regType.Key);
-                if (emg != null)
-                {
-                    exprRenderer = (ExprRenderer)Activator.CreateInstance(regType.Value, emr, emg);
-                    break;
-                }
-            }
+			{
+				ExprMatchTree emt = MatchExpr (emr, regType.Key);
+				if (emt != null)
+				{
+					exprRenderer = (ExprRenderer)Activator.CreateInstance (regType.Value, emr, emt);
+					break;	
+				}
+			}
 
             if (exprRenderer == null)
                 foreach (KeyValuePair<Regex, object[]> regEmpty in _emptyExprRenderers)
                 {
-                    ExprMatchGroups emg = MatchExpr(emr, regEmpty.Key);
-                    if (emg != null)
+                    ExprMatchTree emt = MatchExpr(emr, regEmpty.Key);
+                    if (emt != null)
                     {
                         exprRenderer = new ExprEmptyRenderer(
                                         regEmpty.Value[0].ToString(),
                                         (ExprRenderType)regEmpty.Value[1],
                                         (ExprType)regEmpty.Value[2],
                                         emr,
-                                        emg);
+                                        emt);
                         break;
                     }
                 }
@@ -137,26 +138,16 @@ namespace Badr.Server.Templates.Rendering
             return exprRenderer;
         }
 
-        protected static ExprMatchGroups MatchExpr(Parser.ExprMatchResult pr, Regex re)
-        {
-            Match mc = re.Match(pr.Match);
-            if (mc.Success)
-            {
-                ExprMatchGroups emg = new ExprMatchGroups();
-
-                string[] groupNames = re.GetGroupNames();
-                for (int i = 0; i < groupNames.Length; i++)
-                {
-                    string groupName = groupNames[i];
-                    foreach (Capture cap in mc.Groups[groupName].Captures)
-                        emg.Add(groupName, cap.Value);
-                }
-
-                return emg;
-            }
-
-            return null;
-        }
+		protected static ExprMatchTree MatchExpr(Parser.ExprMatchResult pr, Regex re)
+		{
+			Match mc = re.Match(pr.Match);
+			if (mc.Success)
+			{
+				return new ExprMatchTree(re, mc);
+			}
+			
+			return null;
+		}
 
         internal static ExprBlockDef GetExprBlockDefinition(ExprRenderer exprRenderer)
         {

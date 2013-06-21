@@ -1,4 +1,4 @@
-﻿//
+//
 // Urls.cs
 //
 // Author: najmeddine nouri
@@ -43,7 +43,7 @@ namespace Badr.Apps.Static
 		{
 			protected override void Set ()
 			{
-				Add ("^" + SiteManager.Settings.STATIC_URL + "(?<STATIC_RESOURCE_GROUP>.*)", Views.ServeStaticFiles, "_serve_static_files");
+				Add ("^" + SiteManager.Settings.StaticUrl + "(?<STATIC_RESOURCE_GROUP>.*)", Views.ServeStaticFiles, "_serve_static_files");
 			}
 		}
 	}

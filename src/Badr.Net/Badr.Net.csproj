@@ -184,7 +184,7 @@
     <Compile Include="FastCGI\FastCGIRequest.cs" />
     <Compile Include="SocketAsyncBufferManager.cs" />
     <Compile Include="Http\Request\HttpRequestParams.cs" />
-    <Compile Include="Http\HttpCookie.cs" />
+    <Compile Include="Http\HttpCookies.cs" />
     <Compile Include="Http\HttpCookieFragment.cs" />
     <Compile Include="Utils\DefaultMap.cs" />
   </ItemGroup>

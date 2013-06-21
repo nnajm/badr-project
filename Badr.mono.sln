@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badr.Net.mono", "src\Badr.N
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{BF5CEB94-C6C1-4337-88AF-C307AD07D273}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badr.Orm.Test.mono", "test\Badr.Orm.Test\Badr.Orm.Test.mono.csproj", "{77F2220F-9E68-4A65-9874-4B538AB44BB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badr.Test.mono", "test\Badr.Test\Badr.Test.mono.csproj", "{77F2220F-9E68-4A65-9874-4B538AB44BB7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "testrunner", "testrunner", "{4E205FA7-5BDE-41D2-92DF-B7870095E0CC}"
 	ProjectSection(SolutionItems) = preProject
@@ -247,7 +247,7 @@ Global
 		StartupItem = src\Badr.Demo\Badr.Demo.mono.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
-		$1.DirectoryNamespaceAssociation = None
+		$1.DirectoryNamespaceAssociation = PrefixedFlat
 		$1.ResourceNamePolicy = FileFormatDefault
 		$0.StandardHeader = $2
 		$2.Text = @\n${FileName}\n \nAuthor: ${AuthorName}\n\nCopyright (c) ${Year} ${CopyrightHolder}\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n\nExcept as contained in this notice, the name(s) of the above copyright holders\nshall not be used in advertising or otherwise to promote the sale, use or other\ndealings in this Software without prior written authorization.\n
@@ -260,6 +260,15 @@ Global
 		$5.NamingStyle = None
 		$5.IncludeInstanceMembers = True
 		$5.IncludeStaticEntities = True
+		$0.ChangeLogPolicy = $6
+		$6.UpdateMode = None
+		$6.MessageStyle = $7
+		$7.LastFilePostfix = @:\n
+		$7.LineAlign = 0
+		$7.Wrap = False
+		$6.inheritsSet = Mono
+		$0.VersionControlPolicy = $8
+		$8.inheritsSet = Mono
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Badr.Server.Net;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -58,16 +59,16 @@ namespace Badr.Server.Templates.Rendering
         private readonly int _namedArgsCount;
         private readonly int _positionalArgsCount;
 
-        public UrlRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
-            : base(exprMatchResult, exprMatchGroups)
-        {
-            _urlNameVar = exprMatchGroups.GetFilteredVariable(GROUP_URL_NAME);
-            _urlNamedArgsVar = exprMatchGroups.GetFilteredAssignmentList(GROUP_URL_NAMED_ARGS);
-            _urlPositionalArgsVar = exprMatchGroups.GetFilteredVariableList(GROUP_URL_POSITIONAL_ARGS);
-
-            _namedArgsCount = _urlNamedArgsVar != null ? _urlNamedArgsVar.Count : 0;
-            _positionalArgsCount = _urlPositionalArgsVar != null ? _urlPositionalArgsVar.Count : 0;
-        }
+		public UrlRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
+			: base(exprMatchResult, exprMatchTree)
+		{
+			_urlNameVar = ExprMatchTree.GetFilteredVariable(GROUP_URL_NAME);
+			_urlNamedArgsVar = ExprMatchTree.GetFilteredAssignmentList(GROUP_URL_NAMED_ARGS);
+			_urlPositionalArgsVar = ExprMatchTree.GetFilteredVariableList(GROUP_URL_POSITIONAL_ARGS);
+			
+			_namedArgsCount = _urlNamedArgsVar != null ? _urlNamedArgsVar.Count : 0;
+			_positionalArgsCount = _urlPositionalArgsVar != null ? _urlPositionalArgsVar.Count : 0;
+		}
 
         public override void Render(RenderContext renderContext)
         {

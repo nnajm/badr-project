@@ -46,6 +46,18 @@ namespace Badr.Server.Net
 
         }
 
+		protected override bool CheckIsSecure ()
+		{
+			if (SiteManager.Settings.SecureProxySslHeader != null)
+			{
+				string tlsCheckHeader = Headers [SiteManager.Settings.SecureProxySslHeader [0].ToLower()];
+				if(tlsCheckHeader != null && tlsCheckHeader.ToLower() == SiteManager.Settings.SecureProxySslHeader [1].ToLower())
+					return true;
+			}
+
+			return base.CheckIsSecure();
+		}
+
         public ViewUrl ViewUrl { get; protected internal set; }
         public BadrSession Session { get; set; }
 

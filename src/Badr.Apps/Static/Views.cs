@@ -1,4 +1,4 @@
-﻿//
+//
 // Views.cs
 //
 // Author: najmeddine nouri
@@ -51,7 +51,7 @@ namespace Badr.Apps.Static
 			get
 			{
 				if(_staticFilesManager == null)
-					_staticFilesManager = new FilesManager(SiteManager.Settings.STATIC_ROOT);
+					_staticFilesManager = new FilesManager(SiteManager.Settings.StaticRoot);
 
 				return _staticFilesManager;
 			}

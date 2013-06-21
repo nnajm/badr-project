@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badr.Apps", "src\Badr.Apps\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badr.Net", "src\Badr.Net\Badr.Net.csproj", "{6A65EE42-6B11-40F4-8E3C-B40E4AB21001}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badr.Orm.Test", "test\Badr.Orm.Test\Badr.Orm.Test.csproj", "{77F2220F-9E68-4A65-9874-4B538AB44BB7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Badr.Test", "test\Badr.Test\Badr.Test.csproj", "{77F2220F-9E68-4A65-9874-4B538AB44BB7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "testrunner", "testrunner", "{4E205FA7-5BDE-41D2-92DF-B7870095E0CC}"
 	ProjectSection(SolutionItems) = preProject

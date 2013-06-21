@@ -32,11 +32,11 @@ using Badr.Server.Urls;
 using Xunit;
 using Badr.Server.Net;
 
-namespace Badr.Orm.Test
+namespace Badr.Test.Urls
 {
-	public class UrlsTest
+	public class UrlsMatchingTest: TestBase
 	{
-		public UrlsTest ()
+		public UrlsMatchingTest ()
 		{
 		}
 

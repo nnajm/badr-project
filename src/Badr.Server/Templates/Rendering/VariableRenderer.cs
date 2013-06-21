@@ -34,6 +34,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Badr.Server.Templates.Filters;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -50,11 +51,11 @@ namespace Badr.Server.Templates.Rendering
 
         private readonly TemplateVarFiltered _variable;
 
-        public VariableRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
-            : base(exprMatchResult, exprMatchGroups)
-        {
-            _variable = ExprMatchGroups.GetFilteredVariable(GROUP_VARIABLE_IDENT);
-        }
+		public VariableRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
+			: base(exprMatchResult, exprMatchTree)
+		{
+			_variable = ExprMatchTree.GetFilteredVariable(GROUP_VARIABLE_IDENT);
+		}
 
         public override void Render(RenderContext renderContext)
         {

@@ -41,6 +41,7 @@ namespace Badr.Net.FastCGI
 		public const string REQUEST_METHOD = "REQUEST_METHOD";
 		public const string REQUEST_URI = "REQUEST_URI";
 		public const string SERVER_PROTOCOL = "SERVER_PROTOCOL";
+		public const string HTTPS = "HTTPS";
 
         public readonly string Name;
         public readonly string Value;
@@ -50,6 +51,13 @@ namespace Badr.Net.FastCGI
 		{
 			Name = "EMPTY";
 			Value = null;
+			ParamEndOffset = -1;
+		}
+
+		public FastCGIParam(string name, string value)
+		{
+			Name = name;
+			Value = value;
 			ParamEndOffset = 0;
 		}
 

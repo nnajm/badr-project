@@ -7,8 +7,8 @@
     <ProjectGuid>{77F2220F-9E68-4A65-9874-4B538AB44BB7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Badr.Orm.Test</RootNamespace>
-    <AssemblyName>Badr.Orm.Test</AssemblyName>
+    <RootNamespace>Badr.Test</RootNamespace>
+    <AssemblyName>Badr.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -143,17 +143,32 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Member.cs" />
-    <Compile Include="Models\Project.cs" />
-    <Compile Include="Models\ProjectMembers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DbOperationsTest.cs" />
-    <Compile Include="UrlsTest.cs" />
+    <Compile Include="TestSettings.cs" />
+    <Compile Include="TestApp\Models\Member.cs" />
+    <Compile Include="TestApp\Models\Project.cs" />
+    <Compile Include="TestApp\Models\ProjectMembers.cs" />
+    <Compile Include="TestApp\Urls.cs" />
+    <Compile Include="TestApp\TestApplication.cs" />
+    <Compile Include="Orm\OrmTest.cs" />
+    <Compile Include="TestBase.cs" />
+    <Compile Include="Templates\ForloopTest.cs" />
+    <Compile Include="Templates\IfTest.cs" />
+    <Compile Include="Templates\UrlTest.cs" />
+    <Compile Include="Urls\UrlsMatchingTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="badr_orm_test.db" />
-    <None Include="packages.config" />
+    <EmbeddedResource Include="Orm\badr_orm_test.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Templates\" />
+    <Folder Include="TestApp\" />
+    <Folder Include="Orm\" />
+    <Folder Include="Urls\" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\Badr.Net\Badr.Net.csproj">
       <Project>{6a65ee42-6b11-40f4-8e3c-b40e4ab21001}</Project>
@@ -175,10 +190,10 @@
   </Target>
   -->
   <PropertyGroup>
-    <BadrOrmTestProject>$(SolutionDir)testrunner\Badr.Orm.Test.runner.csproj</BadrOrmTestProject>
+    <BadrTestProject>$(SolutionDir)testrunner\Badr.Test.runner.csproj</BadrTestProject>
   </PropertyGroup>
   <Target Name="AfterBuild">
-    <Exec Condition="'$(Platform)' == 'x86' And ('$(Configuration)' == 'Debug[+TEST]' Or '$(Configuration)' == 'Release[+TEST]')" Command="C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /property:OutputPath=$(OutputPath) &quot;$(BadrOrmTestProject)&quot;" />
-    <Exec Condition="'$(Platform)' != 'x86' And ('$(Configuration)' == 'Debug[+TEST]' Or '$(Configuration)' == 'Release[+TEST]')" Command="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe /property:OutputPath=$(OutputPath) &quot;$(BadrOrmTestProject)&quot;" />
+    <Exec Condition="'$(Platform)' == 'x86' And ('$(Configuration)' == 'Debug[+TEST]' Or '$(Configuration)' == 'Release[+TEST]')" Command="C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe /property:OutputPath=$(OutputPath) &quot;$(BadrTestProject)&quot;" />
+    <Exec Condition="'$(Platform)' != 'x86' And ('$(Configuration)' == 'Debug[+TEST]' Or '$(Configuration)' == 'Release[+TEST]')" Command="C:\Windows\Microsoft.NET\Framework64\v4.0.30319\msbuild.exe /property:OutputPath=$(OutputPath) &quot;$(BadrTestProject)&quot;" />
   </Target>
 </Project>

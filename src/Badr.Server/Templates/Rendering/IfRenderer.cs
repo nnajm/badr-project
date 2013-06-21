@@ -35,6 +35,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -51,96 +52,78 @@ namespace Badr.Server.Templates.Rendering
         internal const string GROUP_FILTERS_R_VAR = "FILTERS_R_VAR";
         internal const string GROUP_IF_OP = "IF_OP";
         internal const string GROUP_IF_NOT = "IF_NOT";
+		internal const string GROUP_IF_COND = "GROUP_IF_CONDITION";
+		internal const string GROUP_IF_COND_BOOLEAN = "GROUP_IF_COND_BOOLEAN";
+		internal const string GROUP_COND_BOOLEAN_OP = "GROUP_COND_BOOLEAN_OP";
 
-        internal const string RE_INSTRUCTION_IF_START = @"if\s+((?<" + GROUP_IF_NOT + @">not)\s+)?"
+		internal const string RE_INSTRUCTION_IF_CONDITION = @"(?<" + GROUP_IF_COND + ">((?<" + GROUP_IF_NOT + @">not)\s+)?"
+															+ @"(?<" + GROUP_IF_L_VAR + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")"
+															
+															+ @"(\s+"
+															+ @"(?<" + GROUP_IF_OP + ">" + @"[\<\>][=]?|!=|=|in|not\sin" + @")\s+"
+															+ @"(?<" + GROUP_IF_R_VAR + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")"
+															+ @")?"
+															+ @")";
 
-                                                      + @"(?<" + GROUP_IF_L_VAR + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")"
-
-                                                      + @"(\s+"
-                                                       + @"(?<" + GROUP_IF_OP + ">" + @"[\<\>][=]?|!=|=|in|not\sin" + @")\s+"
-                                                       + @"(?<" + GROUP_IF_R_VAR + ">" + BadrGrammar.VARIABLE_VALUE_FILTERED + ")"
-                                                      + @")?";
+        internal const string RE_INSTRUCTION_IF_START = @"if\s+"
+			                                            + RE_INSTRUCTION_IF_CONDITION
+				                                        + @"(?<" + GROUP_IF_COND_BOOLEAN + @">\s+"
+				                                             + "(?<"+ GROUP_COND_BOOLEAN_OP + @">(and|or))\s+"
+				                                             + RE_INSTRUCTION_IF_CONDITION 
+				                                        + ")*";
 
         internal const string RE_INSTRUCTION_IF_END = @"endif";
 
         #endregion
 
-        private readonly TemplateVarFiltered _leftVar;
-        private readonly TemplateVarFiltered _rightVar;
-        private readonly string _operator;
-        private readonly bool _isNegated;
+		private readonly List<List<IfCondition>> _oredConditions;
 
-        public IfRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
-            :base(exprMatchResult, exprMatchGroups)
-        {
-            _leftVar = ExprMatchGroups.GetFilteredVariable(GROUP_IF_L_VAR);
-            if (ExprMatchGroups.Contains(GROUP_IF_R_VAR))
-                _rightVar = ExprMatchGroups.GetFilteredVariable(GROUP_IF_R_VAR);
-            else
-                _rightVar = null;
-            _operator = ExprMatchGroups.GetGroupValue(GROUP_IF_OP);
-            _isNegated = ExprMatchGroups.GetGroupValue(GROUP_IF_NOT) == "not";
-        }
+		public IfRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
+			:base(exprMatchResult, exprMatchTree)
+		{
+			_oredConditions = new List<List<IfCondition>> ();
 
-        internal protected bool ConditionResult;
+			List<IfCondition> andedConditions = new List<IfCondition> ();
+			andedConditions.Add (new IfCondition (exprMatchTree.GetGroup(GROUP_IF_COND)));
+
+			List<ExprMatchGroup> booleanOpIfCondition = exprMatchTree.GetGroupList (GROUP_IF_COND_BOOLEAN);
+			if (booleanOpIfCondition != null)
+			{
+				foreach (ExprMatchGroup boolOpifConditionGroup in booleanOpIfCondition)
+				{
+					if (boolOpifConditionGroup.GetGroupValue (GROUP_COND_BOOLEAN_OP) == "or")
+					{
+						_oredConditions.Add (andedConditions);
+						andedConditions = new List<IfCondition> ();
+					}
+
+					andedConditions.Add (new IfCondition (boolOpifConditionGroup.GetGroup(GROUP_IF_COND)));
+				}
+
+			}
+
+			_oredConditions.Add (andedConditions);
+		}
+
+        internal protected bool EvaluationResult;
 
         public override void Render(RenderContext renderContext)
         {
-            ConditionResult = false;
+			EvaluationResult = false;
 
-            object lVar = renderContext[_leftVar.Variable, _leftVar.Filters];
-            object rVar = _rightVar != null ? renderContext[_rightVar.Variable, _rightVar.Filters] : null;
+			foreach(List<IfCondition> andedIfConditions in _oredConditions)
+			{
+				bool result = true;
+				foreach(IfCondition ifCondition in andedIfConditions)
+					result = result && ifCondition.Evaluate(renderContext);
 
-            if (_rightVar == null)
-            {
-                if (lVar is bool)
-                    ConditionResult = (bool)lVar;
-                else
-                    ConditionResult = lVar != null;
-            }
-            else
-                ConditionResult = ParseIf(_operator, lVar, rVar);
+				EvaluationResult = EvaluationResult || result;
+			}
 
-            if (_isNegated)
-                ConditionResult = !ConditionResult;
-
-            if (ConditionResult)
+			if (EvaluationResult)
             {
                 renderContext.RenderSubScopes();
             }
-        }
-
-        protected bool ParseIf(object op, object lVar, object rVar)
-        {
-            if (op != null)
-            {
-                string opStr = op.ToString();
-                bool isInOperator = opStr == "in";
-                if ((isInOperator || opStr == "not in"))
-                {
-                    if (rVar != null)
-                    {
-                        foreach (object item in ((IEnumerable)rVar))
-                        {
-                            if (lVar == item || Helper.GenericCompare(lVar, item) == 0)
-                                return isInOperator;
-                        }
-                    }
-
-                    return !isInOperator;
-                }
-
-                int compResult = Helper.GenericCompare(lVar, rVar);
-
-                if (opStr.Equals(">")) return compResult > 0;
-                else if (opStr.Equals(">=")) return compResult >= 0;
-                else if (opStr.Equals("<")) return compResult < 0;
-                else if (opStr.Equals("<=")) return compResult <= 0;
-                else if (opStr.Equals("=")) return compResult == 0;
-                else if (opStr.Equals("!=")) return compResult != 0;
-            }
-
-            return false;
         }
 
         public override string Name
@@ -157,5 +140,83 @@ namespace Badr.Server.Templates.Rendering
         {
             get { return ExprType.INSTRUCTION; }
         }
+
+		class IfCondition
+		{
+			public IfCondition (ExprMatchGroup ifConditionGroup)
+			{
+				IsNegated = ifConditionGroup.GetGroupValue(GROUP_IF_NOT) == "not";
+
+				LeftVar = ifConditionGroup.GetFilteredVariable(GROUP_IF_L_VAR);
+				if(LeftVar == null)
+					LeftVar = ifConditionGroup.GetAsFilteredVariable();
+				else
+				{
+					RightVar = ifConditionGroup.GetFilteredVariable(GROUP_IF_R_VAR);
+					Operator = ifConditionGroup.GetGroupValue(GROUP_IF_OP);
+				}
+			}
+
+			public bool Evaluate(RenderContext renderContext)
+			{
+				bool result;
+
+				object lVar = renderContext[LeftVar.Variable, LeftVar.Filters];
+				
+				if (RightVar == null)
+				{
+					if (lVar is bool)
+						result = (bool)lVar;
+					else
+						result = lVar != null;
+				} else
+				{
+					object rVar = renderContext [RightVar.Variable, RightVar.Filters];
+					result = ApplyOperator (lVar, rVar);
+				}
+
+				if (IsNegated)
+					result = !result;
+
+				return result;
+			}
+
+			public readonly bool IsNegated;
+			public readonly TemplateVarFiltered LeftVar;
+			public readonly TemplateVarFiltered RightVar;
+			public readonly string Operator;
+
+			protected bool ApplyOperator(object lVar, object rVar)
+			{
+				if (Operator != null)
+				{
+					bool isInOperator = Operator == "in";
+					if ((isInOperator || Operator == "not in"))
+					{
+						if (rVar != null)
+						{
+							foreach (object item in ((IEnumerable)rVar))
+							{
+								if (lVar == item || Helper.GenericCompare(lVar, item) == 0)
+									return isInOperator;
+							}
+						}
+						
+						return !isInOperator;
+					}
+					
+					int compResult = Helper.GenericCompare(lVar, rVar);
+					
+					if (Operator.Equals(">")) return compResult > 0;
+					else if (Operator.Equals(">=")) return compResult >= 0;
+					else if (Operator.Equals("<")) return compResult < 0;
+					else if (Operator.Equals("<=")) return compResult <= 0;
+					else if (Operator.Equals("=")) return compResult == 0;
+					else if (Operator.Equals("!=")) return compResult != 0;
+				}
+				
+				return false;
+			}
+		}
     }
 }

@@ -60,7 +60,7 @@ namespace Badr.Net.Http.Response
             }
             catch { Encoding = Encoding.UTF8; }
 
-            Cookies = new HttpCookie();
+            Cookies = new HttpCookies();
 
 			Headers = new HttpResponseHeaders();
             Headers[HttpResponseHeaders.Date] = DateTime.Now.ToUniversalTime().ToString("r");
@@ -77,7 +77,7 @@ namespace Badr.Net.Http.Response
 
 		public byte[] Data{ get { return GetData (); } }
         protected HttpRequest Request { get; private set; }
-        public HttpCookie Cookies { get; private set; }
+        public HttpCookies Cookies { get; private set; }
         public Encoding Encoding { get; private set; }
         public HttpResponseHeaders Headers { get; private set; }
         public string Body { get; set; }

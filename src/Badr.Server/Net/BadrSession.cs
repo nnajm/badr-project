@@ -39,5 +39,6 @@ namespace Badr.Server.Net
         }
 
         public string ID { get; private set; }
+		public bool SendCookie { get; internal set; }
     }
 }

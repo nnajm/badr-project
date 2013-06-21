@@ -27,6 +27,7 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,45 +48,82 @@ namespace Badr.Server.Settings
     [XmlRoot("website")]
     public class SiteSettings
     {
-        [XmlAttribute("debug")]
-		public bool DEBUG { get; set; }
+		private string[] _allowedHosts;
+		private string[] _secureProxySslHeader;
 
-		public string[] _allowed_hosts;
+        [XmlAttribute("debug")]
+		public bool Debug { get; set; }
+
+		[XmlElement("cookies", typeof(CookiesSettings))]
+		public CookiesSettings Cookies { get; set; }
 
 		[XmlArray("allowed_hosts")]
         [XmlArrayItem("pattern")]
-        public string[] ALLOWED_HOSTS 
+        public string[] AllowedHosts 
 		{ 
-			get {return _allowed_hosts;}
+			get {return _allowedHosts;}
 			set{
-				_allowed_hosts = value;
-				if(_allowed_hosts != null)
-					for(int i=0;i<_allowed_hosts.Length;i++)
-						if(_allowed_hosts[i] != null)
-							_allowed_hosts[i] = _allowed_hosts[i].ToLower();
+				_allowedHosts = value;
+				if(_allowedHosts != null)
+					for(int i=0;i<_allowedHosts.Length;i++)
+						if(_allowedHosts[i] != null)
+							_allowedHosts[i] = _allowedHosts[i].ToLower();
 			}
 		}
 
         [XmlArray("databases")]
         [XmlArrayItem("db_settings")]
-        public DBSettingsDictionary DATABASES { get; protected set; }
+        public DBSettingsDictionary Databases { get; protected set; }
 
         [XmlIgnore]
-        public Dictionary<string, Type> EXTRA_DB_ENGINES { get; protected set; }
+        public Dictionary<string, Type> ExtraDbEngines { get; protected set; }
+
+		/// <summary>
+		/// Gets or sets the request header to use to check if TLS (HTTPS) is on.
+		/// <para>
+		/// It must be set to an array of size 2 containing header name at position 0 &amp; header value at position 1.
+		/// </para>
+		/// <para>
+		/// Header name/value are case-insensitive and must not be null nor spaces or they won't be considered.
+		/// </para>
+		/// <para>
+		/// Header name must start with `HTTP_`.
+		/// </para>
+		/// <para>
+		/// A request is marked secure if a header with the same name and value is found.
+		/// </para>
+		/// </summary>
+		/// <value>
+		/// An array of size 2 containing header name at position 0 &amp; header value at position 1. A request is marked secure if a header with the same name and value is found.
+		/// </value>
+		[XmlIgnore]
+		public string[] SecureProxySslHeader
+		{
+			get {
+				return _secureProxySslHeader;
+			}
+			set {
+				if (value != null && value.Length == 2
+					&& !string.IsNullOrWhiteSpace(value [0]) != null && !string.IsNullOrWhiteSpace(value [1]))
+					_secureProxySslHeader = value;
+				else
+					_secureProxySslHeader = null;
+			}
+		}
 
         /// <summary>
         /// Directories where to look for template files
         /// </summary>
         [XmlArray("template_dirs")]
         [XmlArrayItem("dir")]
-        public string[] TEMPLATE_DIRS { get; set; }
+        public string[] TemplateDirs { get; set; }
 
 		#region STATIC FILES
 
         [XmlAttribute("static_url")]
-        public string STATIC_URL { get; set; }
+        public string StaticUrl { get; set; }
         [XmlAttribute("static_root")]
-		public string STATIC_ROOT { get; set; }
+		public string StaticRoot { get; set; }
 
 		#endregion
 
@@ -93,49 +131,55 @@ namespace Badr.Server.Settings
         /// Response body charset to use by default (initial value is 'utf-8').
         /// </summary>
         [XmlAttribute("default_charset")]
-        public string DEFAULT_CHARSET = HttpResponse.DEFAULT_CHARSET;
+        public string DefaultCharset { get; set; }
+
         /// <summary>
         /// Response body content-type to use by default (initial value is 'text/html').
         /// </summary>
         [XmlAttribute("default_content_type")]
-        public string DEFAULT_CONTENT_TYPE = HttpResponse.DEFAULT_CONTENT_TYPE;
+        public string DefaultContentType { get; set; }
 
         [XmlIgnore]
-        public Type[] MIDDLEWARE_CLASSES { get; protected set; }
+        public Type[] MiddlewareClasses { get; protected set; }
         [XmlIgnore]
-        public Type[] CONTEXT_PROCESSORS { get; protected set; }
+        public Type[] ContextProcessors { get; protected set; }
         [XmlIgnore]
-        public Type[] SITE_URLS { get; protected set; }
+        public Type[] Urls { get; protected set; }
         [XmlIgnore]
-        public Type[] INSTALLED_APPS { get; protected set; }
+        public Type[] InstalledApps { get; protected set; }
 
         public SiteSettings ()
 		{
-            DATABASES = new DBSettingsDictionary();
-            EXTRA_DB_ENGINES = new Dictionary<string, Type>();
+            Databases = new DBSettingsDictionary();
+            ExtraDbEngines = new Dictionary<string, Type>();
+			Cookies = new CookiesSettings();
 
             Set();
         }
 
         protected virtual void Set()
         {
-            DEBUG = false;
+            Debug = false;
 
-			ALLOWED_HOSTS = null;
+			DefaultCharset = HttpResponse.DEFAULT_CHARSET;
+        	DefaultContentType = HttpResponse.DEFAULT_CONTENT_TYPE;
 
-            STATIC_URL = "static/";
-            STATIC_ROOT = "";
-            TEMPLATE_DIRS = new string[0];
+			AllowedHosts = null;
+			SecureProxySslHeader = null;
 
-            MIDDLEWARE_CLASSES = new[] {
+            StaticUrl = "static/";
+            StaticRoot = "";
+            TemplateDirs = new string[0];
+
+            MiddlewareClasses = new[] {
                 typeof(CsrfMiddleware),
                 typeof(SessionMiddleware)
             };
 
-            CONTEXT_PROCESSORS = new Type[0];
+            ContextProcessors = new Type[0];
 
-            SITE_URLS = new Type[0];
-            INSTALLED_APPS = new Type[0];
+            Urls = new Type[0];
+            InstalledApps = new Type[0];
         }
 
         #region statics
@@ -154,16 +198,24 @@ namespace Badr.Server.Settings
             return (SiteSettings)xs.Deserialize(new StringReader(xml));
         }
 
-        static void ResolveUnknownElement(SiteSettings siteSettings, XmlElement element, Dictionary<string, string> typePrefixes)
-        {
-            if (element.Name == "context_processors")
-                siteSettings.CONTEXT_PROCESSORS = DeserializeTypes(element, "type", typePrefixes);
-            else if (element.Name == "middleware_classes")
-                siteSettings.MIDDLEWARE_CLASSES = DeserializeTypes(element, "type", typePrefixes);
-            else if (element.Name == "site_urls")
-                siteSettings.SITE_URLS = DeserializeTypes(element, "type", typePrefixes);
-            else if (element.Name == "installed_apps")
-                siteSettings.INSTALLED_APPS = DeserializeTypes(element, "type", typePrefixes);
+        static void ResolveUnknownElement (SiteSettings siteSettings, XmlElement element, Dictionary<string, string> typePrefixes)
+		{
+			if (element.Name == "context_processors")
+				siteSettings.ContextProcessors = DeserializeTypes (element, "type", typePrefixes);
+			else if (element.Name == "middleware_classes")
+				siteSettings.MiddlewareClasses = DeserializeTypes (element, "type", typePrefixes);
+			else if (element.Name == "urls")
+				siteSettings.Urls = DeserializeTypes (element, "type", typePrefixes);
+			else if (element.Name == "installed_apps")
+				siteSettings.InstalledApps = DeserializeTypes (element, "type", typePrefixes);
+			else if (element.Name == "secure_proxy_ssl_header")
+			{
+				siteSettings.SecureProxySslHeader = new string[]
+				{
+					element.Attributes["header"].Value,
+					element.Attributes["value"].Value
+				};
+			}
         }
 
         static Type[] DeserializeTypes(XmlElement element, string elementName, Dictionary<string, string> typePrefixes)
@@ -186,4 +238,27 @@ namespace Badr.Server.Settings
 
         #endregion
     }
+
+	public class CookiesSettings
+	{
+		public CookiesSettings ()
+		{
+			SessionAge = 1209600; // 2 weeks
+		}
+
+		[XmlAttribute("session_expire_browser_close")]
+		public bool SessionExpireAtBrowserClose { get; set; }
+
+		[XmlAttribute("session_age")]
+		public int SessionAge { get; set; }
+
+		[XmlAttribute("session_httponly")]
+		public bool SessionHttpOnly { get; set; }
+
+		[XmlAttribute("session_secure")]
+		public bool SessionSecure { get; set; }
+
+		[XmlAttribute("csrf_secure")]
+		public bool CsrfSecure { get; set; }
+	}
 }

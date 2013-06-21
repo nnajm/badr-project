@@ -228,7 +228,7 @@ namespace Badr.Server.Urls
 				if(IsMatch(result))
 					return "/" + resultEncoded;
 
-				throw new Exception("Reversed url does not respect the pattern.");
+				throw new Exception("Reverse not possible, check url definition.");
             }
 		}
 

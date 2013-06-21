@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -44,15 +45,15 @@ namespace Badr.Server.Templates.Rendering
 
         #endregion
 
-        public IfElseRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
-            :base(exprMatchResult, exprMatchGroups)
-        {
-
-        }
+		public IfElseRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
+			:base(exprMatchResult, exprMatchTree)
+		{
+			
+		}
 
         public override void Render(RenderContext renderContext)
         {
-            if (_parentIfRenderer != null && !_parentIfRenderer.ConditionResult)
+            if (_parentIfRenderer != null && !_parentIfRenderer.EvaluationResult)
             {
                 renderContext.RenderSubScopes();
             }
@@ -92,10 +93,10 @@ namespace Badr.Server.Templates.Rendering
             {
                 _parentIfRenderer = value as IfRenderer;
 
-                if (_parentIfRenderer != null)
-                    _parentIfRenderer.ExprMatchGroups.CopyTo(ExprMatchGroups);
-                else
-                    ExprMatchGroups.Clear();
+//                if (_parentIfRenderer != null)
+//                    _parentIfRenderer.ExprMatchGroups.CopyTo(ExprMatchGroups);
+//                else
+//                    ExprMatchGroups.Clear();
             }
         }
     }

@@ -1,5 +1,5 @@
 //
-// TemplateVarFiltered.cs
+// TemplateFilter.cs
 //
 // Author: najmeddine nouri
 //
@@ -27,24 +27,23 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System;
 
-namespace Badr.Server.Templates.Rendering
+namespace Badr.Server.Templates.Parsing
 {
-    public class TemplateVarFiltered
+    public class TemplateFilter
     {
-        public TemplateVarFiltered(string varValue, List<TemplateFilter> filters)
-        {
-            Variable = new TemplateVar(varValue);
-            Filters = filters;
-        }
+        public readonly string Name;
+        public readonly TemplateVar Argument;
 
-        public readonly TemplateVar Variable;
-        public readonly List<TemplateFilter> Filters;
+        public TemplateFilter(string name, string argument)
+        {
+            Name = name;
+			if (argument != null)
+				Argument = new TemplateVar (argument);
+			else
+            	Argument = null;
+        }
     }
 }
+

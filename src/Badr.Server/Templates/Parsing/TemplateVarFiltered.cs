@@ -1,5 +1,5 @@
 //
-// FilterLoaderRenderer.cs
+// TemplateVarFiltered.cs
 //
 // Author: najmeddine nouri
 //
@@ -27,53 +27,24 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-﻿using Badr.Server.Templates.Filters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Badr.Server.Templates.Parsing;
 
-namespace Badr.Server.Templates.Rendering
+namespace Badr.Server.Templates.Parsing
 {
-    public class FilterLoaderRenderer: ExprRenderer
+    public class TemplateVarFiltered
     {
-        #region consts
-
-        internal const string FILTER_LOADER_RENDERER_NAME = "FILTER_LOADER_RENDERER_NAME";
-        internal const string GROUP_FILTER_NAME = "EXPR_FILTER_NAME";
-
-        internal const string RE_INSTRUCTION_LOADER = @"load\s+(?<" + GROUP_FILTER_NAME + @">\w+)";
-
-        #endregion
-
-        private readonly string _filterName;
-
-		public FilterLoaderRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
-			: base(exprMatchResult, exprMatchTree)
+        public TemplateVarFiltered(string varValue, List<TemplateFilter> filters)
         {
-			_filterName = ExprMatchTree.GetGroupValue(GROUP_FILTER_NAME);
+            Variable = new TemplateVar(varValue);
+            Filters = filters;
         }
 
-        public override void Render(RenderContext renderContext)
-        {
-            FilterManager.LoadFilters(_filterName);
-        }
-
-        public override string Name
-        {
-            get { return FILTER_LOADER_RENDERER_NAME; }
-        }
-
-        public override ExprRenderType RenderType
-        {
-            get { return ExprRenderType.Simple; }
-        }
-
-        public override ExprType Type
-        {
-            get { return ExprType.INSTRUCTION; }
-        }
+        public readonly TemplateVar Variable;
+        public readonly List<TemplateFilter> Filters;
     }
 }

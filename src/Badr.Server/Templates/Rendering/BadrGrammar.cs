@@ -35,7 +35,7 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using Badr.Server.Net;
 
-namespace Badr.Server.Templates
+namespace Badr.Server.Templates.Rendering
 {
     internal static class BadrGrammar
     {

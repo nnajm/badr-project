@@ -65,22 +65,22 @@ namespace Badr.Server
        
         internal static void CreateOrmManagers()
         {
-			if(Settings.EXTRA_DB_ENGINES != null && Settings.EXTRA_DB_ENGINES.Count > 0)
-	            foreach (KeyValuePair<string, Type> dbengine in Settings.EXTRA_DB_ENGINES)
+			if(Settings.ExtraDbEngines != null && Settings.ExtraDbEngines.Count > 0)
+	            foreach (KeyValuePair<string, Type> dbengine in Settings.ExtraDbEngines)
 	            {
 	                OrmManager.RegisterDbEngine(dbengine.Key, dbengine.Value);
 	            }
 
-			if(Settings.DATABASES != null && Settings.DATABASES.Count > 0)
-	            foreach (DbSettings dbSettings in Settings.DATABASES)
+			if(Settings.Databases != null && Settings.Databases.Count > 0)
+	            foreach (DbSettings dbSettings in Settings.Databases)
 	            {
 	                OrmManager.RegisterDatabase(dbSettings.ID, dbSettings);
 	            }
 
             APPS = new Dictionary<string, AppRoot>();
 
-			if(Settings.INSTALLED_APPS != null && Settings.INSTALLED_APPS.Length > 0)
-	            foreach (Type installedApp in Settings.INSTALLED_APPS)
+			if(Settings.InstalledApps != null && Settings.InstalledApps.Length > 0)
+	            foreach (Type installedApp in Settings.InstalledApps)
 	            {
 	                if (typeof(AppRoot).IsAssignableFrom(installedApp))
 	                {
@@ -106,15 +106,15 @@ namespace Badr.Server
         internal static void LoadUrls()
         {
 			Urls = new UrlsManager();
-            Urls.Register(Settings.SITE_URLS);
+            Urls.Register(Settings.Urls);
         }
 
         internal static void RegisterMiddlewares()
         {
 			Middlewares = new MiddlewareManager();
 
-			if(Settings.MIDDLEWARE_CLASSES != null && Settings.MIDDLEWARE_CLASSES.Length > 0)
-		        foreach (Type middleWareType in Settings.MIDDLEWARE_CLASSES)
+			if(Settings.MiddlewareClasses != null && Settings.MiddlewareClasses.Length > 0)
+		        foreach (Type middleWareType in Settings.MiddlewareClasses)
 		            Middlewares.Register(middleWareType);
         }
 
@@ -122,8 +122,8 @@ namespace Badr.Server
         {
 			ContextProcessors = new ContextProcessorManager();
 
-			if(Settings.CONTEXT_PROCESSORS != null && Settings.CONTEXT_PROCESSORS.Length > 0)
-	            foreach (Type contextProcessorType in Settings.CONTEXT_PROCESSORS)
+			if(Settings.ContextProcessors != null && Settings.ContextProcessors.Length > 0)
+	            foreach (Type contextProcessorType in Settings.ContextProcessors)
 	                ContextProcessors.Register(contextProcessorType);
         }
         

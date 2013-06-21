@@ -27,13 +27,14 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-﻿using Badr.Orm.Fields;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Badr.Orm;
+﻿using Badr.Orm.Fields;
 
-namespace Badr.Orm.Test.Models
+namespace Badr.Test.TestApp.Models
 {
     public class ProjectMembers: Model
     {

@@ -166,7 +166,7 @@ namespace Badr.Server.Views
             {% if " + DEBUG_PAGE_VAR_URLS + @" %}
             <div class=""_section_header""><span class=""button"" onclick=""javascript:toggleVisibility(this, '_id_urls_table');""><span>&#x25B7;</span>Urls:</span></div>
             <div id=""_id_urls_table"" style=""display:none"">
-            {{ " + DEBUG_PAGE_VAR_URLS + @" }}
+            {{ " + DEBUG_PAGE_VAR_URLS + @"|Safe }}
             </div>
             {% endif %}
 

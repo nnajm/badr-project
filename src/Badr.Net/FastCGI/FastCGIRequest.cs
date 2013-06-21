@@ -65,12 +65,29 @@ namespace Badr.Net.FastCGI
         public string RequestMethod { get; private set; }
         public string ResourceUri{ get; private set; }
         public string ServerProtocol { get; private set; }
+		public bool IsSecure { get; private set; }
 
-        public void BuildParams()
-        {
-            RequestMethod = Params[FastCGIParam.REQUEST_METHOD].Value;
-			ResourceUri = Params[FastCGIParam.REQUEST_URI].Value;
-			ServerProtocol = Params[FastCGIParam.SERVER_PROTOCOL].Value;
+        public void ExtractMainParams ()
+		{
+			RequestMethod = Params [FastCGIParam.REQUEST_METHOD].Value;
+			ResourceUri = Params [FastCGIParam.REQUEST_URI].Value;
+			ServerProtocol = Params [FastCGIParam.SERVER_PROTOCOL].Value;
+
+			// check https
+
+			string httpsParamName = "HTTP_X_IS_HTTPS";
+
+			// first, if HTTP_X_IS_HTTPS is present this means that `X-Is-Https` header was set by the client and this is not good.
+			// remove it
+			if(Params.Contains(httpsParamName))
+				Params.Remove(httpsParamName);
+
+			// If HTTPS was set by the reverse proxy then copy it into HTTP_X_IS_HTTPS (prefixed by HTTP_ to be recognized as header by Badr.Net.Http.HttpRequest)
+			string https = Params [FastCGIParam.HTTPS].Value;
+			if (https != null && https.ToLower () == "on")
+			{
+				Params [httpsParamName] = new FastCGIParam (httpsParamName, "on");
+			}
         }
 
         public override string ToString()
@@ -86,14 +103,14 @@ namespace Badr.Net.FastCGI
 
         internal byte[] ToHttpData()
         {
-            BuildParams();
+            ExtractMainParams();
             
             StringBuilder sb = new StringBuilder();
 			sb.Append(string.Format("{0} {1} {2}\r\n", RequestMethod, ResourceUri, ServerProtocol));
             foreach (FastCGIParam param in Params.Values)
             {
                 if (param.Name.StartsWith("HTTP_"))
-                    sb.Append(string.Format("{0}:{1}\r\n", param.Name.Substring(5), param.Value));
+                    sb.Append(string.Format("{0}:{1}\r\n", param.Name.Substring(5).Replace('_', '-'), param.Value));
             }
             sb.Append("\r\n");
 

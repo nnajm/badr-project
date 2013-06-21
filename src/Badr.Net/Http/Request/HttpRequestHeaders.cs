@@ -233,6 +233,11 @@ namespace Badr.Net.Http.Request
         /// </summary>
         public const string XRequestedWith = "x-requested-with";
 
+		/// <summary>
+		/// Internal use in badr to check if a connection is secure. This header must be set in the front end web server as header named 'HTTP'
+		/// </summary>
+		public const string XIsHttps = "x-is-https";
+
 		#endregion
 
 		public HttpRequestHeaders()

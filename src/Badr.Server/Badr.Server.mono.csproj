@@ -13,9 +13,9 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -25,7 +25,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -33,7 +33,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\Badr.Server.XML</DocumentationFile>
@@ -42,12 +42,12 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -55,7 +55,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\Badr.Server.XML</DocumentationFile>
@@ -64,12 +64,12 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -77,19 +77,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug[+TEST]|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\Badr.Server.XML</DocumentationFile>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug[+TEST]|x86'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\Badr.Server.XML</DocumentationFile>
@@ -98,10 +97,10 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug[+TEST]|x64'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\Badr.Server.XML</DocumentationFile>
@@ -110,14 +109,13 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release[+TEST]|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
@@ -125,7 +123,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release[+TEST]|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -135,7 +133,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release[+TEST]|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -165,9 +163,6 @@
     <Compile Include="Middlewares\SessionMiddleware.cs" />
     <Compile Include="Settings\SiteSettings.cs" />
     <Compile Include="Templates\Filters\FilterManager.cs" />
-    <Compile Include="Templates\Parser.cs" />
-    <Compile Include="Templates\Rendering\ExprMatchGroups.cs" />
-    <Compile Include="Templates\Rendering\ExprRenderer.cs" />
     <Compile Include="Templates\Rendering\FilterLoaderRenderer.cs" />
     <Compile Include="Templates\Rendering\ForLoopRenderer.cs" />
     <Compile Include="Templates\Rendering\IfElseRenderer.cs" />
@@ -178,9 +173,7 @@
     <Compile Include="Templates\Rendering\UrlRenderer.cs" />
     <Compile Include="Templates\Rendering\VariableRenderer.cs" />
     <Compile Include="Templates\Rendering\RenderContext.cs" />
-    <Compile Include="Templates\Scope.cs" />
     <Compile Include="Templates\TemplateAttribute.cs" />
-    <Compile Include="Templates\BadrGrammar.cs" />
     <Compile Include="Templates\TemplateEngine.cs" />
     <Compile Include="Templates\TemplateException.cs" />
     <Compile Include="Utils\Helper.cs" />
@@ -206,12 +199,18 @@
     <Compile Include="ContextProcessors\ContextProcessorBase.cs" />
     <Compile Include="Settings\ServerSettings.cs" />
     <Compile Include="Utils\Logging\ManagedColordConsoleAppender.cs" />
-    <Compile Include="Templates\Rendering\TemplateVarFiltered.cs" />
     <Compile Include="Templates\Filters\IFilterContainer.cs" />
-    <Compile Include="Templates\Rendering\TemplateVar.cs" />
     <Compile Include="Urls\UrlsBase.cs" />
     <Compile Include="SiteManager.cs" />
     <Compile Include="AppRoot.cs" />
+    <Compile Include="Templates\Parsing\Parser.cs" />
+    <Compile Include="Templates\Parsing\Scope.cs" />
+    <Compile Include="Templates\Parsing\ExprMatchTree.cs" />
+    <Compile Include="Templates\Rendering\ExprRenderer.cs" />
+    <Compile Include="Templates\Parsing\TemplateFilter.cs" />
+    <Compile Include="Templates\Parsing\TemplateVar.cs" />
+    <Compile Include="Templates\Parsing\TemplateVarFiltered.cs" />
+    <Compile Include="Templates\Rendering\BadrGrammar.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Badr.Orm\Badr.Orm.mono.csproj">
@@ -234,5 +233,6 @@
   <ItemGroup />
   <ItemGroup>
     <Folder Include="Utils\Logging\" />
+    <Folder Include="Templates\Parsing\" />
   </ItemGroup>
 </Project>

@@ -43,42 +43,58 @@ namespace Badr.Server.Middlewares
     {
         protected const string SESSION_SPE_TAG_NAME = "sessiontoken";
 
-        public override MiddlewareProcessStatus PreProcess(BadrRequest wRequest, out string errorMessage)
+        public override MiddlewareProcessStatus PreProcess(BadrRequest request, out string errorMessage)
         {
-            string sessionId = wRequest.Cookies[CookieNames.SESSION_ID].Value;
-            if (string.IsNullOrEmpty(sessionId) || sessionId.Trim() == "")
+            string sessionId = request.Cookies[CookieNames.SESSION_ID].Value;
+			bool sessionReceived = !string.IsNullOrWhiteSpace(sessionId);
+
+            if (!sessionReceived)
                 sessionId = Security.GenerateId(24);
 
-            wRequest.Session = new BadrSession(sessionId);
+            request.Session = new BadrSession(sessionId) { SendCookie = !sessionReceived };
 
             errorMessage = null;
 			return MiddlewareProcessStatus.Continue;
         }
 
-        public override bool PostProcess(BadrRequest wRequest, BadrResponse wResponse, out string errorMessage)
+        public override bool PostProcess(BadrRequest request, BadrResponse response, out string errorMessage)
         {
+			CookiesSettings cookiesSettings = SiteManager.Settings.Cookies;
             errorMessage = null;
-            if (wResponse.Status.IsSuccess() && wRequest.Session != null)
+
+            if ((!cookiesSettings.SessionSecure || request.IsSecure)
+				&& response.Status.IsSuccess() && request.Session != null && request.Session.SendCookie)
             {
-                wResponse.Cookies[CookieNames.SESSION_ID] = new HttpCookieFragment(
+				HttpCookieFragment sessionFragment = new HttpCookieFragment(
                     name: CookieNames.SESSION_ID,
-                    value: wRequest.Session.ID,
+                    value: request.Session.ID,
                     path: "/",
-                    domain: wRequest.DomainUri.Host);
+                    domain: request.DomainUri.Host);
+
+				if(cookiesSettings != null)
+				{
+					if(!SiteManager.Settings.Cookies.SessionExpireAtBrowserClose)
+						sessionFragment[HttpCookieFragment.ATTR_MAX_AGE] = cookiesSettings.SessionAge.ToString();
+
+					sessionFragment.IsSecure = cookiesSettings.SessionSecure;
+					sessionFragment.IsHttpOnly = cookiesSettings.SessionHttpOnly;
+				}
+
+				response.Cookies[CookieNames.SESSION_ID] = sessionFragment;
             }
 
             return true;
         }
 
-        public override bool ResolveSpecialTag(BadrRequest wRequest, string spetagName, out string result)
+        public override bool ResolveSpecialTag(BadrRequest request, string spetagName, out string result)
         {
-            if (spetagName == SESSION_SPE_TAG_NAME)
+			if (request != null && spetagName == SESSION_SPE_TAG_NAME)
             {
-                result = wRequest.Session.ID;
+                result = request.Session.ID;
                 return true;
             }
 
-            return base.ResolveSpecialTag(wRequest, spetagName, out result);
+            return base.ResolveSpecialTag(request, spetagName, out result);
         }
     }
 }

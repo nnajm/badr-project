@@ -36,6 +36,7 @@ using Badr.Server.Utils;
 using Badr.Server.Templates.Filters;
 using Badr.Server.Templates.Rendering;
 using System.Collections;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates
 {
@@ -160,9 +161,6 @@ namespace Badr.Server.Templates
         internal object this [Scope scope, TemplateVar variable, List<TemplateFilter> filters]
 		{
 			get {
-				if (_alwaysEmpty)
-					return null;
-
 				object val = null;
 				if (variable != null && variable.StrValue != null)
 				{
@@ -199,7 +197,7 @@ namespace Badr.Server.Templates
 
 				if (filters != null && filters.Count > 0)
 				{
-                    int filtersCount = filters.Count;
+					int filtersCount = filters.Count;
 					KeyValuePair<string, object>[] resolvedFilters = new KeyValuePair<string, object>[filtersCount];
 					for (int i = 0; i < filtersCount; i++)
 					{

@@ -32,7 +32,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Badr.Server.Templates
+namespace Badr.Server.Templates.Parsing
 {
     public class Parser
     {

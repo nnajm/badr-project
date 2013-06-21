@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -61,12 +62,12 @@ namespace Badr.Server.Templates.Rendering
         private readonly TemplateVarFiltered _listVar;
         private readonly string _loopVariableName;
 
-        public ForLoopRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
-            : base(exprMatchResult, exprMatchGroups)
-        {
-            _listVar = ExprMatchGroups.GetFilteredVariable(GROUP_FOR_LIST);
-            _loopVariableName = ExprMatchGroups.GetGroupValue(GROUP_FOR_VAR);
-        }
+		public ForLoopRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
+			: base(exprMatchResult, exprMatchTree)
+		{
+			_listVar = ExprMatchTree.GetFilteredVariable(GROUP_FOR_LIST);
+			_loopVariableName = ExprMatchTree.GetGroupValue(GROUP_FOR_VAR);
+		}
 
         public override void Render(RenderContext renderContext)
         {

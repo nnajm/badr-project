@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Badr.Server.Net;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -57,11 +58,11 @@ namespace Badr.Server.Templates.Rendering
 
         private readonly TemplateVarFiltered _templatePathVar;
 
-        public IncludeRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
-            : base(exprMatchResult, exprMatchGroups)
-        {
-            _templatePathVar = ExprMatchGroups.GetFilteredVariable(GROUP_TEMPLATE_FILE);
-        }
+		public IncludeRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
+			: base(exprMatchResult, exprMatchTree)
+		{
+			_templatePathVar = ExprMatchTree.GetFilteredVariable(GROUP_TEMPLATE_FILE);
+		}
 
         public override void Render(RenderContext renderContext)
         {

@@ -1,5 +1,5 @@
 //
-// TemplateVar.cs
+// TemplateTagForloop.cs
 //
 // Author: najmeddine nouri
 //
@@ -27,28 +27,29 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
+using Xunit;
+using Badr.Server.Templates;
 
-namespace Badr.Server.Templates.Rendering
+namespace Badr.Test.Templates
 {
-    public class TemplateVar
-    {
-        public readonly string StrValue;
-        public readonly bool IsLiteralString;
+	public class ForloopTest: TestBase
+	{
+		public ForloopTest ()
+		{
+		}
+			
+		[Fact(DisplayName="template tag: {% for a in list %}")]
+		public void ForTag_in()
+		{
+			string tt = "{% for a in list %}{{ a }}, {% endfor %}";
+			
+			TemplateEngine te = new TemplateEngine (tt);
+			TemplateContext tc = new TemplateContext ();
+			tc ["list"] = new int[]{1, 2, 3, 4, 5, 6, 7 ,8, 9 };	
 
-        public TemplateVar(string strValue)
-        {
-            StrValue = strValue;
-
-            if (strValue != null && (strValue.StartsWith("\"") || strValue.StartsWith("'")))
-            {
-                StrValue = StrValue.Trim('"', '\'');
-                IsLiteralString = true;
-            }
-        }
-    }
+			Assert.Equal ("1, 2, 3, 4, 5, 6, 7, 8, 9, ", te.Render (tc));			
+		}
+	}
 }
+

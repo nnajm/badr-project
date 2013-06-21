@@ -1,5 +1,5 @@
 //
-// FilterLoaderRenderer.cs
+// TemplateVar.cs
 //
 // Author: najmeddine nouri
 //
@@ -27,53 +27,28 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-﻿using Badr.Server.Templates.Filters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Badr.Server.Templates.Parsing;
 
-namespace Badr.Server.Templates.Rendering
+namespace Badr.Server.Templates.Parsing
 {
-    public class FilterLoaderRenderer: ExprRenderer
+    public class TemplateVar
     {
-        #region consts
+        public readonly string StrValue;
+        public readonly bool IsLiteralString;
 
-        internal const string FILTER_LOADER_RENDERER_NAME = "FILTER_LOADER_RENDERER_NAME";
-        internal const string GROUP_FILTER_NAME = "EXPR_FILTER_NAME";
-
-        internal const string RE_INSTRUCTION_LOADER = @"load\s+(?<" + GROUP_FILTER_NAME + @">\w+)";
-
-        #endregion
-
-        private readonly string _filterName;
-
-		public FilterLoaderRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
-			: base(exprMatchResult, exprMatchTree)
+        public TemplateVar(string strValue)
         {
-			_filterName = ExprMatchTree.GetGroupValue(GROUP_FILTER_NAME);
-        }
+            StrValue = strValue;
 
-        public override void Render(RenderContext renderContext)
-        {
-            FilterManager.LoadFilters(_filterName);
-        }
-
-        public override string Name
-        {
-            get { return FILTER_LOADER_RENDERER_NAME; }
-        }
-
-        public override ExprRenderType RenderType
-        {
-            get { return ExprRenderType.Simple; }
-        }
-
-        public override ExprType Type
-        {
-            get { return ExprType.INSTRUCTION; }
+            if (strValue != null && (strValue.StartsWith("\"") || strValue.StartsWith("'")))
+            {
+                StrValue = StrValue.Trim('"', '\'');
+                IsLiteralString = true;
+            }
         }
     }
 }

@@ -41,104 +41,106 @@ using Badr.Server.Views;
 
 namespace Badr.Server.Net
 {
-
 	public class BadrHandler: IHttpHandler
 	{
-        private static readonly ILog _Logger = LogManager.GetLogger(typeof(BadrHandler));
-
+		private static readonly ILog _Logger = LogManager.GetLogger (typeof(BadrHandler));
 		BadrServer _badrServer;
 
-		public BadrHandler(BadrServer server)
+		public BadrHandler (BadrServer server)
 		{
 			_badrServer = server;
 		}
 
 		public HttpResponse Handle (HttpRequest request)
 		{
-			return Handle(request as BadrRequest);
+			return Handle (request as BadrRequest);
 		}
 
-        public HttpResponse Handle(BadrRequest request)
-        {
-            string exceptionMessage = null;
-            string errorMessage;
-            BadrResponse response = null;
+		public HttpResponse Handle (BadrRequest request)
+		{
+			string exceptionMessage = null;
+			string errorMessage;
+			BadrResponse response = null;
 
-            try
-            {
-                if (request == null)
-                    throw new Exception("Request is not a BadrRequest");
+			try
+			{
+				if (request == null)
+					throw new Exception ("Request is not a BadrRequest");
 
 				if (!request.ValidMethod)
-					return BadrResponse.Create(request, HttpResponseStatus._405);
+					return BadrResponse.Create (request, HttpResponseStatus._405);
 
-                if (ValidateHost(request.Headers[HttpRequestHeaders.Host]))
-                {
-                    MiddlewareProcessStatus middlewarePreProcessStatus = SiteManager.Middlewares.PreProcess(request, out errorMessage);
-                    if ((middlewarePreProcessStatus & MiddlewareProcessStatus.Stop) == MiddlewareProcessStatus.Stop)
-                        exceptionMessage = string.Format("Request pre-processing error: {0}", errorMessage);
-                    else
-                    {
-                        ViewUrl viewUrl = SiteManager.Urls.GetViewUrl(request.Resource);
-                        if (viewUrl != null)
-                        {
-                            request.ViewUrl = viewUrl;
-                            response = viewUrl.View(request, viewUrl.GetArgs(request.Resource));
-                        }
-                        else
-                            exceptionMessage = string.Format("Unknown resource url: {0}", request.Resource);
+				if (ValidateHost (request.Headers [HttpRequestHeaders.Host]))
+				{
+					MiddlewareProcessStatus middlewarePreProcessStatus = SiteManager.Middlewares.PreProcess (request, out errorMessage);
+					if ((middlewarePreProcessStatus & MiddlewareProcessStatus.Stop) == MiddlewareProcessStatus.Stop)
+						exceptionMessage = string.Format ("Request pre-processing error: {0}", errorMessage);
+					else
+					{
+						ViewUrl viewUrl = SiteManager.Urls.GetViewUrl (request.Resource);
+						if (viewUrl != null)
+						{
+							request.ViewUrl = viewUrl;
+							response = viewUrl.View (request, viewUrl.GetArgs (request.Resource));
+						} else
+							exceptionMessage = string.Format ("Unknown resource url: {0}", request.Resource);
 
-                        if (response != null)
-                            if (!SiteManager.Middlewares.PostProcess(request, response, out errorMessage))
-                                exceptionMessage = string.Format("Request post-processing error: {0}", errorMessage);
-                    }
-                }else
-					throw new Exception(string.Format("Unknown host '{0}'", request.Headers[HttpRequestHeaders.Host]));
+						if (response != null)
+						if (!SiteManager.Middlewares.PostProcess (request, response, out errorMessage))
+							exceptionMessage = string.Format ("Request post-processing error: {0}", errorMessage);
+					}
+				} else
+					throw new Exception (string.Format ("Unknown host '{0}'", request.Headers [HttpRequestHeaders.Host]));
 
-                if (exceptionMessage != null)
-                {
-                    if (SiteManager.Settings.DEBUG)
-                        throw new Exception(exceptionMessage);
-                    else
-                    {
-                        _Logger.Error(exceptionMessage);
-                        return BadrResponse.Create(request, HttpResponseStatus._404);
-                    }
-                }
-                else
-                    return response;
-            }
-            catch (Exception ex)
-            {
-                _Logger.Error(ex.Message, ex);
+				if (exceptionMessage != null)
+				{
+					if (SiteManager.Settings.Debug)
+						throw new Exception (exceptionMessage);
+					else
+					{
+						_Logger.Error (exceptionMessage);
+						return BadrResponse.Create (request, HttpResponseStatus._404);
+					}
+				} else
+					return response;
+			} catch (Exception ex)
+			{
+				_Logger.Error (ex.Message, ex);
 
-                if (SiteManager.Settings.DEBUG)
-                    return BadrResponse.CreateDebugResponse(request, ex);
-                else
-                    return BadrResponse.Create(request, HttpResponseStatus._404);
-            }
-        }
+				if (SiteManager.Settings.Debug)
+					return BadrResponse.CreateDebugResponse (request, ex);
+				else
+					return BadrResponse.Create (request, HttpResponseStatus._404);
+			}
+		}
 
-		protected bool ValidateHost(string hostname)
+		protected bool ValidateHost (string hostname)
 		{
-			if(hostname == null || SiteManager.Settings.ALLOWED_HOSTS == null || SiteManager.Settings.ALLOWED_HOSTS.Length == 0)
+			if (hostname == null || SiteManager.Settings.AllowedHosts == null || SiteManager.Settings.AllowedHosts.Length == 0)
 				return false;
 
-			int portIndex = hostname.LastIndexOf(':');
+			int portIndex = hostname.LastIndexOf (':');
 			string ihostname = (portIndex != -1
-				? hostname.Substring(0, portIndex)
-				: hostname).ToLower();
+				? hostname.Substring (0, portIndex)
+				: hostname).ToLower ();
 
-			foreach(string hostpattern in SiteManager.Settings.ALLOWED_HOSTS)
+			foreach (string hostpattern in SiteManager.Settings.AllowedHosts)
 			{
-				if(hostpattern == "*")
+				if (hostpattern == "*")
 					return true;
 
-				if(hostpattern.Length > 1)
-					if(hostpattern.StartsWith("."))
-						return hostname.EndsWith(hostpattern.Substring(1));
-					else
-						return ihostname == hostpattern;
+				if (hostpattern.Length > 1)
+				{
+					if (hostpattern.StartsWith ("."))
+					{
+						if (hostname.EndsWith (hostpattern.Substring (1)))
+							return true;
+					} else
+					{
+						if (ihostname == hostpattern)
+							return true;
+					}
+				}
 			}
 
 			return false;

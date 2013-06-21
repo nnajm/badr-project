@@ -7,16 +7,16 @@
     <ProjectGuid>{77F2220F-9E68-4A65-9874-4B538AB44BB7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Badr.Orm.Test</RootNamespace>
-    <AssemblyName>Badr.Orm.Test</AssemblyName>
+    <RootNamespace>Badr.Test</RootNamespace>
+    <AssemblyName>Badr.Test</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -24,14 +24,14 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
@@ -39,12 +39,12 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -52,7 +52,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
@@ -60,12 +60,12 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -73,23 +73,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug[+TEST]|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/Debug/ &quot;$(SolutionDir)/testrunner/Badr.Orm.Test.runner.csproj&quot;" />
+        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/Debug/ &quot;$(SolutionDir)/testrunner/Badr.Test.runner.csproj&quot;" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug[+TEST]|x86'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
@@ -97,15 +96,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/x86/Debug/ &quot;$(SolutionDir)/testrunner/Badr.Orm.Test.runner.csproj&quot;" />
+        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/x86/Debug/ &quot;$(SolutionDir)/testrunner/Badr.Test.runner.csproj&quot;" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug[+TEST]|x64'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
@@ -113,32 +112,31 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/x64/Debug/ &quot;$(SolutionDir)/testrunner/Badr.Orm.Test.runner.csproj&quot;" />
+        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/x64/Debug/ &quot;$(SolutionDir)/testrunner/Badr.Test.runner.csproj&quot;" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release[+TEST]|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/Release/ &quot;$(SolutionDir)/testrunner/Badr.Orm.Test.runner.csproj&quot;" />
+        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/Release/ &quot;$(SolutionDir)/testrunner/Badr.Test.runner.csproj&quot;" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release[+TEST]|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -146,14 +144,14 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/x86/Release/ &quot;$(SolutionDir)/testrunner/Badr.Orm.Test.runner.csproj&quot;" />
+        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/x86/Release/ &quot;$(SolutionDir)/testrunner/Badr.Test.runner.csproj&quot;" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release[+TEST]|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -161,7 +159,7 @@
     <WarningLevel>4</WarningLevel>
     <CustomCommands>
       <CustomCommands>
-        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/x64/Release/ &quot;$(SolutionDir)/testrunner/Badr.Orm.Test.runner.csproj&quot;" />
+        <Command type="AfterBuild" command="xbuild /property:OutputPath=bin/x64/Release/ &quot;$(SolutionDir)/testrunner/Badr.Test.runner.csproj&quot;" />
       </CustomCommands>
     </CustomCommands>
   </PropertyGroup>
@@ -188,16 +186,24 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Member.cs" />
-    <Compile Include="Models\Project.cs" />
-    <Compile Include="Models\ProjectMembers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DbOperationsTest.cs" />
-    <Compile Include="UrlsTest.cs" />
+    <Compile Include="TestSettings.cs" />
+    <Compile Include="TestApp\Models\Member.cs" />
+    <Compile Include="TestApp\Models\Project.cs" />
+    <Compile Include="TestApp\Models\ProjectMembers.cs" />
+    <Compile Include="TestApp\Urls.cs" />
+    <Compile Include="TestApp\TestApplication.cs" />
+    <Compile Include="Orm\OrmTest.cs" />
+    <Compile Include="TestBase.cs" />
+    <Compile Include="Templates\ForloopTest.cs" />
+    <Compile Include="Templates\IfTest.cs" />
+    <Compile Include="Templates\UrlTest.cs" />
+    <Compile Include="Urls\UrlsMatchingTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="badr_orm_test.db" />
-    <None Include="packages.config" />
+    <EmbeddedResource Include="Orm\badr_orm_test.db">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Badr.Orm\Badr.Orm.mono.csproj">
@@ -208,6 +214,10 @@
       <Project>{477E8E97-6FE9-4E3B-858E-2EBA823ACEDF}</Project>
       <Name>Badr.Server.mono</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\Badr.Net\Badr.Net.mono.csproj">
+      <Project>{6A65EE42-6B11-40F4-8E3C-B40E4AB21001}</Project>
+      <Name>Badr.Net.mono</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -217,4 +227,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Templates\" />
+    <Folder Include="TestApp\" />
+    <Folder Include="Orm\" />
+    <Folder Include="Urls\" />
+  </ItemGroup>
 </Project>

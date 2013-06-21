@@ -150,9 +150,6 @@
     <Compile Include="Middlewares\SessionMiddleware.cs" />
     <Compile Include="Settings\SiteSettings.cs" />
     <Compile Include="Templates\Filters\FilterManager.cs" />
-    <Compile Include="Templates\Parser.cs" />
-    <Compile Include="Templates\Rendering\ExprMatchGroups.cs" />
-    <Compile Include="Templates\Rendering\ExprRenderer.cs" />
     <Compile Include="Templates\Rendering\FilterLoaderRenderer.cs" />
     <Compile Include="Templates\Rendering\ForLoopRenderer.cs" />
     <Compile Include="Templates\Rendering\IfElseRenderer.cs" />
@@ -163,12 +160,9 @@
     <Compile Include="Templates\Rendering\UrlRenderer.cs" />
     <Compile Include="Templates\Rendering\VariableRenderer.cs" />
     <Compile Include="Templates\Rendering\RenderContext.cs" />
-    <Compile Include="Templates\Scope.cs" />
     <Compile Include="Templates\TemplateAttribute.cs" />
-    <Compile Include="Templates\BadrGrammar.cs" />
     <Compile Include="Templates\TemplateEngine.cs" />
     <Compile Include="Templates\TemplateException.cs" />
-    <Compile Include="Urls\UrlsBase.cs" />
     <Compile Include="Utils\Helper.cs" />
     <Compile Include="Utils\MimeMapping.cs" />
     <Compile Include="Views\FilesManager.cs" />
@@ -192,11 +186,18 @@
     <Compile Include="ContextProcessors\ContextProcessorBase.cs" />
     <Compile Include="Settings\ServerSettings.cs" />
     <Compile Include="Utils\Logging\ManagedColordConsoleAppender.cs" />
-    <Compile Include="Templates\Rendering\TemplateVarFiltered.cs" />
     <Compile Include="Templates\Filters\IFilterContainer.cs" />
-    <Compile Include="Templates\Rendering\TemplateVar.cs" />
+    <Compile Include="Urls\UrlsBase.cs" />
     <Compile Include="SiteManager.cs" />
     <Compile Include="AppRoot.cs" />
+    <Compile Include="Templates\Parsing\Parser.cs" />
+    <Compile Include="Templates\Parsing\Scope.cs" />
+    <Compile Include="Templates\Parsing\ExprMatchTree.cs" />
+    <Compile Include="Templates\Rendering\ExprRenderer.cs" />
+    <Compile Include="Templates\Parsing\TemplateFilter.cs" />
+    <Compile Include="Templates\Parsing\TemplateVar.cs" />
+    <Compile Include="Templates\Parsing\TemplateVarFiltered.cs" />
+    <Compile Include="Templates\Rendering\BadrGrammar.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Badr.Orm\Badr.Orm.csproj">
@@ -217,5 +218,8 @@
   </Target>
   -->
   <ItemGroup />
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Utils\Logging\" />
+    <Folder Include="Templates\Parsing\" />
+  </ItemGroup>
 </Project>

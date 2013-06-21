@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -88,15 +89,15 @@ namespace Badr.Server.Templates.Rendering
 
     public abstract class ExprRenderer
     {
-        public ExprRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
-        {
-            ExprMatchResult = exprMatchResult;
-            ExprMatchGroups = exprMatchGroups;
-        }        
+		public ExprRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
+		{
+			ExprMatchResult = exprMatchResult;
+			ExprMatchTree = exprMatchTree;
+		}        
 
         public abstract void Render(RenderContext renderContext);
-
-        public ExprMatchGroups ExprMatchGroups;
+		
+		public ExprMatchTree ExprMatchTree;
         public Parser.ExprMatchResult ExprMatchResult;
         public abstract string Name { get; }
         public abstract ExprRenderType RenderType { get; }
@@ -134,8 +135,8 @@ namespace Badr.Server.Templates.Rendering
         private ExprRenderType _renderType;
         private ExprType _type;
 
-        public ExprEmptyRenderer(string name, ExprRenderType renderType, ExprType type, Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
-            :base(exprMatchResult, exprMatchGroups)
+        public ExprEmptyRenderer(string name, ExprRenderType renderType, ExprType type, Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
+			:base(exprMatchResult, exprMatchTree)
         {
             _name = name;
             _renderType = renderType;

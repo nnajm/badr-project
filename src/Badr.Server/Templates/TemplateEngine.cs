@@ -37,6 +37,7 @@ using Badr.Net;
 using Badr.Server.Net;
 using Badr.Server.Settings;
 using Badr.Server.Templates.Rendering;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates
 {
@@ -77,6 +78,11 @@ namespace Badr.Server.Templates
             else
                 return new RenderContext(request).Render(_scope0, context);
         }
+
+		public string Render(TemplateContext context)
+		{
+			return Render (null, context);
+		}
 
         private bool ParseExpressions()
         {

@@ -46,15 +46,15 @@ namespace Badr.Server.Net
     {
 		public BadrResponse(HttpResponseStatus status, string contentType = null, string charset = null)
             : base(status,
-                   contentType ?? SiteManager.Settings.DEFAULT_CONTENT_TYPE,
-                   charset ?? SiteManager.Settings.DEFAULT_CHARSET)
+                   contentType ?? SiteManager.Settings.DefaultContentType,
+                   charset ?? SiteManager.Settings.DefaultCharset)
         {
         }
 
         public BadrResponse(BadrRequest request, string contentType = null, string charset = null)
             : base(request,
-                   contentType ?? SiteManager.Settings.DEFAULT_CONTENT_TYPE,
-                   charset ?? SiteManager.Settings.DEFAULT_CHARSET)
+                   contentType ?? SiteManager.Settings.DefaultContentType,
+                   charset ?? SiteManager.Settings.DefaultCharset)
         {
         }
 

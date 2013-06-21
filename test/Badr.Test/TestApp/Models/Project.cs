@@ -1,5 +1,5 @@
 //
-// Member.cs
+// Project.cs
 //
 // Author: najmeddine nouri
 //
@@ -27,25 +27,28 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-﻿using Badr.Orm.Fields;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Badr.Orm;
+﻿using Badr.Orm.Fields;
 
-namespace Badr.Orm.Test.Models
+namespace Badr.Test.TestApp.Models
 {
-    public class Member: Model
+    public class Project: Model
     {
         protected override void Configure(dynamic self)
         {
             base.Configure(this);
 
-            this.ModelDbName = "member";
+            this.ModelDbName = "project";
             this.PKField.DbName = "id";
 
-            self.Role = new CharField() { MaxLength = 255, DbName = "role" };
-            self.Rate = new DecimalField() { DbName = "rate" };
+            self.Name = new CharField() { MaxLength = 255, DbName = "name" };
+            self.StartDate = new DateTimeField() { DbName = "start_date" };
+            self.DueDate = new DateTimeField() { DbName = "due_date" };
+            self.Members = new ManyToManyField(typeof(Member), typeof(ProjectMembers));
         }
     }
 }

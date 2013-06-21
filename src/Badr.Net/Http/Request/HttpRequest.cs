@@ -67,7 +67,7 @@ namespace Badr.Net.Http.Request
             POST = new HttpRequestParams();
             FILES = new HttpFormFiles();
             Headers = new HttpRequestHeaders();
-            Cookies = new HttpCookie();
+            Cookies = new HttpCookies();
         }
 
         protected internal virtual void CreateHeaders(ReceiveBufferManager rbm)
@@ -114,6 +114,7 @@ namespace Badr.Net.Http.Request
 
             ClientGzipSupport = Headers[HttpRequestHeaders.AcceptEncoding] != null && Headers[HttpRequestHeaders.AcceptEncoding].Contains("gzip");
             IsAjax = Headers[HttpRequestHeaders.XRequestedWith] == "XMLHttpRequest";
+			IsSecure = CheckIsSecure();
 
             if (Headers.Contains(HttpRequestHeaders.Host))
             {
@@ -124,6 +125,11 @@ namespace Badr.Net.Http.Request
             else
                 throw new HttpStatusException(HttpResponseStatus._400);
         }
+
+		protected virtual bool CheckIsSecure()
+		{
+			return Headers[HttpRequestHeaders.XIsHttps] == "on";
+		}
 
         protected bool ParseLine(string line, bool isFirstLine)
         {
@@ -228,16 +234,17 @@ namespace Badr.Net.Http.Request
         public HttpFormFiles FILES { get; protected internal set; }
         public HttpRequestHeaders Headers { get; protected internal set; }
         public Uri DomainUri { get; protected internal set; }
-        public HttpCookie Cookies { get; protected internal set; }
+        public HttpCookies Cookies { get; protected internal set; }
         public string Body { get; protected internal set; }
-        public bool ValidMethod { get { return Method == HttpRequestMethods.GET || Method == HttpRequestMethods.POST; } }
-        
+       
         public int HeaderLength { get; private set; }
         public int ContentLength { get; private set; }
         public int TotalLength { get { return HeaderLength + ContentLength; } }
 
         public bool ClientGzipSupport { get; protected set; }
+		public bool ValidMethod { get { return Method == HttpRequestMethods.GET || Method == HttpRequestMethods.POST; } }
         public bool IsAjax { get; protected set; }
+		public bool IsSecure { get; protected set; }
 
         public bool IsMulitpart { get; protected set; }
         public string MulitpartBoundary { get; protected set; }

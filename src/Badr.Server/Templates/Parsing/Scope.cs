@@ -41,7 +41,7 @@ using Badr.Server.Middlewares;
 using Badr.Server.Utils;
 using Badr.Server.Templates.Rendering;
 
-namespace Badr.Server.Templates
+namespace Badr.Server.Templates.Parsing
 {
     public class Scope
     {

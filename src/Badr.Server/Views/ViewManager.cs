@@ -61,7 +61,7 @@ namespace Badr.Server.Views
         internal ViewManager()
         {
             _viewTemplates = new Dictionary<string, TemplateEngine>();
-            _templateFilesManager = new FilesManager(SiteManager.Settings.TEMPLATE_DIRS);
+            _templateFilesManager = new FilesManager(SiteManager.Settings.TemplateDirs);
         }
 
         public TemplateEngine GetTemplateEngine(ViewUrl viewUrl, string templatePathOverride = null)

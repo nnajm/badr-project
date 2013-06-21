@@ -47,12 +47,12 @@ namespace Badr.Server.Middlewares
         protected const string CSRF_INPUT_NAME = CookieNames.CSRF_TOKEN + "_spetag";
         protected const string CSRF_SPE_TAG_NAME = "csrftoken";
 
-        public override MiddlewareProcessStatus PreProcess(BadrRequest wRequest, out string errorMessage)
+        public override MiddlewareProcessStatus PreProcess(BadrRequest request, out string errorMessage)
         {
-            if (!HttpRequest.IsSafeMethod(wRequest.Method))
+            if (!HttpRequest.IsSafeMethod(request.Method))
             {
-                if (!wRequest.POST.Contains(CSRF_INPUT_NAME)
-                    || wRequest.CsrfToken != wRequest.POST[CSRF_INPUT_NAME].ToString())
+                if (!request.POST.Contains(CSRF_INPUT_NAME)
+                    || request.CsrfToken != request.POST[CSRF_INPUT_NAME].ToString())
                 {
                     errorMessage = "POST request does not contain valid csrf token";
                     _Logger.Error(errorMessage);
@@ -64,38 +64,46 @@ namespace Badr.Server.Middlewares
             return MiddlewareProcessStatus.Continue;
         }
 
-        public override bool PostProcess(BadrRequest wRequest, BadrResponse wResponse, out string errorMessage)
+        public override bool PostProcess(BadrRequest request, BadrResponse response, out string errorMessage)
         {
             errorMessage = null;
-            if (wResponse.Status.IsSuccess() && IsValidCsrf(wRequest))
+            if ((!SiteManager.Settings.Cookies.CsrfSecure || request.IsSecure)
+				 && response.Status.IsSuccess() && IsValidCsrf(request))
             {
-                wResponse.Cookies[CookieNames.CSRF_TOKEN] = new HttpCookieFragment(
+				HttpCookieFragment csrfFragment = new HttpCookieFragment(
                     name: CookieNames.CSRF_TOKEN,
-                    value: wRequest.CsrfToken,
+                    value: request.CsrfToken,
                     path: "/",
-                    domain: wRequest.DomainUri.Host);
+                    domain: request.DomainUri.Host);
+
+				if(SiteManager.Settings.Cookies != null)
+				{
+					csrfFragment.IsSecure = SiteManager.Settings.Cookies.CsrfSecure;
+				}
+
+				response.Cookies[CookieNames.CSRF_TOKEN] = csrfFragment;
             }
 
             return true;
         }
 
-        public override bool ResolveSpecialTag(BadrRequest wRequest, string spetagName, out string result)
+        public override bool ResolveSpecialTag(BadrRequest request, string spetagName, out string result)
         {
-            if (spetagName == CSRF_SPE_TAG_NAME)
+			if (request != null && spetagName == CSRF_SPE_TAG_NAME)
             {
-                if (!IsValidCsrf(wRequest))
-                    wRequest.CsrfToken = Security.GenerateId(24);
+                if (!IsValidCsrf(request))
+                    request.CsrfToken = Security.GenerateId(24);
 
-                result = string.Format("<input type=\"hidden\" name=\"{0}\" value=\"{1}\"/>", CSRF_INPUT_NAME, wRequest.CsrfToken);
+                result = string.Format("<input type=\"hidden\" name=\"{0}\" value=\"{1}\"/>", CSRF_INPUT_NAME, request.CsrfToken);
                 return true;
             }
 
-            return base.ResolveSpecialTag(wRequest, spetagName, out result);
+            return base.ResolveSpecialTag(request, spetagName, out result);
         }
 
-        private bool IsValidCsrf(BadrRequest wRequest)
+        private bool IsValidCsrf(BadrRequest request)
         {
-            return !(string.IsNullOrEmpty(wRequest.CsrfToken) || wRequest.CsrfToken.Trim() == "");
+            return !(string.IsNullOrEmpty(request.CsrfToken) || request.CsrfToken.Trim() == "");
         }
     }
 }

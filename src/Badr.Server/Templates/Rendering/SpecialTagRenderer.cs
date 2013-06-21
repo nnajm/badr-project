@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Badr.Server.Net;
+using Badr.Server.Templates.Parsing;
 
 namespace Badr.Server.Templates.Rendering
 {
@@ -50,10 +51,10 @@ namespace Badr.Server.Templates.Rendering
 
         private readonly string _specialTagName;
 
-        public SpecialTagRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchGroups exprMatchGroups)
-            : base(exprMatchResult, exprMatchGroups)
+		public SpecialTagRenderer(Parser.ExprMatchResult exprMatchResult, ExprMatchTree exprMatchTree)
+			: base(exprMatchResult, exprMatchTree)
         {
-            _specialTagName = ExprMatchGroups.GetGroupValue(GROUP_SPE_TAG_NAME);
+			_specialTagName = ExprMatchTree.GetGroupValue(GROUP_SPE_TAG_NAME);
         }
 
         public override void Render(RenderContext renderContext)

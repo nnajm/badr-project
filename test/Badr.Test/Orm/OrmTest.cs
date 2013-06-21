@@ -28,7 +28,7 @@
 // dealings in this Software without prior written authorization.
 //
 using Badr.Orm.Query;
-using Badr.Orm.Test.Models;
+using Badr.Test.TestApp.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -37,42 +37,20 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Xunit;
+using Badr.Orm;
 
-namespace Badr.Orm.Test
+namespace Badr.Test.Orm
 {
-    public class DbOperationsTest
+	public class OrmTest: TestBase
     {
-        private const string DB_FILE_PATH = "badr_orm_test.db";
-
         /// <summary>
         /// Initializing database file
         /// </summary>
         private static void ResetDatabase()
         {
-            using (Stream s = typeof(DbOperationsTest).Assembly.GetManifestResourceStream("Badr.Orm.Test.badr_orm_test.db"))
-            using (FileStream fs = File.Create(DB_FILE_PATH))
+			using (Stream s = typeof(OrmTest).Assembly.GetManifestResourceStream("Badr.Test.Orm.badr_orm_test.db"))
+				using (FileStream fs = File.Create(WebsiteSettings.DB_FILE_PATH))
                 s.CopyTo(fs);
-        }
-
-        static DbOperationsTest()
-        {
-            ResetDatabase();
-
-            // ---
-            // Registering database
-            // ---
-            DbSettings dbSettings = new DbSettings()
-            {
-                ENGINE = Badr.Orm.DbEngines.DbEngine.DB_SQLITE3,
-                DB_NAME = DB_FILE_PATH
-            };
-
-            OrmManager.RegisterDatabase("BADR_ORM_TEST", dbSettings);
-
-            // ---
-            // Registering models
-            // ---
-            OrmManager.RegisterModels("Test1App", new Type[] { typeof(Project), typeof(Member), typeof(ProjectMembers) });
         }
 
         /// <summary>
