@@ -30,7 +30,7 @@
 using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using Badr.Server.Templates;
+using Badr.Server.Templates.Rendering;
 
 namespace Badr.Server.Templates.Parsing
 {
