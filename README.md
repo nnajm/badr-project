@@ -39,9 +39,9 @@ Version: 0.9 Beta
 
 ####Road map:
 
+- _**[done]**_ _Https support_
 - More template tags/filters
 - Model forms
-- Https support
 - Authentication app
 - Admin interface
 - More databases support
