@@ -1,4 +1,4 @@
-**Badr** is a full-stack .net web framework written in c# & inspired by django.
+**Badr** is a full-stack .net mvc web framework written in c# & inspired by django.
 
 ####Main features:
 
