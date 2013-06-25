@@ -47,4 +47,4 @@ Version: 0.9 Beta
 
 ##License
 
-[MIT Licence](https://github.com/nnajm/badrproject/blob/master/LICENCE.TXT)
+[MIT Licence](https://github.com/badrproject/badr-project/blob/master/LICENCE.TXT)
