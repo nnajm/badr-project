@@ -38,6 +38,7 @@ Version: 0.9 Beta
 ####Road map:
 
 - _**[done]**_ _Https support_
+- _**[done]**_ _File upload support_
 - More template tags/filters
 - Model forms
 - Authentication app
