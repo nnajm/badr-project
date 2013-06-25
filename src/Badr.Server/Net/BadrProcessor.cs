@@ -56,10 +56,5 @@ namespace Badr.Server.Net
         {
             return new BadrRequest();
         }
-
-        public override HttpUploadManager InitUploadManager(HttpRequest request)
-        {
-            return base.InitUploadManager(request);
-        }
     }
 }

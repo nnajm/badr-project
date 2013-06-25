@@ -166,8 +166,6 @@ namespace Badr.Test.Orm
             newMember.Rate = "101";
             newMember.Save(); // newMember.Id is updated from database (last_insert_id)
 
-            Console.WriteLine("New member id = " + newMember.Id);
-
             dynamic newMemberFromDb = Model<Member>.Manager.Get(newMember.Id);
             Assert.NotNull(newMemberFromDb);
             Assert.Equal(13, newMemberFromDb.Id);

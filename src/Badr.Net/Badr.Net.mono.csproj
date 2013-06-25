@@ -167,7 +167,6 @@
     <Compile Include="SocketAsyncManager.cs" />
     <Compile Include="SocketAsyncReceiveArgs.cs" />
     <Compile Include="NetProcessor.cs" />
-    <Compile Include="Http\HttpUploadManager.cs" />
     <Compile Include="RecieveBufferManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="INetServer.cs" />
@@ -193,6 +192,14 @@
     <Compile Include="Http\HttpCookieFragment.cs" />
     <Compile Include="Utils\DefaultMap.cs" />
     <Compile Include="Http\HttpCookies.cs" />
+    <Compile Include="Http\Request\HttpFormFile.cs" />
+    <Compile Include="Http\Request\HttpFormFiles.cs" />
+    <Compile Include="Http\Upload\HttpUploadManager.cs" />
+    <Compile Include="Http\Upload\FileUploadHandler.cs" />
+    <Compile Include="Http\Upload\TmpFileUploadedHandler.cs" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Http\Upload\" />
+  </ItemGroup>
 </Project>

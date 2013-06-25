@@ -1,5 +1,5 @@
 //
-// Program.cs
+// FileUploadHandler.cs
 //
 // Author: najmeddine nouri
 //
@@ -27,48 +27,35 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-﻿using System;
+
+using Badr.Net.Http.Request;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Net;
-using Badr.Server.Net;
-using Badr.Server.Settings;
-using Badr.Orm;
-using Badr.Demo.Accounting;
-using Badr.Orm.Query;
 
-namespace Badr.Demo
+namespace Badr.Net.Http
 {
-    class Program
+
+    public abstract class FileUploadHandler
     {
-        static void Main (string[] args)
-		{
-			log4net.Config.XmlConfigurator.Configure ();
-
-			// after db initialization (db file creation), set to true
-			bool databaseInitialized = true;
-
-			if (!databaseInitialized)
-				InitializeDatabase ();
-			else
-			{
-				new BadrServer ().XmlConfigure ()
-                                 .Start ();
-			}
-        }
-
-        private static void InitializeDatabase()
+        public FileUploadHandler(string fieldName, string fileUploadName, string contentType)
         {
-            new BadrServer().XmlConfigure()
-                            .SyncDatabase();
-
-            for (int i = 0; i <= 27; i++)
-            {
-                AccountType at = new AccountType();
-                at.Description = "AccountType " + i;
-                at.Save();
-            }
+			FieldName = fieldName;
+			FileUploadName = fileUploadName;
+			ContentType = contentType;
         }
-	}
+
+		public string FieldName { get; protected set; }
+		public string FileUploadName{ get; protected set; }
+		public string ContentType{ get; protected set; }
+
+		public abstract void UploadStarted();
+        public abstract void ChunkReceived(byte[] chunk, int offset, int count);
+        public abstract void UploadEnded();
+		public abstract void Clean();
+		public abstract HttpFormFile GetHttpFormFile ();
+    }
+    
 }

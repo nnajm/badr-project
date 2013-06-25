@@ -68,7 +68,7 @@ namespace Badr.Net.Http.Request
             FILES = new HttpFormFiles();
             Headers = new HttpRequestHeaders();
             Cookies = new HttpCookies();
-        }
+		}
 
         protected internal virtual void CreateHeaders(ReceiveBufferManager rbm)
         {
@@ -108,7 +108,7 @@ namespace Badr.Net.Http.Request
             IsMulitpart = contentType.Contains("multipart/form-data");
             if (IsMulitpart)
             {
-                MulitpartBoundary = "--" + contentType.Split(';')[1].Split('=')[1].TrimStart();
+				MulitpartBoundary = string.Format("--{0}", contentType.Split(';')[1].Split('=')[1].TrimStart());
                 MulitpartBoundaryBytes = Encoding.Default.GetBytes(MulitpartBoundary);
             }
 
@@ -192,6 +192,12 @@ namespace Badr.Net.Http.Request
 
             return false;
         }
+
+		public void RefreshFiles (HttpUploadManager uploadManager)
+		{
+			if(uploadManager != null)
+				FILES.AddRange(uploadManager.HttpFormFiles);
+		}
 
         protected internal void ParseUrlEncodedParams(string paramsLine)
         {

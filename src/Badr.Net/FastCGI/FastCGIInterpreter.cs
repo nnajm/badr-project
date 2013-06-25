@@ -95,6 +95,8 @@ namespace Badr.Net.FastCGI
         public void Clear()
         {
             Request = null;
+			_stdinHeader = null;
+			_stdinDataReceivedLength = 0;
             EndOfRequest = false;
             AbortRequest = false;
         }
@@ -108,7 +110,6 @@ namespace Badr.Net.FastCGI
 
         public int TranslateToHttpData(byte[] buffer, int offset, int length)
         {
-            byte[] requestHeadersData = null;
 
             int remainingOffset;
             int remainingReplaceOffset;
@@ -117,7 +118,7 @@ namespace Badr.Net.FastCGI
             {
                 remainingOffset = ParseRequest(buffer, offset, length);
 
-                requestHeadersData = Request.ToHttpData();
+				byte[] requestHeadersData = Request.ToHttpData();
                 Array.Copy(requestHeadersData, 0, buffer, offset, requestHeadersData.Length);
 
                 remainingReplaceOffset = offset + requestHeadersData.Length;
@@ -136,47 +137,71 @@ namespace Badr.Net.FastCGI
             return endOffset - offset;
         }
 
+		private FastCGIHeader? _stdinHeader;
+		private int _stdinDataReceivedLength = 0;
+
         private int TranslateRemainingData(byte[] buffer, int offset, int length, int replaceOffset)
         {
-            List<byte> stdinData = new List<byte>();
+			List<byte> stdinData = new List<byte> ();
 
-            int endOffset = offset + length;
-            while (offset < endOffset)
-            {
-                FastCGIHeader header = new FastCGIHeader(buffer, offset);
-                offset += FastCGIHeader.LENGTH;
-                if (header.RequestId != 0 )
-                {
-                    if (header.Type == FastCGIHeader.TYPE.STDIN)
-                    {
-                        if (header.ContentLength > 0)
-                        {
-                            for (int i = offset; i < offset + header.ContentLength; i++)
-                            {
-                                buffer[replaceOffset] = buffer[i];
-                                replaceOffset += 1;
-                            }
+			int endOffset = offset + length;
+			while (offset < endOffset)
+			{
+				if (!_stdinHeader.HasValue)
+				{
+					FastCGIHeader header = new FastCGIHeader (buffer, offset);
+					offset += FastCGIHeader.LENGTH;
+					if (header.RequestId != 0)
+					{
+						if (header.Type == FastCGIHeader.TYPE.STDIN)
+						{
+							_stdinHeader = header;
+						} else if (header.Type == FastCGIHeader.TYPE.ABORT_REQUEST)
+						{
+							AbortRequest = true;
+						}
+					}
+				}
 
-                            offset += header.ContentLength;
-                        }
-                        else
-                        {
-                            // empty stdin = last stdin = endofrequest
-                            EndOfRequest = true;
-                            break;
-                        }
-                    }
-                    if (header.Type == FastCGIHeader.TYPE.ABORT_REQUEST)
-                    {
-                        AbortRequest = true;
-                    }
-                }
+				if (_stdinHeader.HasValue)
+				{
+					if (_stdinHeader.Value.ContentLength == 0)
+					{
+						// empty stdin = last stdin = endofrequest
+						EndOfRequest = true;
+						break;
+					} else if (_stdinHeader.Value.RequestId != 0 && endOffset > offset)
+					{
+						int contentLength = Math.Min (_stdinHeader.Value.ContentLength - _stdinDataReceivedLength, endOffset - offset);
+						if (contentLength > 0)
+						{
+							for (int i = offset; i < offset + contentLength; i++)
+							{
+								buffer [replaceOffset] = buffer [i];
+								replaceOffset += 1;
+							}
+						
+							offset += contentLength;
+						
+							_stdinDataReceivedLength += contentLength;
+						} else
+						{
+							// empty stdin = last stdin = endofrequest
+							EndOfRequest = true;
+							break;
+						}
 
-                offset += header.PaddingLength;
-            }
-
-            return replaceOffset;
-        }
+						if (_stdinDataReceivedLength == _stdinHeader.Value.ContentLength)
+						{
+							offset += _stdinHeader.Value.PaddingLength;
+							_stdinHeader = null;
+							_stdinDataReceivedLength = 0;
+						}
+					}
+				}
+			}
+			return replaceOffset;
+		}
 
         #endregion
 
@@ -184,25 +209,43 @@ namespace Badr.Net.FastCGI
 
         public byte[] TranslateToFCGIResponse(byte[] responseData)
         {
-            int paddingLength = (int)Math.Ceiling(responseData.Length / 8.0) * 8 - responseData.Length;
-            byte[] fcgiRespData = new byte[FastCGIHeader.LENGTH + responseData.Length + paddingLength + FastCGIHeader.LENGTH + EndRequestBody.LENGTH];
-            
-            FastCGIHeader stdoutHeader = new FastCGIHeader();
-            stdoutHeader.RequestId = Request.BeginRequestRecord.Header.RequestId;
-            stdoutHeader.Type = FastCGIHeader.TYPE.STDOUT;
-            stdoutHeader.Version = Request.BeginRequestRecord.Header.Version;
-            stdoutHeader.ContentLength = (ushort)responseData.Length;
-            stdoutHeader.PaddingLength = (byte)paddingLength;
-            stdoutHeader.Reserved = 0;
+//            int paddingLength = (int)Math.Ceiling(responseData.Length / 8.0) * 8 - responseData.Length;
+//            byte[] fcgiRespData = new byte[FastCGIHeader.LENGTH + responseData.Length + paddingLength + FastCGIHeader.LENGTH + EndRequestBody.LENGTH];
 
-            // copy stdout header
-            stdoutHeader.CopyBytesTo(fcgiRespData, 0);
+			int maxChunkLength = ushort.MaxValue - 8;
+			int lastChunkLength;
 
-            // copy stdout body
-            Array.Copy(responseData, 0, fcgiRespData, FastCGIHeader.LENGTH, responseData.Length);
+			int chuncksCount = Math.DivRem(responseData.Length, maxChunkLength, out lastChunkLength) + 1;
+			int padding = 8 - (lastChunkLength % 8);
+			if (padding == 8)
+				padding = 0;
+
+			byte[] fcgiRespData = new byte[(chuncksCount - 1) * (maxChunkLength + FastCGIHeader.LENGTH) 
+			                               + FastCGIHeader.LENGTH + lastChunkLength + padding 
+			                               + FastCGIHeader.LENGTH + EndRequestBody.LENGTH];
+
+			for (int i=0; i<chuncksCount; i++)
+			{
+				int contentLength = i == chuncksCount - 1 ? lastChunkLength : maxChunkLength;
+				int paddingLength = i == chuncksCount - 1 ? padding : 0;
+
+				FastCGIHeader stdoutHeader = new FastCGIHeader ();
+				stdoutHeader.RequestId = Request.BeginRequestRecord.Header.RequestId;
+				stdoutHeader.Type = FastCGIHeader.TYPE.STDOUT;
+				stdoutHeader.Version = Request.BeginRequestRecord.Header.Version;
+				stdoutHeader.ContentLength = (ushort)contentLength;
+				stdoutHeader.PaddingLength = (byte)paddingLength;
+				stdoutHeader.Reserved = 0;
+
+				// copy stdout header
+				stdoutHeader.CopyBytesTo (fcgiRespData, i * (FastCGIHeader.LENGTH + maxChunkLength));
+
+				// copy stdout body
+				Array.Copy (responseData, i * maxChunkLength, fcgiRespData, i * (FastCGIHeader.LENGTH + maxChunkLength) + FastCGIHeader.LENGTH, contentLength);
+			}
 
             // copy endrequest record header & body
-            int endReqRecOffset = FastCGIHeader.LENGTH + responseData.Length + paddingLength;
+			int endReqRecOffset = fcgiRespData.Length - (FastCGIHeader.LENGTH + EndRequestBody.LENGTH);
             GetEndRequestRecord(0, EndRequestBody.PROTOCOL_STATUS.FCGI_REQUEST_COMPLETE)
                                .CopyBytesTo(fcgiRespData, endReqRecOffset);
 

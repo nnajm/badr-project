@@ -79,9 +79,10 @@ namespace Badr.Net.Http
 		{
 			_request = null;
 
+			EndUploads ();
 			if (_uploadManager != null)
 			{
-				_uploadManager.AllFileUploadsEnded ();
+				_uploadManager.Clean ();
 				_uploadManager = null;
 			}
 
@@ -91,6 +92,14 @@ namespace Badr.Net.Http
 
 		protected internal override void OnDataReceived (byte[] buffer, int offset, int length)
 		{
+//#if DUMP_REQUEST_BYTES
+//
+//			string reqDumpFile = string.Format("curr_request.{0}.dump", DateTime.Now.Ticks);
+//			using (var stream = new System.IO.FileStream(reqDumpFile, System.IO.FileMode.Append))
+//			{
+//				stream.Write (buffer, offset, length);
+//			}
+//#endif
 			try
 			{
 				if (length > 0)
@@ -118,56 +127,24 @@ namespace Badr.Net.Http
 
 				if (_request != null && (_request.TotalLength == SocketAsyncManager.TotalReceived || (_httpServer.Mode == ServerMode.FastCGI && FcgiInterpreter.EndOfRequest)))
 				{
+					_request.RefreshFiles (_uploadManager);
 					SendResponse ();
 				}
 			} catch (Exception ex)
 			{
-				byte[] hError = Encoding.Default.GetBytes (string.Format ("HTTP/1.1 {0}\r\n\r\n", ex.Message));
+				byte[] hError;
+
+				HttpStatusException hsEx = ex as HttpStatusException;
+				if(hsEx != null)
+					hError = Encoding.Default.GetBytes (string.Format ("HTTP/1.1 {0}\r\n\r\n", hsEx.ResponseCode));
+				else
+					hError = Encoding.Default.GetBytes (string.Format ("HTTP/1.1 500\r\n\r\n"));
+
 				if (_httpServer.Mode == ServerMode.FastCGI)
 					hError = _fcgiInterpreter.TranslateToFCGIResponse (hError);
 
 				SocketAsyncManager.SendAsync (hError, 0, hError.Length, true);
 			}
-		}
-
-		protected void SendResponse ()
-		{
-			if (_uploadManager != null)
-				_uploadManager.AllFileUploadsEnded ();
-
-			_Logger.DebugFormat ("Data received: {0} bytes", SocketAsyncManager.TotalReceived);
-			bool closeConnectionAfterSend = true;
-
-			if (_request != null)
-			{
-				Handler = InitHandler ();
-				if (Handler != null)
-				{
-					_Logger.InfoFormat ("{0} /{1} {2}", _request.Method, _request.Resource, _request.Protocol);
-					HttpResponse response = Handler.Handle (_request);
-					if (response != null)
-					{
-						byte[] responseData = response.Data;
-
-						if (_httpServer.Mode == ServerMode.FastCGI)
-							responseData = _fcgiInterpreter.TranslateToFCGIResponse (responseData);
-
-						SocketAsyncManager.SendAsync (responseData, 0, responseData.Length);
-						SocketAsyncManager.Clear ();
-						_request = null;
-						closeConnectionAfterSend = !response.ConnectionKeepAlive;
-					} else
-					{
-						byte[] h404 = Encoding.Default.GetBytes (string.Format ("HTTP/1.1 {0}\r\n\r\n", HttpResponseStatus._404.ToResponseHeaderText ()));
-						if (_httpServer.Mode == ServerMode.FastCGI)
-							h404 = _fcgiInterpreter.TranslateToFCGIResponse (h404);
-
-						SocketAsyncManager.SendAsync (h404, 0, h404.Length, true);
-					}
-				}
-			}
-
-			SocketAsyncManager.ShouldCloseConnection = closeConnectionAfterSend;
 		}
 
 		protected virtual void ContinueRequestBuilding (byte[] buffer, int offset, int length)
@@ -203,10 +180,9 @@ namespace Badr.Net.Http
 						{
 							if (_uploadStarted)
 							{
-								if (_uploadManager == null)
-									_uploadManager = InitUploadManager (_request);
+								if(_currFileName != "")
+									StartUploads();
 
-								_uploadManager.FileUploadStarted (_currParamName, _currFileName, _currContentType);
 								_uploadStarted = false;
 							}
 
@@ -221,14 +197,11 @@ namespace Badr.Net.Http
 								if (boundaryIndex == -1)
 									amountToWrite = (eolIndex - _rbm.StartIndex) + 2;
 								else
-									amountToWrite = boundaryIndex - _rbm.StartIndex;
+									amountToWrite = boundaryIndex - 2 - _rbm.StartIndex;
 							}
 
-							if (amountToWrite > 0)// && !(amountToWrite == 2 && _rbm.StartsWithEol()))
+							if (amountToWrite > 0 && _currFileName != "")
 							{
-								if (_uploadManager == null)
-									_uploadManager = InitUploadManager (_request);
-
 								_uploadManager.WriteChunck (_currFileName, _rbm.WorkingBuffer, _rbm.StartIndex, amountToWrite);
 							}
 
@@ -236,10 +209,11 @@ namespace Badr.Net.Http
 
 							if (boundaryIndex != -1)
 							{
+								_rbm.MarkAsTreated (2);
 								eolIndex = _rbm.IndexOfEol ();
 								_endOfPart = false;
 
-								if (_uploadManager != null)
+								if (_currFileName != "")
 									_uploadManager.FileUploadEnded (_currFileName);
 							} else
 								return;
@@ -269,12 +243,12 @@ namespace Badr.Net.Http
 					if (line == _request.MulitpartBoundary)
 					{
 						_endOfPart = false;
-
+						
 						_currParamName = null;
 						_currFileName = null;
 						_currContentType = null;
 					}
-
+					
 					if (line.StartsWith ("Content-Disposition"))
 					{
 						string[] cdSplit = line.Split (';');
@@ -292,6 +266,59 @@ namespace Badr.Net.Http
 			}
 		}
 
+		private void StartUploads()
+		{
+			if (_uploadManager == null)
+				_uploadManager = InitUploadManager ();
+			
+			_uploadManager.FileUploadStarted (_currParamName, _currFileName, _currContentType);
+		}
+
+		private void EndUploads()
+		{
+			if (_uploadManager != null)
+				_uploadManager.AllFileUploadsEnded ();
+		}
+
+		protected void SendResponse ()
+		{
+			EndUploads ();
+			
+			_Logger.DebugFormat ("Data received: {0} bytes", SocketAsyncManager.TotalReceived);
+			bool closeConnectionAfterSend = true;
+			
+			if (_request != null)
+			{
+				Handler = InitHandler ();
+				if (Handler != null)
+				{
+					_Logger.InfoFormat ("{0} /{1} {2}", _request.Method, _request.Resource, _request.Protocol);
+					HttpResponse response = Handler.Handle (_request);
+					if (response != null)
+					{
+						byte[] responseData = response.Data;
+						
+						if (_httpServer.Mode == ServerMode.FastCGI)
+							responseData = _fcgiInterpreter.TranslateToFCGIResponse (responseData);
+						
+						SocketAsyncManager.SendAsync (responseData, 0, responseData.Length);
+						SocketAsyncManager.Clear ();
+						_request = null;
+						closeConnectionAfterSend = !response.ConnectionKeepAlive;
+					} else
+					{
+						byte[] h404 = Encoding.Default.GetBytes (string.Format ("HTTP/1.1 {0}\r\n\r\n", HttpResponseStatus._404.ToResponseHeaderText ()));
+						if (_httpServer.Mode == ServerMode.FastCGI)
+							h404 = _fcgiInterpreter.TranslateToFCGIResponse (h404);
+						
+						SocketAsyncManager.SendAsync (h404, 0, h404.Length, true);
+					}
+				}
+			}
+			
+			SocketAsyncManager.ShouldCloseConnection = closeConnectionAfterSend;
+		}
+
         #region virtuals
 
 		public virtual HttpRequest InitRequest ()
@@ -299,9 +326,9 @@ namespace Badr.Net.Http
 			return new HttpRequest ();
 		}
 
-		public virtual HttpUploadManager InitUploadManager (HttpRequest request)
+		public virtual HttpUploadManager InitUploadManager ()
 		{
-			return new HttpUploadManager (request);
+			return new HttpUploadManager (typeof(TmpFileUploadedHandler));
 		}
 
 		public virtual IHttpHandler InitHandler ()

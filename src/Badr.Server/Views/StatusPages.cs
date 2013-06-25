@@ -151,7 +151,7 @@ namespace Badr.Server.Views
 
             {% if " + DEBUG_PAGE_VAR_EXCEPTION + @" %}
             <div class=""_section_header""><span class=""button"" onclick=""javascript:toggleVisibility(this, '_id_debug_exception');""><span>&#x25BD;</span>Stack trace:</span></div>
-            <pre id=""_id_debug_exception"" class=""_debug_exception"">{{ " + DEBUG_PAGE_VAR_EXCEPTION + @" }}</pre>
+            <pre id=""_id_debug_exception"" class=""_debug_exception"">{{ " + DEBUG_PAGE_VAR_EXCEPTION + @"|Safe }}</pre>
             {% endif %}
 
             {% if " + DEBUG_PAGE_VAR_TEMPLATE_RENDERERS + @" %}
@@ -172,7 +172,7 @@ namespace Badr.Server.Views
 
             {% if " + DEBUG_PAGE_VAR_REQUEST + @" %}
             <div class=""_section_header""><span class=""button"" onclick=""javascript:toggleVisibility(this, '_id_debug_request');""><span>&#x25B7;</span>Request:</span></div>
-            <pre id=""_id_debug_request"" class=""_debug_request"" style=""display:none"">{{ " + DEBUG_PAGE_VAR_REQUEST + @" }}</pre>
+            <pre id=""_id_debug_request"" class=""_debug_request"" style=""display:none"">{{ " + DEBUG_PAGE_VAR_REQUEST + @"|Safe }}</pre>
             {% endif %}
 
         </div>

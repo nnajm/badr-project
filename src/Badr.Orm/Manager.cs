@@ -321,6 +321,11 @@ namespace Badr.Orm
             return CreateQuerySet().Exclude(excludeConditions);
         }
 
+		public Queryset OrderBy(List<FieldSortDef> orderByFields)
+		{
+			return CreateQuerySet().OrderBy(orderByFields);
+		}
+
         public Queryset CreateQuerySet()
         {
             if (PreFilter != null)

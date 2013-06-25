@@ -1,9 +1,9 @@
 //
-// Program.cs
+// HttpFormFile.cs
 //
-// Author: najmeddine nouri
+// Author: nnajm
 //
-// Copyright (c) 2013 najmeddine nouri, amine gassem
+// Copyright (c) 2013 najmeddine nouri
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,48 +27,54 @@
 // shall not be used in advertising or otherwise to promote the sale, use or other
 // dealings in this Software without prior written authorization.
 //
-﻿using System;
+
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
+using System.IO.Compression;
 using System.Net;
-using Badr.Server.Net;
-using Badr.Server.Settings;
-using Badr.Orm;
-using Badr.Demo.Accounting;
-using Badr.Orm.Query;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 
-namespace Badr.Demo
+namespace Badr.Net.Http.Request
 {
-    class Program
+    public class HttpFormFile
     {
-        static void Main (string[] args)
-		{
-			log4net.Config.XmlConfigurator.Configure ();
+		private byte[] _contentData;
 
-			// after db initialization (db file creation), set to true
-			bool databaseInitialized = true;
-
-			if (!databaseInitialized)
-				InitializeDatabase ();
-			else
-			{
-				new BadrServer ().XmlConfigure ()
-                                 .Start ();
-			}
-        }
-
-        private static void InitializeDatabase()
+		public HttpFormFile(string fieldName, string fileName, string storageId, string contentType)
         {
-            new BadrServer().XmlConfigure()
-                            .SyncDatabase();
-
-            for (int i = 0; i <= 27; i++)
-            {
-                AccountType at = new AccountType();
-                at.Description = "AccountType " + i;
-                at.Save();
-            }
+            FieldName = fieldName;
+            FileName = fileName;
+			StorageId = storageId;
+            ContentType = contentType;
         }
-	}
+
+        public string FieldName { get; protected set; }
+        public string FileName { get; protected set; }
+		public string StorageId { get; protected set; }
+        public string ContentType { get; protected set; }
+        public byte[] GetContentData()
+		{
+			if(_contentData == null)
+			{
+				_contentData = File.ReadAllBytes(StorageId);
+			}
+
+			return _contentData;
+		}
+
+        public void Save()
+        {
+            Save(FileName);
+        }
+
+        public void Save(string filepath)
+        {
+			File.WriteAllBytes(filepath, GetContentData());
+        }
+    }
+	
 }

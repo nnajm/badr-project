@@ -184,9 +184,17 @@
     <Compile Include="FastCGI\FastCGIRequest.cs" />
     <Compile Include="SocketAsyncBufferManager.cs" />
     <Compile Include="Http\Request\HttpRequestParams.cs" />
-    <Compile Include="Http\HttpCookies.cs" />
     <Compile Include="Http\HttpCookieFragment.cs" />
     <Compile Include="Utils\DefaultMap.cs" />
+    <Compile Include="Http\HttpCookies.cs" />
+    <Compile Include="Http\Request\HttpFormFile.cs" />
+    <Compile Include="Http\Request\HttpFormFiles.cs" />
+    <Compile Include="Http\Upload\HttpUploadManager.cs" />
+    <Compile Include="Http\Upload\FileUploadHandler.cs" />
+    <Compile Include="Http\Upload\TmpFileUploadedHandler.cs" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Http\Upload\" />
+  </ItemGroup>
 </Project>
