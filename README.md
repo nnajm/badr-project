@@ -49,3 +49,7 @@ Version: 0.9 Beta
 ##License
 
 [MIT Licence](https://github.com/badrproject/badr-project/blob/master/LICENCE.TXT)
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/badrproject/badr-project/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
